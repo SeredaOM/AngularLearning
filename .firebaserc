@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "buddaangularexample": {
+      "hosting": {
+        "angular-example": [
+          "buddaangularexample"
+        ]
+      }
+    }
+  }
+}
