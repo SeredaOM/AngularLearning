@@ -23,7 +23,7 @@ export class HexComponent implements OnInit {
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
-    this.map = new Map(this.ctx);
+    this.map = new Map(this.ctx, 5);
 
     this.animate();
   }
@@ -33,7 +33,7 @@ export class HexComponent implements OnInit {
   }
 
   protected animate() {
-    console.log("render called");
+    //console.log("render called");
 
     requestAnimationFrame(this.animate.bind(this));
 
@@ -41,7 +41,10 @@ export class HexComponent implements OnInit {
 
     this.ctx.font = 'italic bold 48px serif';
     this.ctx.textBaseline = 'hanging';
-    this.ctx.strokeText('Hello world', 0, 100);
+    let text = 'Hello world';
+    let measure = this.ctx.measureText(text);
+    //console.log(measure);
+    this.ctx.strokeText(text, this.ctx.canvas.width - measure.actualBoundingBoxRight, this.ctx.canvas.height - measure.actualBoundingBoxDescent - 10);
 
     this.squares.forEach((hex: Hex) => {
       hex.moveRight();
@@ -52,5 +55,7 @@ export class HexComponent implements OnInit {
     this.map.drawTile(tile);
     var tile = new Tile(2, 0, "water", "fish");
     this.map.drawTile(tile);
+
+    this.map.drawMap();
   }
 }
