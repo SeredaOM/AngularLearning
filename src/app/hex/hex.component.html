@@ -1,4 +1,14 @@
 <p>Drawings using TS</p>
 
-<canvas #canvas width="900" height="600" style="border: black 1px solid; margin:5px; padding:10px;"></canvas>
+<canvas #canvas width="900" height="600" style="border: black 1px solid; margin: 5px; padding: 0px"
+  (click)="onCanvasMouseClick($event)"
+  (mousemove)="onCanvasMouseMove($event)"
+  (mouseover)="onCanvasMouseOver()"
+  (mouseleave)="onCanvasMouseLeave()"
+  (mousedown)="onCanvasMouseDown($event)"
+  (mouseup)="onCanvasMouseUp()"
+>
+</canvas>
 <button (click)="addHex()">Add Hex</button>
+
+<h1>Action {{ canvasAction }}</h1>

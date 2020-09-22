@@ -16,9 +16,15 @@ export class HexComponent implements OnInit {
 
   private ctx: CanvasRenderingContext2D;
   private map: Map;
+  private mapOffsetX = 0;
+  private mapOffsetY = 0;
+  private mapDragModeOn = false;
+  private mapDragLastOffsetX = 0;
+  private mapDragLastOffsetY = 0;
 
   private squares = new Array();
-  counter = 0;
+
+  canvasAction = '';
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');

@@ -149,7 +149,7 @@ export class Map {
     this.ctx.stroke();
   }
 
-  drawTile(tile: Tile): void {
+  drawTile(tile: Tile, offsetX: number, offsetY: number): void {
     const tileR = 18;
     const tileHalfW = tileR * 0.866;
     const tileW = tileHalfW * 2;
@@ -157,8 +157,8 @@ export class Map {
 
     const x = tile.getX(); // !== undefined ? tile.getX() : tile[0];
     const y = tile.getY(); // !== undefined ? tile.getY(): tile[1];
-    const cx = 250 + (x + y / 2) * tileW * dist;
-    const cy = 200 + y * tileR * 1.5 * dist;
+    const cx = offsetX + 250 + (x + y / 2) * tileW * dist;
+    const cy = offsetY + 200 + y * tileR * 1.5 * dist;
     const terrain = tile.getTerrain(); // !== undefined ? tile.getTerrain() : tile[2];
     const color = Map.GetTerrainColor(terrain);
 
@@ -170,7 +170,7 @@ export class Map {
     }
   }
 
-  drawMap(): void {
+  drawMap(offsetX: number, offsetY: number): void {
     const mapRadius = 11;
 
     for (let y = -mapRadius; y <= mapRadius; y++) {
@@ -178,7 +178,7 @@ export class Map {
         const tile = this.getTile(x, y);
         // console.log('x=' + x + ', y=' + y + ': tile is ' + (tile !== undefined ? tile.terrain : 'undefined'));
         if (tile !== undefined) {
-          this.drawTile(tile);
+          this.drawTile(tile, offsetX, offsetY);
         }
       }
     }
