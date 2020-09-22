@@ -6,14 +6,13 @@ import { Tile } from './tile';
 @Component({
   selector: 'app-hex',
   templateUrl: './hex.component.html',
-  styleUrls: ['./hex.component.css']
+  styleUrls: ['./hex.component.css'],
 })
-
 export class HexComponent implements OnInit {
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
 
-  constructor() { }
+  constructor() {}
 
   private ctx: CanvasRenderingContext2D;
   private map: Map;
@@ -44,16 +43,20 @@ export class HexComponent implements OnInit {
     let text = 'Hello world';
     let measure = this.ctx.measureText(text);
     //console.log(measure);
-    this.ctx.strokeText(text, this.ctx.canvas.width - measure.actualBoundingBoxRight, this.ctx.canvas.height - measure.actualBoundingBoxDescent - 10);
+    this.ctx.strokeText(
+      text,
+      this.ctx.canvas.width - measure.actualBoundingBoxRight,
+      this.ctx.canvas.height - measure.actualBoundingBoxDescent - 10
+    );
 
     this.squares.forEach((hex: Hex) => {
       hex.moveRight();
     });
 
-    this.map.drawHex(10, 10, 10, "red", "blue", 2);
-    var tile = new Tile(0, 0, "water", "");
+    this.map.drawHex(10, 10, 10, 'red', 'blue', 2);
+    var tile = new Tile(0, 0, 'water', '');
     this.map.drawTile(tile);
-    var tile = new Tile(2, 0, "water", "fish");
+    var tile = new Tile(2, 0, 'water', 'fish');
     this.map.drawTile(tile);
 
     this.map.drawMap();
