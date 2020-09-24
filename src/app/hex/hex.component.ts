@@ -33,12 +33,59 @@ export class HexComponent implements OnInit {
     this.animate();
   }
 
+  //region CanvasEvents
+
+  onCanvasMouseClick(event: MouseEvent): void {
+    this.canvasAction = 'click, ' + this.canvasAction;
+  }
+
+  onCanvasMouseMove(event: MouseEvent): void {
+    const tileCoords = Map.getTileCoordinates(
+      event.offsetX,
+      event.offsetY,
+      this.mapOffsetX,
+      this.mapOffsetY
+    );
+    this.canvasAction =
+      `Move on: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y})`;
+
+    // console.log(
+    //   `MouseMove: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y}), offset=(${this.mapOffsetX}, ${this.mapOffsetY}))`
+    // );
+
+    if (this.mapDragModeOn) {
+      this.mapOffsetX += event.offsetX - this.mapDragLastOffsetX;
+      this.mapOffsetY += event.offsetY - this.mapDragLastOffsetY;
+
+      this.mapDragLastOffsetX = event.offsetX;
+      this.mapDragLastOffsetY = event.offsetY;
+    }
+
+    this.map.hoverTile(tileCoords.x,tileCoords.y);
+  }
+
+  onCanvasMouseDown(event: MouseEvent): void {
+    this.canvasAction = 'down';
+
+    this.mapDragModeOn = true;
+    this.mapDragLastOffsetX = event.offsetX;
+    this.mapDragLastOffsetY = event.offsetY;
+  }
+
+  onCanvasMouseUp(): void {
+    this.canvasAction = 'up';
+
+    this.mapDragModeOn = false;
+  }
+
+  //endregion
+
   addHex(): void {
     this.squares.push(new Hex(this.ctx));
   }
 
-  protected animate() {
-    //console.log("render called");
+  protected animate(): void {
+    // console.log("render called");
 
     requestAnimationFrame(this.animate.bind(this));
 
@@ -46,9 +93,9 @@ export class HexComponent implements OnInit {
 
     this.ctx.font = 'italic bold 48px serif';
     this.ctx.textBaseline = 'hanging';
-    let text = 'Hello world';
-    let measure = this.ctx.measureText(text);
-    //console.log(measure);
+    const text = 'Hello world';
+    const measure = this.ctx.measureText(text);
+    // console.log(measure);
     this.ctx.strokeText(
       text,
       this.ctx.canvas.width - measure.actualBoundingBoxRight,

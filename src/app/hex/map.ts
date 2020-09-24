@@ -185,6 +185,17 @@ export class Map {
     return tile;
   }
 
+  hoverTile(x: number, y: number) {
+    if (this.lastHovered !== undefined) {
+      this.lastHovered.setHovered(false);
+    }
+
+    this.lastHovered = this.getTile(x, y);
+    if (this.lastHovered !== undefined) {
+      this.lastHovered.setHovered(true);
+    }
+  }
+
   drawHex(
     cx: number,
     cy: number,
@@ -209,26 +220,89 @@ export class Map {
     this.ctx.lineTo(cx, cy - radius);
     this.ctx.fill();
     this.ctx.stroke();
+
+    // //region draw rectangle in tile
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx, cy - radius);
+    // this.ctx.lineTo(cx, cy + radius);
+    // this.ctx.stroke();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx - halfWidth, cy);
+    // this.ctx.lineTo(cx + halfWidth, cy);
+    // this.ctx.stroke();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx + halfWidth, cy - radius / 2);
+    // this.ctx.lineTo(cx - halfWidth, cy - radius / 2);
+    // this.ctx.stroke();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx + halfWidth, cy + radius / 2);
+    // this.ctx.lineTo(cx - halfWidth, cy + radius / 2);
+    // this.ctx.stroke();
+    // //endregion
+
+    //region draw X in tile
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx - halfWidth, cy);
+    // this.ctx.lineTo(cx + halfWidth, cy);
+    // this.ctx.stroke();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx + halfWidth / 2, cy - (radius * 3) / 4);
+    // this.ctx.lineTo(cx - halfWidth / 2, cy + (radius * 3) / 4);
+    // this.ctx.stroke();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx + halfWidth / 2, cy + (radius * 3) / 4);
+    // this.ctx.lineTo(cx - halfWidth / 2, cy - (radius * 3) / 4);
+    // this.ctx.stroke();
+    //endregion
+
+    //region draw *
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx, cy - radius);
+    // this.ctx.lineTo(cx, cy + radius);
+    // this.ctx.stroke();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx + halfWidth, cy - radius / 2);
+    // this.ctx.lineTo(cx - halfWidth, cy + radius / 2);
+    // this.ctx.stroke();
+    // this.ctx.beginPath();
+    // this.ctx.moveTo(cx + halfWidth, cy + radius / 2);
+    // this.ctx.lineTo(cx - halfWidth, cy - radius / 2);
+    // this.ctx.stroke();
   }
 
-  drawTile(tile: Tile, offsetX: number, offsetY: number): void {
-    const tileR = 18;
-    const tileHalfW = tileR * 0.866;
-    const tileW = tileHalfW * 2;
-    const dist = 1.1; //  10%
-
-    const x = tile.getX(); // !== undefined ? tile.getX() : tile[0];
-    const y = tile.getY(); // !== undefined ? tile.getY(): tile[1];
-    const cx = offsetX + 250 + (x + y / 2) * tileW * dist;
-    const cy = offsetY + 200 + y * tileR * 1.5 * dist;
+  private drawTile(tile: Tile, offsetX: number, offsetY: number): void {
+    const center = Map.getTileCenterCoordinates(
+      tile.getX(),
+      tile.getY(),
+      offsetX,
+      offsetY
+    );
     const terrain = tile.getTerrain(); // !== undefined ? tile.getTerrain() : tile[2];
     const color = Map.GetTerrainColor(terrain);
 
-    this.drawHex(cx, cy, tileR, color.fill, color.stroke, 1);
+    if (tile.isHovered()) {
+      this.drawHex(
+        center.x,
+        center.y,
+        Map.tileR + 2,
+        color.fill,
+        color.stroke,
+        1
+      );
+    }
+
+    this.drawHex(center.x, center.y, Map.tileR, color.fill, color.stroke, 1);
 
     const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
     if (resource !== undefined && resource !== '') {
-      this.drawHex(cx, cy, tileR / 2, color.fill, color.stroke, 1);
+      this.drawHex(
+        center.x,
+        center.y,
+        Map.tileR / 2,
+        color.fill,
+        color.stroke,
+        2
+      );
     }
 
     // this.ctx.font = '12px Arial';
@@ -256,4 +330,6 @@ export class Map {
       }
     }
   }
+
+  private lastHovered: Tile;
 }
