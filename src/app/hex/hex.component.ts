@@ -59,12 +59,6 @@ export class HexComponent implements OnInit {
       hex.moveRight();
     });
 
-    this.map.drawHex(10, 10, 10, 'red', 'blue', 2);
-    var tile = new Tile(0, 0, 'water', '');
-    this.map.drawTile(tile);
-    var tile = new Tile(2, 0, 'water', 'fish');
-    this.map.drawTile(tile);
-
-    this.map.drawMap();
+    this.map.drawMap(this.mapOffsetX, this.mapOffsetY);
   }
 }
