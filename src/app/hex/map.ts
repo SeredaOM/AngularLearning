@@ -33,8 +33,10 @@ export class Map {
       const raw = new Array<Tile>(xWidth);
       for (let x = xMin; x <= xMax; x++) {
         let terrain;
+        let resource = '';
         if (x === 0 && y === 0) {
           terrain = 'desert';
+          resource = 'castle';
         } else if (
           x === -radius ||
           y === -radius ||
@@ -49,7 +51,7 @@ export class Map {
         }
 
         log += ' (' + x + ',' + y + ': ' + terrain + ')';
-        raw[x - xMin] = new Tile(x, y, terrain, '');
+        raw[x - xMin] = new Tile(x, y, terrain, resource);
       }
 
       // console.log(log);
