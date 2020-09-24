@@ -1,6 +1,16 @@
 import { Tile } from './tile';
 
 export class Map {
+  //  Pixel coordinates of the (0,0) tile on the maps
+  private static readonly mapCenterX = 250;
+  private static readonly mapCenterY = 200;
+  private static readonly tileR = 20;
+  private static readonly tileHalfW = Map.tileR * 0.866;
+  private static readonly tileW = Map.tileHalfW * 2;
+  private static readonly dist = 1.1; //  distance between tiles is 10% of the tile width
+  private static readonly tileHorizontalShift = 1.5;
+
+  private radius: number;
   private tiles: Array<Array<Tile>>;
   private xMins: Array<number>;
   private xWidths: Array<number>;
@@ -9,6 +19,7 @@ export class Map {
     // https://www.redblobgames.com/grids/hexagons/
     // Creates a hexagonal map that with the center at (0,0)
 
+    this.radius = radius;
     const diameter = 1 + 2 * radius;
     this.tiles = new Array<Array<Tile>>(4 * diameter * diameter);
     this.xMins = new Array<number>(diameter);
@@ -96,6 +107,57 @@ export class Map {
     return { fill: colorFill, stroke: colorStroke };
   }
 
+  //  converts pixels of the canvas to the tile coordinates on the map
+  static getTileCoordinates(
+    clickX: number,
+    clickY: number,
+    offsetX: number,
+    offsetY: number
+  ): { x: number; y: number } {
+    //  relative position around the center
+    const x = clickX - offsetX - Map.mapCenterX;
+    const y = clickY - offsetY - Map.mapCenterY;
+
+    //  https://www.redblobgames.com/grids/hexagons/#pixel-to-hex
+
+    const tx = ((Math.sqrt(3) / 3) * x - (1 / 3) * y) / (Map.tileR * Map.dist);
+    const ty = ((2 / 3) * y) / (Map.tileR * Map.dist);
+
+    //  The limitation of this approach is that the most upper and bottom part of the hex (1/4) is considered to belong to another raw
+    //  Needs to be addressed later
+
+    return { x: Math.round(tx), y: Math.round(ty) };
+  }
+
+  //  calculates the pixels' coordinates for the tile based on its cartesians map coordinates
+  private static getTileCenterCoordinates(
+    tileX: number,
+    tileY: number,
+    offsetX: number,
+    offsetY: number
+  ): { x: number; y: number } {
+    //  https://www.redblobgames.com/grids/hexagons/#hex-to-pixel
+    const cx =
+      offsetX +
+      Map.mapCenterX +
+      (Math.sqrt(3) * tileX + (Math.sqrt(3) * tileY) / 2) *
+        (Map.tileR * Map.dist);
+    const cy =
+      offsetY +
+      Map.mapCenterY +
+      tileY * (Map.tileR * Map.dist) * Map.tileHorizontalShift;
+
+    //  empirical
+    // const cx =
+    //   offsetX + Map.mapCenterX + (tileX + tileY / 2) * Map.tileW * Map.dist;
+    // const cy =
+    //   offsetY +
+    //   Map.mapCenterY +
+    //   tileY * (Map.tileR*Map.dist) * Map.tileHorizontalShift ;
+
+    return { x: cx, y: cy };
+  }
+
   private getTile(x: number, y: number): Tile {
     if (y < -this.radius) {
       // console.warning('y (' + y + ') < -radius (' + -this._radius + ')');
@@ -168,10 +230,21 @@ export class Map {
     if (resource !== undefined && resource !== '') {
       this.drawHex(cx, cy, tileR / 2, color.fill, color.stroke, 1);
     }
+
+    // this.ctx.font = '12px Arial';
+    // this.ctx.textBaseline = 'hanging';
+    // const text = `(${tile.getX()},${tile.getY()})`;
+    // const measure = this.ctx.measureText(text);
+    // this.ctx.lineWidth = 1;
+    // this.ctx.strokeText(
+    //   text,
+    //   center.x - measure.actualBoundingBoxRight / 2,
+    //   center.y - measure.actualBoundingBoxDescent / 2
+    // );
   }
 
   drawMap(offsetX: number, offsetY: number): void {
-    const mapRadius = 11;
+    const mapRadius = 2 * this.radius;
 
     for (let y = -mapRadius; y <= mapRadius; y++) {
       for (let x = -mapRadius; x <= mapRadius; x++) {
