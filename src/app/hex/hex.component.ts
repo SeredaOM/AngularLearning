@@ -1,4 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 import { Hex } from './hex';
 import { Map } from './map';
 import { Tile } from './tile';
@@ -12,7 +13,7 @@ export class HexComponent implements OnInit {
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
 
-  constructor() {}
+  constructor(private cookieService: CookieService) {}
 
   private ctx: CanvasRenderingContext2D;
   private map: Map;
@@ -28,7 +29,12 @@ export class HexComponent implements OnInit {
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
-    this.map = new Map(this.ctx, 5);
+    let tileRadius = parseInt(this.cookieService.get('tileRadius'));
+    if (tileRadius === undefined) {
+      tileRadius = 30;
+    }
+
+    this.map = new Map(this.ctx, 15, tileRadius);
 
     this.animate();
   }
@@ -78,9 +84,10 @@ export class HexComponent implements OnInit {
   }
 
   onCanvasMouseWheel(event: WheelEvent): void {
-    this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}`;
+    const newTileRadius = this.map.changeTileRadius(-Math.sign(event.deltaY));
+    this.cookieService.set('tileRadius', newTileRadius.toString());
 
-    this.map.changeTileRadius(-Math.sign(event.deltaY));
+    this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}. NewTileRadius: ${newTileRadius}`;
   }
 
   //endregion

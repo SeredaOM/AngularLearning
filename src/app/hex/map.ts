@@ -14,19 +14,24 @@ export class Map {
   private xMins: Array<number>;
   private xWidths: Array<number>;
 
-  constructor(private ctx: CanvasRenderingContext2D, private radius: number) {
+  constructor(
+    private ctx: CanvasRenderingContext2D,
+    private mapRadius: number,
+    private tileRadius: number
+  ) {
     // https://www.redblobgames.com/grids/hexagons/
     // Creates a hexagonal map that with the center at (0,0)
-    this.tileR = 30;
-    const diameter = 1 + 2 * radius;
+    this.mapRadius = mapRadius;
+    this.tileR = tileRadius;
+    const diameter = 1 + 2 * this.mapRadius;
     this.defineSizing();
 
     this.tiles = new Array<Array<Tile>>(4 * diameter * diameter);
     this.xMins = new Array<number>(diameter);
     this.xWidths = new Array<number>(diameter);
-    for (let y = -radius; y <= radius; y++) {
-      const xMin = Math.max(-radius, -(y + radius));
-      const xWidth = 2 * radius - Math.abs(y) + 5;
+    for (let y = -this.mapRadius; y <= this.mapRadius; y++) {
+      const xMin = Math.max(-this.mapRadius, -(y + this.mapRadius));
+      const xWidth = 2 * this.mapRadius - Math.abs(y) + 5;
       const xMax = xMin + xWidth;
       let log = 'Line y=' + y + ', width=' + xWidth + ':';
 
@@ -38,12 +43,12 @@ export class Map {
           terrain = 'desert';
           resource = 'castle';
         } else if (
-          x === -radius ||
-          y === -radius ||
-          x + y === -radius ||
-          x === radius ||
-          y === radius ||
-          x + y === radius
+          x === -this.mapRadius ||
+          y === -this.mapRadius ||
+          x + y === -this.mapRadius ||
+          x === this.mapRadius ||
+          y === this.mapRadius ||
+          x + y === this.mapRadius
         ) {
           terrain = 'rock';
         } else {
@@ -55,9 +60,9 @@ export class Map {
       }
 
       // console.log(log);
-      this.tiles[y + radius] = raw;
-      this.xMins[y + radius] = xMin;
-      this.xWidths[y + radius] = xWidth;
+      this.tiles[y + this.mapRadius] = raw;
+      this.xMins[y + this.mapRadius] = xMin;
+      this.xWidths[y + this.mapRadius] = xWidth;
     }
   }
 
@@ -161,27 +166,27 @@ export class Map {
   }
 
   private getTile(x: number, y: number): Tile {
-    if (y < -this.radius) {
+    if (y < -this.mapRadius) {
       // console.warning('y (' + y + ') < -radius (' + -this._radius + ')');
       return undefined;
     }
-    if (y > this.radius) {
+    if (y > this.mapRadius) {
       // console.warning('y (' + y + ') > radius (' + this._radius + ')');
       return undefined;
     }
 
-    const xMin = this.xMins[y + this.radius];
+    const xMin = this.xMins[y + this.mapRadius];
     // console.log('y=' + y + ', xMin=' + xMin);
     if (x < xMin) {
       // console.warn('x (' + x + ') < xMin (' + xMin + ') for y=' + y);
       return undefined;
     }
-    const xWidth = this.xWidths[y + this.radius];
+    const xWidth = this.xWidths[y + this.mapRadius];
     if (x > xMin + xWidth) {
       // console.warn('x (' + x + ') > xWidth (' + xWidth + ') for y=' + y);
       return undefined;
     }
-    const raw = this.tiles[y + this.radius];
+    const raw = this.tiles[y + this.mapRadius];
     const tile = raw[x - xMin];
 
     return tile;
@@ -203,9 +208,11 @@ export class Map {
     this.tileW = this.tileHalfW * 2;
   }
 
-  changeTileRadius(delta: number) {
+  changeTileRadius(delta: number): number {
     this.tileR += delta;
     this.defineSizing();
+
+    return this.tileR;
   }
 
   drawHex(
@@ -330,7 +337,7 @@ export class Map {
   }
 
   drawMap(offsetX: number, offsetY: number): void {
-    const mapRadius = 2 * this.radius;
+    const mapRadius = 2 * this.mapRadius;
 
     for (let y = -mapRadius; y <= mapRadius; y++) {
       for (let x = -mapRadius; x <= mapRadius; x++) {
