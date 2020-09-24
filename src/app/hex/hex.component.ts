@@ -40,14 +40,13 @@ export class HexComponent implements OnInit {
   }
 
   onCanvasMouseMove(event: MouseEvent): void {
-    const tileCoords = Map.getTileCoordinates(
+    const tileCoords = this.map.getTileCoordinates(
       event.offsetX,
       event.offsetY,
       this.mapOffsetX,
       this.mapOffsetY
     );
-    this.canvasAction =
-      `Move on: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y})`;
+    this.canvasAction = `Move on: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y})`;
 
     // console.log(
     //   `MouseMove: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y}), offset=(${this.mapOffsetX}, ${this.mapOffsetY}))`
@@ -61,7 +60,7 @@ export class HexComponent implements OnInit {
       this.mapDragLastOffsetY = event.offsetY;
     }
 
-    this.map.hoverTile(tileCoords.x,tileCoords.y);
+    this.map.hoverTile(tileCoords.x, tileCoords.y);
   }
 
   onCanvasMouseDown(event: MouseEvent): void {
@@ -76,6 +75,12 @@ export class HexComponent implements OnInit {
     this.canvasAction = 'up';
 
     this.mapDragModeOn = false;
+  }
+
+  onCanvasMouseWheel(event: WheelEvent): void {
+    this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}`;
+
+    this.map.changeTileRadius(-Math.sign(event.deltaY));
   }
 
   //endregion

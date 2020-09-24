@@ -4,9 +4,9 @@ export class Map {
   //  Pixel coordinates of the (0,0) tile on the maps
   private static readonly mapCenterX = 250;
   private static readonly mapCenterY = 200;
-  private static readonly tileR = 20;
-  private static readonly tileHalfW = Map.tileR * 0.866;
-  private static readonly tileW = Map.tileHalfW * 2;
+  private tileR = 30;
+  private tileHalfW: number;
+  private tileW: number;
   private static readonly dist = 1.1; //  distance between tiles is 10% of the tile width
   private static readonly tileHorizontalShift = 1.5;
 
@@ -17,8 +17,10 @@ export class Map {
   constructor(private ctx: CanvasRenderingContext2D, private radius: number) {
     // https://www.redblobgames.com/grids/hexagons/
     // Creates a hexagonal map that with the center at (0,0)
-
+    this.tileR = 30;
     const diameter = 1 + 2 * radius;
+    this.defineSizing();
+
     this.tiles = new Array<Array<Tile>>(4 * diameter * diameter);
     this.xMins = new Array<number>(diameter);
     this.xWidths = new Array<number>(diameter);
@@ -108,7 +110,7 @@ export class Map {
   }
 
   //  converts pixels of the canvas to the tile coordinates on the map
-  static getTileCoordinates(
+  getTileCoordinates(
     clickX: number,
     clickY: number,
     offsetX: number,
@@ -120,8 +122,8 @@ export class Map {
 
     //  https://www.redblobgames.com/grids/hexagons/#pixel-to-hex
 
-    const tx = ((Math.sqrt(3) / 3) * x - (1 / 3) * y) / (Map.tileR * Map.dist);
-    const ty = ((2 / 3) * y) / (Map.tileR * Map.dist);
+    const tx = ((Math.sqrt(3) / 3) * x - (1 / 3) * y) / (this.tileR * Map.dist);
+    const ty = ((2 / 3) * y) / (this.tileR * Map.dist);
 
     //  The limitation of this approach is that the most upper and bottom part of the hex (1/4) is considered to belong to another raw
     //  Needs to be addressed later
@@ -130,7 +132,7 @@ export class Map {
   }
 
   //  calculates the pixels' coordinates for the tile based on its cartesians map coordinates
-  private static getTileCenterCoordinates(
+  getTileCenterCoordinates(
     tileX: number,
     tileY: number,
     offsetX: number,
@@ -141,11 +143,11 @@ export class Map {
       offsetX +
       Map.mapCenterX +
       (Math.sqrt(3) * tileX + (Math.sqrt(3) * tileY) / 2) *
-        (Map.tileR * Map.dist);
+        (this.tileR * Map.dist);
     const cy =
       offsetY +
       Map.mapCenterY +
-      tileY * (Map.tileR * Map.dist) * Map.tileHorizontalShift;
+      tileY * (this.tileR * Map.dist) * Map.tileHorizontalShift;
 
     //  empirical
     // const cx =
@@ -194,6 +196,16 @@ export class Map {
     if (this.lastHovered !== undefined) {
       this.lastHovered.setHovered(true);
     }
+  }
+
+  private defineSizing() {
+    this.tileHalfW = this.tileR * 0.866;
+    this.tileW = this.tileHalfW * 2;
+  }
+
+  changeTileRadius(delta: number) {
+    this.tileR += delta;
+    this.defineSizing();
   }
 
   drawHex(
@@ -271,7 +283,7 @@ export class Map {
   }
 
   private drawTile(tile: Tile, offsetX: number, offsetY: number): void {
-    const center = Map.getTileCenterCoordinates(
+    const center = this.getTileCenterCoordinates(
       tile.getX(),
       tile.getY(),
       offsetX,
@@ -284,21 +296,21 @@ export class Map {
       this.drawHex(
         center.x,
         center.y,
-        Map.tileR + 2,
+        this.tileR + 2,
         color.fill,
         color.stroke,
         1
       );
     }
 
-    this.drawHex(center.x, center.y, Map.tileR, color.fill, color.stroke, 1);
+    this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, 1);
 
     const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
     if (resource !== undefined && resource !== '') {
       this.drawHex(
         center.x,
         center.y,
-        Map.tileR / 2,
+        this.tileR / 2,
         color.fill,
         color.stroke,
         2
