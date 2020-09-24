@@ -10,7 +10,6 @@ export class Map {
   private static readonly dist = 1.1; //  distance between tiles is 10% of the tile width
   private static readonly tileHorizontalShift = 1.5;
 
-  private radius: number;
   private tiles: Array<Array<Tile>>;
   private xMins: Array<number>;
   private xWidths: Array<number>;
@@ -19,7 +18,6 @@ export class Map {
     // https://www.redblobgames.com/grids/hexagons/
     // Creates a hexagonal map that with the center at (0,0)
 
-    this.radius = radius;
     const diameter = 1 + 2 * radius;
     this.tiles = new Array<Array<Tile>>(4 * diameter * diameter);
     this.xMins = new Array<number>(diameter);
