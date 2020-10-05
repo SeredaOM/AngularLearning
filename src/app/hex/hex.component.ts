@@ -1,5 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { HexesService } from './hexes.service';
+
 import { Hex } from './hex';
 import { Map } from './map';
 import { Tile } from './tile';
@@ -13,7 +15,10 @@ export class HexComponent implements OnInit {
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
 
-  constructor(private cookieService: CookieService) {}
+  constructor(
+    private cookieService: CookieService,
+    private hexesService: HexesService
+  ) {}
 
   private ctx: CanvasRenderingContext2D;
   private map: Map;
@@ -28,6 +33,10 @@ export class HexComponent implements OnInit {
   canvasAction = '';
 
   ngOnInit(): void {
+    this.hexesService.get().subscribe((data: any[]) => {
+      console.log(data);
+    });
+
     this.ctx = this.canvas.nativeElement.getContext('2d');
     let tileRadius = parseInt(this.cookieService.get('tileRadius'));
     if (tileRadius === undefined) {
