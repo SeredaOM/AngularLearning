@@ -32,6 +32,7 @@ export class HexComponent implements OnInit {
   private squares = new Array();
 
   canvasAction = '';
+  animationTime = 0;
 
   ngOnInit(): void {
     this.hexesService.get().subscribe((data: any[]) => {
@@ -124,6 +125,7 @@ export class HexComponent implements OnInit {
 
   protected animate(): void {
     // console.log("render called");
+    var t0 = performance.now();
 
     requestAnimationFrame(this.animate.bind(this));
 
@@ -135,5 +137,8 @@ export class HexComponent implements OnInit {
     });
 
     this.map.drawMap(this.mapOffsetX, this.mapOffsetY);
+
+    var t1 = performance.now();
+    this.animationTime = Math.floor((t1 - t0)*10)/10;
   }
 }
