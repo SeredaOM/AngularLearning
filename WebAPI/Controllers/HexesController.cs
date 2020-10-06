@@ -27,7 +27,8 @@ namespace WebAPI.Controllers
             return Enumerable.Range(1, 5).Select(index => new CustomListItem
             {
                 Id = index,
-                Text = string.Format("Text #{0}", index)
+                Text = string.Format("Text #{0}", index),
+                Description = "Hello EVERYONE!!!"
             })
             .ToArray();
         }

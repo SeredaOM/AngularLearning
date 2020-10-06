@@ -34,27 +34,33 @@ export class HexComponent implements OnInit {
   canvasAction = '';
   animationTime = 0;
 
-  ngOnInit(): void {
-    this.hexesService.get().subscribe((data: any[]) => {
-      console.log(data);
-    });
-
+  private UpdateGreeting(greeting: string) {
     this.ctx = this.canvas.nativeElement.getContext('2d');
     this.offscreenCanvas = new OffscreenCanvas(256, 256);
     this.offscreenCanvas.width = this.ctx.canvas.width;
     this.offscreenCanvas.height = this.ctx.canvas.height;
-    
+
     let ctxOS = this.offscreenCanvas.getContext('2d');
     ctxOS.font = 'italic bold 48px serif';
     ctxOS.textBaseline = 'hanging';
-    const text = 'Hello Offscreen World!';
+    const text = greeting;
     const measure = ctxOS.measureText(text);
-    // console.log(measure);
     ctxOS.strokeText(
       text,
       ctxOS.canvas.width - measure.actualBoundingBoxRight,
       ctxOS.canvas.height - measure.actualBoundingBoxDescent - 10
     );
+  }
+
+  ngOnInit(): void {
+    this.hexesService.get().subscribe((data: any[]) => {
+      console.log(data);
+      let d = data[0];
+      console.log(d.description);
+      this.UpdateGreeting(d.description);
+    });
+
+    this.UpdateGreeting('Hello World!!!');
 
     let tileRadius = parseInt(this.cookieService.get('tileRadius'));
     if (tileRadius === undefined) {
