@@ -21,6 +21,7 @@ export class HexComponent implements OnInit {
   ) {}
 
   private ctx: CanvasRenderingContext2D;
+  private offscreenCanvas: OffscreenCanvas;
   private map: Map;
   private mapOffsetX = 0;
   private mapOffsetY = 0;
@@ -38,6 +39,22 @@ export class HexComponent implements OnInit {
     });
 
     this.ctx = this.canvas.nativeElement.getContext('2d');
+    this.offscreenCanvas = new OffscreenCanvas(256, 256);
+    this.offscreenCanvas.width = this.ctx.canvas.width;
+    this.offscreenCanvas.height = this.ctx.canvas.height;
+    
+    let ctxOS = this.offscreenCanvas.getContext('2d');
+    ctxOS.font = 'italic bold 48px serif';
+    ctxOS.textBaseline = 'hanging';
+    const text = 'Hello Offscreen World!';
+    const measure = ctxOS.measureText(text);
+    // console.log(measure);
+    ctxOS.strokeText(
+      text,
+      ctxOS.canvas.width - measure.actualBoundingBoxRight,
+      ctxOS.canvas.height - measure.actualBoundingBoxDescent - 10
+    );
+
     let tileRadius = parseInt(this.cookieService.get('tileRadius'));
     if (tileRadius === undefined) {
       tileRadius = 30;
@@ -112,17 +129,7 @@ export class HexComponent implements OnInit {
 
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-    this.ctx.font = 'italic bold 48px serif';
-    this.ctx.textBaseline = 'hanging';
-    const text = 'Hello world';
-    const measure = this.ctx.measureText(text);
-    // console.log(measure);
-    this.ctx.strokeText(
-      text,
-      this.ctx.canvas.width - measure.actualBoundingBoxRight,
-      this.ctx.canvas.height - measure.actualBoundingBoxDescent - 10
-    );
-
+    this.ctx.drawImage(this.offscreenCanvas, 0, 0);
     this.squares.forEach((hex: Hex) => {
       hex.moveRight();
     });
