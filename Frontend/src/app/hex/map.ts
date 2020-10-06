@@ -296,6 +296,16 @@ export class Map {
       offsetX,
       offsetY
     );
+
+    if (
+      center.x < 0 - this.tileW ||
+      center.x > this.ctx.canvas.width + this.tileW ||
+      center.y < 0 - this.tileR ||
+      center.y > this.ctx.canvas.height + this.tileR
+    ) {
+      return;
+    }
+
     const terrain = tile.getTerrain(); // !== undefined ? tile.getTerrain() : tile[2];
     const color = Map.GetTerrainColor(terrain);
 
