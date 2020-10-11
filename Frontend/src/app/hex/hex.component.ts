@@ -18,7 +18,7 @@ export class HexComponent implements OnInit {
   constructor(
     private cookieService: CookieService,
     private hexesService: HexesService
-  ) {}
+  ) { }
 
   private ctx: CanvasRenderingContext2D;
   private offscreenCanvas: OffscreenCanvas;
@@ -63,7 +63,7 @@ export class HexComponent implements OnInit {
     this.UpdateGreeting('Hello World!!!');
 
     let tileRadius = parseInt(this.cookieService.get('tileRadius'));
-    if (tileRadius === undefined) {
+    if (isNaN(tileRadius)) {
       tileRadius = 30;
     }
 
@@ -145,6 +145,6 @@ export class HexComponent implements OnInit {
     this.map.drawMap(this.mapOffsetX, this.mapOffsetY);
 
     var t1 = performance.now();
-    this.animationTime = Math.floor((t1 - t0)*10)/10;
+    this.animationTime = Math.floor((t1 - t0) * 10) / 10;
   }
 }
