@@ -3,8 +3,10 @@ import { CookieService } from 'ngx-cookie-service';
 import { HexesService } from './hexes.service';
 
 import { Hex } from './hex';
-import { Map } from './map';
+import { ITile } from './itile';
 import { Tile } from './tile';
+import { IMap } from './imap';
+import { Map } from './map';
 
 @Component({
   selector: 'app-hex',
@@ -53,38 +55,73 @@ export class HexComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.hexesService.get().subscribe((data: any[]) => {
-      console.log(data);
-      let d = data[0];
-      console.log(d.description);
-      this.UpdateGreeting(d.description);
-    });
-
     this.UpdateGreeting('Hello World!!!');
+    this.map = undefined;//Map.CreateRoundMap(this.ctx, 15, tileRadius);
 
-    let tileRadius = parseInt(this.cookieService.get('tileRadius'));
-    if (isNaN(tileRadius)) {
-      tileRadius = 30;
-    }
+    this.hexesService.get().subscribe((mapData: IMap) => {
+      console.log("Get: ");
+      console.log(mapData);
 
-    this.map = new Map(this.ctx, 15, tileRadius);
+      let tileRadius = parseInt(this.cookieService.get('tileRadius'));
+      if (isNaN(tileRadius)) {
+        tileRadius = 30;
+        this.cookieService.set('tileRadius', tileRadius.toString());
+      }
+      //this.map = <Map>mapData;
+
+      let tiles = new Array<Array<Tile>>();
+      mapData.tiles.forEach(rowTilesData => {
+        let rowTiles = new Array<Tile>();
+        rowTilesData.forEach(tileData => {
+          debugger;
+          const tile = new Tile(tileData.x, tileData.y, tileData.terrain.toLocaleLowerCase(),
+            tileData.resource == undefined || tileData.resource == "null" ? undefined : tileData.resource.toLocaleLowerCase());
+          rowTiles.push(tile);
+          tile.getTerrain();
+        });
+        tiles.push(rowTiles);
+      });
+
+      this.map = new Map(this.ctx, mapData.name, mapData.radius, tileRadius, tiles, mapData.xMins, mapData.xWidths);
+
+      this.UpdateGreeting(`Map: ${this.map.name}`);
+    });
 
     this.animate();
   }
 
-  //region CanvasEvents
+  /* #region CanvasEvents */
 
   onCanvasMouseClick(event: MouseEvent): void {
     this.canvasAction = 'click, ' + this.canvasAction;
   }
 
   onCanvasMouseMove(event: MouseEvent): void {
+    if (this.map === undefined) {
+      console.log(`Map is not defined`);
+      return;
+    }
+
     const tileCoords = this.map.getTileCoordinates(
       event.offsetX,
       event.offsetY,
       this.mapOffsetX,
       this.mapOffsetY
     );
+    if (isNaN(tileCoords.x) || isNaN(tileCoords.y)) {
+      console.log(`Cand identify tile on mouse move (${event.offsetX},${event.offsetY})`);
+
+      debugger;
+      const tileCoords = this.map.getTileCoordinates(
+        event.offsetX,
+        event.offsetY,
+        this.mapOffsetX,
+        this.mapOffsetY
+      );
+
+      return;
+    }
+
     this.canvasAction = `Move on: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y})`;
 
     // console.log(
@@ -123,7 +160,7 @@ export class HexComponent implements OnInit {
     this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}. NewTileRadius: ${newTileRadius}`;
   }
 
-  //endregion
+  /* #endregion */
 
   addHex(): void {
     this.squares.push(new Hex(this.ctx));
@@ -142,8 +179,9 @@ export class HexComponent implements OnInit {
       hex.moveRight();
     });
 
-    this.map.drawMap(this.mapOffsetX, this.mapOffsetY);
-
+    if (this.map !== undefined) {
+      this.map.drawMap(this.mapOffsetX, this.mapOffsetY);
+    }
     var t1 = performance.now();
     this.animationTime = Math.floor((t1 - t0) * 10) / 10;
   }

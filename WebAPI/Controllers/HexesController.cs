@@ -21,16 +21,15 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<CustomListItem> Get()
+        public ActionResult<IMap> GetMap([FromQuery] int mapId)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new CustomListItem
+            if (mapId <= 0)
             {
-                Id = index,
-                Text = string.Format("Text #{0}", index),
-                Description = "Hello EVERYONE!!!"
-            })
-            .ToArray();
+                return NotFound();
+            }
+
+            IMap map = Map.CreateRoundMap(mapId);   //  temporarily use id as radius
+            return Ok(map);
         }
     }
 }

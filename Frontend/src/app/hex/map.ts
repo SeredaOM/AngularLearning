@@ -5,33 +5,46 @@ export class Map {
   private static readonly mapCenterX = 250;
   private static readonly mapCenterY = 200;
   private tileR = 30;
-  private tileHalfW: number;
   private tileW: number;
   private static readonly dist = 1.1; //  distance between tiles is 10% of the tile width
   private static readonly tileHorizontalShift = 1.5;
 
-  private tiles: Array<Array<Tile>>;
-  private xMins: Array<number>;
-  private xWidths: Array<number>;
+  /* #region  Construction */
 
   constructor(
     private ctx: CanvasRenderingContext2D,
-    private mapRadius: number,
-    private tileRadius: number
+    public name: string,
+    radius: number,
+    tileRadius: number,
+    private tiles: Array<Array<Tile>>,
+    private xMins: Array<number>,
+    private xWidths: Array<number>
   ) {
+    this.radius = radius;
+
+    this.tileR = tileRadius;
+    this.tileW = Map.getTileWidth(this.tileR);
+
+    this.tiles = tiles;
+    this.xMins = xMins;
+    this.xWidths = xWidths;
+  }
+
+  static CreateRoundMap(
+    ctx: CanvasRenderingContext2D,
+    name: string,
+    mapRadius: number,
+    tileR: number): Map {
     // https://www.redblobgames.com/grids/hexagons/
     // Creates a hexagonal map that with the center at (0,0)
-    this.mapRadius = mapRadius;
-    this.tileR = tileRadius;
-    const diameter = 1 + 2 * this.mapRadius;
-    this.defineSizing();
-
-    this.tiles = new Array<Array<Tile>>(4 * diameter * diameter);
-    this.xMins = new Array<number>(diameter);
-    this.xWidths = new Array<number>(diameter);
-    for (let y = -this.mapRadius; y <= this.mapRadius; y++) {
-      const xMin = Math.max(-this.mapRadius, -(y + this.mapRadius));
-      const xWidth = 2 * this.mapRadius - Math.abs(y) + 5;
+    const diameter = 1 + 2 * mapRadius;
+    let tileW = Map.getTileWidth(tileR);
+    let tiles = new Array<Array<Tile>>(4 * diameter * diameter);
+    let xMins = new Array<number>(diameter);
+    let xWidths = new Array<number>(diameter);
+    for (let y = -mapRadius; y <= mapRadius; y++) {
+      const xMin = Math.max(-mapRadius, -(y + mapRadius));
+      const xWidth = 2 * mapRadius - Math.abs(y) + 5;
       const xMax = xMin + xWidth;
       let log = 'Line y=' + y + ', width=' + xWidth + ':';
 
@@ -43,12 +56,12 @@ export class Map {
           terrain = 'desert';
           resource = 'castle';
         } else if (
-          x === -this.mapRadius ||
-          y === -this.mapRadius ||
-          x + y === -this.mapRadius ||
-          x === this.mapRadius ||
-          y === this.mapRadius ||
-          x + y === this.mapRadius
+          x === -mapRadius ||
+          y === -mapRadius ||
+          x + y === -mapRadius ||
+          x === mapRadius ||
+          y === mapRadius ||
+          x + y === mapRadius
         ) {
           terrain = 'rock';
         } else {
@@ -60,11 +73,15 @@ export class Map {
       }
 
       // console.log(log);
-      this.tiles[y + this.mapRadius] = raw;
-      this.xMins[y + this.mapRadius] = xMin;
-      this.xWidths[y + this.mapRadius] = xWidth;
+      tiles[y + mapRadius] = raw;
+      xMins[y + mapRadius] = xMin;
+      xWidths[y + mapRadius] = xWidth;
     }
+
+    return new Map(ctx, name, mapRadius, tileR, tiles, xMins, xWidths);
   }
+
+  /* #endregion */
 
   static GetTerrainColor(terrain: string): { fill: string; stroke: string } {
     let colorFill: string;
@@ -96,7 +113,7 @@ export class Map {
         colorStroke = '#000000';
         break;
 
-      case 'rock':
+      case 'mountain':
         colorFill = '#888888';
         colorStroke = '#000000';
         break;
@@ -148,7 +165,7 @@ export class Map {
       offsetX +
       Map.mapCenterX +
       (Math.sqrt(3) * tileX + (Math.sqrt(3) * tileY) / 2) *
-        (this.tileR * Map.dist);
+      (this.tileR * Map.dist);
     const cy =
       offsetY +
       Map.mapCenterY +
@@ -166,27 +183,27 @@ export class Map {
   }
 
   private getTile(x: number, y: number): Tile {
-    if (y < -this.mapRadius) {
+    if (y < -this.radius) {
       // console.warning('y (' + y + ') < -radius (' + -this._radius + ')');
       return undefined;
     }
-    if (y > this.mapRadius) {
+    if (y > this.radius) {
       // console.warning('y (' + y + ') > radius (' + this._radius + ')');
       return undefined;
     }
 
-    const xMin = this.xMins[y + this.mapRadius];
+    const xMin = this.xMins[y + this.radius];
     // console.log('y=' + y + ', xMin=' + xMin);
     if (x < xMin) {
       // console.warn('x (' + x + ') < xMin (' + xMin + ') for y=' + y);
       return undefined;
     }
-    const xWidth = this.xWidths[y + this.mapRadius];
+    const xWidth = this.xWidths[y + this.radius];
     if (x > xMin + xWidth) {
       // console.warn('x (' + x + ') > xWidth (' + xWidth + ') for y=' + y);
       return undefined;
     }
-    const raw = this.tiles[y + this.mapRadius];
+    const raw = this.tiles[y + this.radius];
     const tile = raw[x - xMin];
 
     return tile;
@@ -203,17 +220,22 @@ export class Map {
     }
   }
 
-  private defineSizing() {
-    this.tileHalfW = this.tileR * 0.866;
-    this.tileW = this.tileHalfW * 2;
+  static getTileWidth(tileR: number): number {
+    return tileR * 0.866 * 2;
+  }
+
+  setTileRadius(radius: number) {
+    this.tileR = radius;
   }
 
   changeTileRadius(delta: number): number {
     this.tileR += delta;
-    this.defineSizing();
+    this.tileW = Map.getTileWidth(this.tileR);
 
     return this.tileR;
   }
+
+  /* #region Drawing */
 
   drawHex(
     cx: number,
@@ -347,18 +369,23 @@ export class Map {
   }
 
   drawMap(offsetX: number, offsetY: number): void {
-    const mapRadius = 2 * this.mapRadius;
+    const mapRadius = 2 * this.radius;
 
     for (let y = -mapRadius; y <= mapRadius; y++) {
       for (let x = -mapRadius; x <= mapRadius; x++) {
         const tile = this.getTile(x, y);
-        // console.log('x=' + x + ', y=' + y + ': tile is ' + (tile !== undefined ? tile.terrain : 'undefined'));
+        //console.log(`x=${x}, y=${y}: tile is ` + (tile !== undefined ? tile.terrain : 'undefined'));
         if (tile !== undefined) {
           this.drawTile(tile, offsetX, offsetY);
         }
       }
     }
   }
+
+  /* #endregion */
+
+  public id: number;
+  public radius: number;
 
   private lastHovered: Tile;
 }
