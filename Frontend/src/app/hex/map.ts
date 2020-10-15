@@ -30,57 +30,6 @@ export class Map {
     this.xWidths = xWidths;
   }
 
-  static CreateRoundMap(
-    ctx: CanvasRenderingContext2D,
-    name: string,
-    mapRadius: number,
-    tileR: number): Map {
-    // https://www.redblobgames.com/grids/hexagons/
-    // Creates a hexagonal map that with the center at (0,0)
-    const diameter = 1 + 2 * mapRadius;
-    let tileW = Map.getTileWidth(tileR);
-    let tiles = new Array<Array<Tile>>(4 * diameter * diameter);
-    let xMins = new Array<number>(diameter);
-    let xWidths = new Array<number>(diameter);
-    for (let y = -mapRadius; y <= mapRadius; y++) {
-      const xMin = Math.max(-mapRadius, -(y + mapRadius));
-      const xWidth = 2 * mapRadius - Math.abs(y) + 5;
-      const xMax = xMin + xWidth;
-      let log = 'Line y=' + y + ', width=' + xWidth + ':';
-
-      const raw = new Array<Tile>(xWidth);
-      for (let x = xMin; x <= xMax; x++) {
-        let terrain;
-        let resource = '';
-        if (x === 0 && y === 0) {
-          terrain = 'desert';
-          resource = 'castle';
-        } else if (
-          x === -mapRadius ||
-          y === -mapRadius ||
-          x + y === -mapRadius ||
-          x === mapRadius ||
-          y === mapRadius ||
-          x + y === mapRadius
-        ) {
-          terrain = 'rock';
-        } else {
-          terrain = 'snow';
-        }
-
-        log += ' (' + x + ',' + y + ': ' + terrain + ')';
-        raw[x - xMin] = new Tile(x, y, terrain, resource);
-      }
-
-      // console.log(log);
-      tiles[y + mapRadius] = raw;
-      xMins[y + mapRadius] = xMin;
-      xWidths[y + mapRadius] = xWidth;
-    }
-
-    return new Map(ctx, name, mapRadius, tileR, tiles, xMins, xWidths);
-  }
-
   /* #endregion */
 
   static GetTerrainColor(terrain: string): { fill: string; stroke: string } {

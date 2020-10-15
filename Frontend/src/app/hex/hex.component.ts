@@ -20,7 +20,7 @@ export class HexComponent implements OnInit {
   constructor(
     private cookieService: CookieService,
     private hexesService: HexesService
-  ) { }
+  ) {}
 
   private ctx: CanvasRenderingContext2D;
   private offscreenCanvas: OffscreenCanvas;
@@ -56,10 +56,10 @@ export class HexComponent implements OnInit {
 
   ngOnInit(): void {
     this.UpdateGreeting('Hello World!!!');
-    this.map = undefined;//Map.CreateRoundMap(this.ctx, 15, tileRadius);
+    this.map = undefined;
 
     this.hexesService.get().subscribe((mapData: IMap) => {
-      console.log("Get: ");
+      console.log('Get: ');
       console.log(mapData);
 
       let tileRadius = parseInt(this.cookieService.get('tileRadius'));
@@ -70,19 +70,32 @@ export class HexComponent implements OnInit {
       //this.map = <Map>mapData;
 
       let tiles = new Array<Array<Tile>>();
-      mapData.tiles.forEach(rowTilesData => {
+      mapData.tiles.forEach((rowTilesData) => {
         let rowTiles = new Array<Tile>();
-        rowTilesData.forEach(tileData => {
-          debugger;
-          const tile = new Tile(tileData.x, tileData.y, tileData.terrain.toLocaleLowerCase(),
-            tileData.resource == undefined || tileData.resource == "null" ? undefined : tileData.resource.toLocaleLowerCase());
+        rowTilesData.forEach((tileData) => {
+          const tile = new Tile(
+            tileData.x,
+            tileData.y,
+            tileData.terrain.toLocaleLowerCase(),
+            tileData.resource == undefined || tileData.resource == 'null'
+              ? undefined
+              : tileData.resource.toLocaleLowerCase()
+          );
           rowTiles.push(tile);
           tile.getTerrain();
         });
         tiles.push(rowTiles);
       });
 
-      this.map = new Map(this.ctx, mapData.name, mapData.radius, tileRadius, tiles, mapData.xMins, mapData.xWidths);
+      this.map = new Map(
+        this.ctx,
+        mapData.name,
+        mapData.radius,
+        tileRadius,
+        tiles,
+        mapData.xMins,
+        mapData.xWidths
+      );
 
       this.UpdateGreeting(`Map: ${this.map.name}`);
     });
@@ -109,9 +122,10 @@ export class HexComponent implements OnInit {
       this.mapOffsetY
     );
     if (isNaN(tileCoords.x) || isNaN(tileCoords.y)) {
-      console.log(`Cand identify tile on mouse move (${event.offsetX},${event.offsetY})`);
+      console.log(
+        `Can't identify tile on mouse move (${event.offsetX},${event.offsetY})`
+      );
 
-      debugger;
       const tileCoords = this.map.getTileCoordinates(
         event.offsetX,
         event.offsetY,
