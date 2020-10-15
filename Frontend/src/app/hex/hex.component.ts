@@ -9,7 +9,6 @@ import { CookieService } from 'ngx-cookie-service';
 import { HexesService } from './hexes.service';
 
 import { Hex } from './hex';
-import { ITile } from './itile';
 import { Tile } from './tile';
 import { IMap } from './imap';
 import { Map } from './map';
@@ -128,9 +127,7 @@ export class HexComponent implements OnInit {
       this.mapOffsetY
     );
     if (isNaN(tileCoords.x) || isNaN(tileCoords.y)) {
-      console.log(
-        `Can't identify tile on mouse move (${event.offsetX},${event.offsetY})`
-      );
+      console.log(`Can't identify tile on mouse move (${event.offsetX},${event.offsetY})`);
 
       const tileCoords = this.map.getTileCoordinates(
         event.offsetX,
