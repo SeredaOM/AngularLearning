@@ -5,9 +5,9 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class HexesService {
-  private HEXES_SERVER_URL = 'http://localhost:81/api/hexes';
+  //private HEXES_SERVER_URL = 'http://localhost:81/api/hexes';
   //private HEXES_SERVER_URL = 'http://localhost:81/api/weatherforecast';
-  //private HEXES_SERVER_URL = 'https://localhost:44362/hexes';
+  private HEXES_SERVER_URL = 'https://localhost:44362/hexes';
   //private HEXES_SERVER_URL = 'http://localhost:3000/products';
 
   constructor(private httpClient: HttpClient) { }

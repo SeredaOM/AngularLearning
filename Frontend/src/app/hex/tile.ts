@@ -1,9 +1,9 @@
 export class Tile {
   constructor(
-    private x,
-    private y,
-    private terrain: string,
-    private resource: string
+    public x,
+    public y,
+    public terrain: string,
+    public resource: string
   ) {}
 
   getX() {
