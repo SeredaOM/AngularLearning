@@ -20,6 +20,7 @@ function ownJS() {
   const height = width;
   const step = 10;
   const ds = 0.1;
+  var zMap = new Map(); //Array(2 * width + 1);
 
   ctx.strokeStyle = 'black'; // Fill color of rectangle drawn
   ctx.fillStyle = 'green'; // Fill color of rectangle drawn
@@ -65,6 +66,43 @@ function ownJS() {
     let y2 = z3 - ((x3 - y3) * Math.sin((30 * pi) / 180)) / 4;
 
     //console.log(`(${x},${y3},${z3})=>(${x2},${y2})`);
+
+    let visible = false;
+
+    let n = Math.round(x2);
+    if (zMap[n] === undefined) {
+      zMap[n] = z3;
+      visible = true;
+    } else {
+      if (z3 > zMap[n]) {
+        visible = z3 > zMap[n];
+        zMap[n] = z3;
+      }
+    }
+
+    // let nx = Math.round(x2);
+    // let ny = Math.round(y2);
+    
+    // if (zMap[nx] === undefined) {
+    //   console.log(`New nx=${nx}`);
+    //   zMap[nx] = new Map();
+    //   zMap[nx][ny] = true;
+    //   visible = true;
+    // } else {
+    //   //console.log(`Existing nx=${nx}`);
+    //   if (zMap[nx][ny] === undefined) {
+    //     //console.log(`New ny=${ny}`);
+    //     zMap[nx][ny] = true;
+    //     visible = true;
+    //     // console.log(`Draw nx=${nx}, ny=${ny}?`);
+    //   } else {
+    //     //console.log(`Existing ny=${ny}`);
+    //     visible = false;
+    //     //console.log('Ever visible?');
+    //   }
+    // }
+
+    if (visible)
     drawPixel(x2, y2);
   }
 
