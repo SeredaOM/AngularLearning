@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
 function ownJS() {
-  console.log("Hello from pingball.component.ts: " + document.getElementById('p1').innerHTML);
+  console.log(
+    'Hello from pingball.component.ts: ' +
+      document.getElementById('p1').innerHTML
+  );
 
   var canvas = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
   var ctx = canvas.getContext('2d'); // Canvas 2d rendering context
@@ -9,17 +12,33 @@ function ownJS() {
   var fieldHeight = canvas.height;
   var fieldWidth = canvas.width;
 
+  const pi = 3.1415926;
+  const border = 10;
+  const cX = 400;
+  const cY = 400;
+  const width = 200;
+  const height = width;
+  const step = 10;
+  const ds = 0.1;
+
+  ctx.strokeStyle = 'black'; // Fill color of rectangle drawn
+  ctx.fillStyle = 'green'; // Fill color of rectangle drawn
+  ctx.lineWidth = 1;
+
   var x = 10; //intial horizontal position of drawn rectangle
   var y = 10; //intial vertical position of drawn rectangle
   var wid = 20; //width of the drawn rectangle
   var hei = 20; //height of the drawn rectangle
 
-  //Draw Rectangle function		
+  var t2 = new Map();
+  console.log(t2[2] === undefined ? 'undefined' : 'no');
+
+  //Draw Rectangle function
+
   function drawRect(x, y, w, h) {
     ctx.fillStyle = '#999'; // Fill color of rectangle drawn
     ctx.fillStyle = 'green'; // Fill color of rectangle drawn
     ctx.fillRect(x, y, w, h); //This will draw a rectangle of 20x20
-
   }
 
   function moveRect() {
@@ -37,7 +56,78 @@ function ownJS() {
     drawRect(x, y, wid, hei); //Drawing rectangle on initial load
   }
 
-  setInterval(moveRect, 10);
+  function drawPixel(x: number, y: number) {
+    ctx.fillRect(cX + x, cY - y, 1, 1);
+  }
+
+  function drawPixel3d(x3, y3, z3) {
+    let x2 = (x3 + y3) * Math.sin((60 * pi) / 180);
+    let y2 = z3 - ((x3 - y3) * Math.sin((30 * pi) / 180)) / 4;
+
+    //console.log(`(${x},${y3},${z3})=>(${x2},${y2})`);
+    drawPixel(x2, y2);
+  }
+
+  function myFunc(x, y) {
+    let x2 = x * x;
+    let y2 = y * y;
+    let zHyperbola4 = ((x2 * x2 + y2 * y2) / 1200 - (x2 + y2) * 10) / height;
+    let zHyperbola3 =
+      ((x2 * x + y2 * y) / 1200 + 0.5 * (x2 + y2) + 10 * (x + y)) / height;
+    let zHyperbola2 = (x2 + y2) / 2 / height;
+    let zRipple =
+      Math.pow(2, -0.005 * (Math.abs(x) + Math.abs(y))) *
+      Math.cos(((x * x + y * y) * 2 * pi) / 180 / width) *
+      height *
+      1;
+
+    //return zHyperbola3;
+    return zRipple;
+  }
+
+  function drawGrid() {
+    ctx.strokeRect(
+      cX - 2 * width - border,
+      cY - 2 * height - border,
+      2 * (2 * width + border),
+      2 * (2 * height + border)
+    );
+
+    ctx.beginPath();
+  ctx.moveTo(cX - width * Math.sin(60), cY - height * Math.sin(30));
+  ctx.lineTo(cX + width * Math.sin(60), cY + height * Math.sin(30));
+  //ctx.stroke();  ctx.beginPath();
+  ctx.moveTo(cX + width * Math.sin(60), cY - height * Math.sin(30));
+  ctx.lineTo(cX - width * Math.sin(60), cY + height * Math.sin(30));
+  ctx.stroke();
+
+    //for (let x3 = -width; x3 <= width; x3 += step) {
+    for (let x3 = width; x3 >= -width; x3 -= step) {
+      //console.log(`New Line: (${x3})`);
+      for (let y3 = -height; y3 <= height; y3 += step) {
+        //for (let y3 = 1 * height; y3 >= 1 * height - 20 * step; y3 -= step) {
+        //console.log(`New Point: (${x3}, ${y3})`);
+        for (let s = 0; s < step; s += ds) {
+          let x = x3 + s;
+          if (x < width) {
+            let z3 = myFunc(x, y3);
+            drawPixel3d(x, y3, z3);
+          }
+        }
+
+        for (let s = 0; s < step; s += ds) {
+          let y = y3 + s;
+          if (y < height) {
+            let z3 = myFunc(x3, y);
+            drawPixel3d(x3, y, z3);
+          }
+        }
+      }
+    }
+  }
+
+  drawGrid(); //setInterval(drawGrid, 10);
+  //setInterval(moveRect, 10);
 
   /* //move rectangle inside the canvas using arrow keys
    window.onkeydown = function (event) {
@@ -73,11 +163,10 @@ declare const pingball_Test2: any;
 @Component({
   selector: 'app-pingball',
   templateUrl: './pingball.component.html',
-  styleUrls: ['./pingball.component.css']
+  styleUrls: ['./pingball.component.css'],
 })
 export class PingballComponent implements OnInit {
-
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     ownJS();
@@ -85,5 +174,4 @@ export class PingballComponent implements OnInit {
     /*initMethod();
     helloPB();*/
   }
-
 }
