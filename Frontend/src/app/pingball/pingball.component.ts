@@ -31,9 +31,6 @@ function ownJS() {
   var wid = 20; //width of the drawn rectangle
   var hei = 20; //height of the drawn rectangle
 
-  var t2 = new Map();
-  console.log(t2[2] === undefined ? 'undefined' : 'no');
-
   //Draw Rectangle function
 
   function drawRect(x, y, w, h) {
