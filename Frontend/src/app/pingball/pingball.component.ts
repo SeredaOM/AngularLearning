@@ -132,12 +132,18 @@ function ownJS() {
     );
 
     ctx.beginPath();
-  ctx.moveTo(cX - width * Math.sin(60), cY - height * Math.sin(30));
-  ctx.lineTo(cX + width * Math.sin(60), cY + height * Math.sin(30));
-  //ctx.stroke();  ctx.beginPath();
-  ctx.moveTo(cX + width * Math.sin(60), cY - height * Math.sin(30));
-  ctx.lineTo(cX - width * Math.sin(60), cY + height * Math.sin(30));
-  ctx.stroke();
+    ctx.moveTo(cX - width * Math.sin(30), cY - height * Math.sin(60));
+    ctx.lineTo(cX + width * Math.sin(30), cY + height * Math.sin(60));
+    ctx.moveTo(cX + width * Math.sin(30), cY - height * Math.sin(60));
+    ctx.lineTo(cX - width * Math.sin(30), cY + height * Math.sin(60));
+
+    ctx.moveTo(cX - 2 * width * Math.sin(30), cY);
+    ctx.lineTo(cX, cY - 2 * height * Math.sin(60));
+    ctx.lineTo(cX + 2 * width * Math.sin(30), cY);
+    ctx.lineTo(cX, cY + 2 * height * Math.sin(60));
+    ctx.lineTo(cX - 2 * width * Math.sin(30), cY);
+
+    ctx.stroke();
 
     //for (let x3 = -width; x3 <= width; x3 += step) {
     for (let x3 = width; x3 >= -width; x3 -= step) {
