@@ -1,4 +1,10 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  isDevMode,
+} from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { HexesService } from './hexes.service';
 
@@ -45,7 +51,7 @@ export class HexComponent implements OnInit {
     let ctxOS = this.offscreenCanvas.getContext('2d');
     ctxOS.font = 'italic bold 48px serif';
     ctxOS.textBaseline = 'hanging';
-    const text = greeting;
+    const text = greeting + (isDevMode() ? ' (DevMode: ON)' : '');
     const measure = ctxOS.measureText(text);
     ctxOS.strokeText(
       text,
