@@ -59,11 +59,8 @@ export class HexComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {
-    this.UpdateGreeting('Hello World!!!');
-    this.map = undefined;
-
-    this.hexesService.get().subscribe((mapData: IMap) => {
+  private handleNewMap(mapData: IMap): void {
+    {
       console.log('Get: ');
       console.log(mapData);
 
@@ -103,7 +100,16 @@ export class HexComponent implements OnInit {
       );
 
       this.UpdateGreeting(`Map: ${this.map.name}`);
-    });
+    }
+  }
+
+  ngOnInit(): void {
+    this.UpdateGreeting('Hello World!!!');
+    this.map = undefined;
+
+    this.hexesService
+      .getMap(3)
+      .subscribe((mapData: IMap) => this.handleNewMap(mapData));
 
     this.animate();
   }
@@ -127,7 +133,9 @@ export class HexComponent implements OnInit {
       this.mapOffsetY
     );
     if (isNaN(tileCoords.x) || isNaN(tileCoords.y)) {
-      console.log(`Can't identify tile on mouse move (${event.offsetX},${event.offsetY})`);
+      console.log(
+        `Can't identify tile on mouse move (${event.offsetX},${event.offsetY})`
+      );
 
       const tileCoords = this.map.getTileCoordinates(
         event.offsetX,
@@ -181,6 +189,13 @@ export class HexComponent implements OnInit {
 
   addHex(): void {
     this.squares.push(new Hex(this.ctx));
+  }
+
+  increaseMapSize(): void {
+    let newMapSize = this.map.getMapRadius() + 1;
+    this.hexesService
+      .getMap(newMapSize)
+      .subscribe((mapData: IMap) => this.handleNewMap(mapData));
   }
 
   protected animate(): void {

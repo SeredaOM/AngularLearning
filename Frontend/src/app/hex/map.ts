@@ -114,7 +114,7 @@ export class Map {
       offsetX +
       Map.mapCenterX +
       (Math.sqrt(3) * tileX + (Math.sqrt(3) * tileY) / 2) *
-      (this.tileR * Map.dist);
+        (this.tileR * Map.dist);
     const cy =
       offsetY +
       Map.mapCenterY +
@@ -173,8 +173,12 @@ export class Map {
     return tileR * 0.866 * 2;
   }
 
-  setTileRadius(radius: number) {
-    this.tileR = radius;
+  getMapRadius(): number {
+    return this.radius;
+  }
+
+  setTileRadius(tileRadius: number) {
+    this.tileR = tileRadius;
   }
 
   changeTileRadius(delta: number): number {
