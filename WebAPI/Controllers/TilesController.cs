@@ -31,7 +31,7 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Tile>> GetTile(int id)
         {
-            if (id==1)
+            if (id == 1)
             {
                 return Ok(new Tile(1, 1, TerrainType.Hill, null));
             }
@@ -87,7 +87,7 @@ namespace WebAPI.Controllers
             //_context.TodoItems.Add(tile);
             //await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTile", new { id = tile.X }, tile.Y);
+            return CreatedAtAction("GetTile", new { id = tile.X + tile.Y }, tile.X - tile.Y);
         }
         //public async Task<ActionResult<Tile>> PostTile222(Tile tile)
         //{
