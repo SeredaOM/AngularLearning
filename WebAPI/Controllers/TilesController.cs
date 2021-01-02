@@ -82,13 +82,20 @@ namespace WebAPI.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Tile>> PostTile(Tile tile)
+        public ActionResult<int> PostTile222(Tile tile)
         {
-            _context.TodoItems.Add(tile);
-            await _context.SaveChangesAsync();
+            //_context.TodoItems.Add(tile);
+            //await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTile", new { id = tile.Id }, tile);
+            return CreatedAtAction("GetTile", new { id = tile.X }, tile.Y);
         }
+        //public async Task<ActionResult<Tile>> PostTile222(Tile tile)
+        //{
+        //    //_context.TodoItems.Add(tile);
+        //    //await _context.SaveChangesAsync();
+
+        //    return CreatedAtAction("GetTile", new { id = tile.X }, tile);
+        //}
 
         // DELETE: Tiles/5
         [HttpDelete("{id}")]

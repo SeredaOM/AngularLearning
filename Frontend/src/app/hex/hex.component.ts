@@ -9,6 +9,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { HexesService } from './hexes.service';
 
 import { Hex } from './hex';
+import { ITile } from './itile';
 import { Tile } from './tile';
 import { IMap } from './imap';
 import { Map } from './map';
@@ -196,6 +197,14 @@ export class HexComponent implements OnInit {
     this.hexesService
       .getMap(newMapSize)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
+  }
+
+  testPostRequest(): void {
+    let tile = new ITile(1, 2, 'snow', '');
+
+    this.hexesService.postTile(tile).subscribe((id: number) => {
+      console.log(`PostTitle id=${id}`);
+    });
   }
 
   protected animate(): void {
