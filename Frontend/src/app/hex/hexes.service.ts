@@ -9,7 +9,9 @@ import { ITile } from './itile';
 export class HexesService {
   constructor(private httpClient: HttpClient) {}
 
-  private static host = isDevMode() ? 'https://localhost:44362' : '/api';
+  private static getHost() {
+    return isDevMode() ? 'https://localhost:44362' : '/api';
+  }
 
   private static httpOptions = {
     headers: new HttpHeaders({
@@ -18,12 +20,12 @@ export class HexesService {
   };
 
   public getMap(mapId: number) {
-    return this.httpClient.get(HexesService.host + '/hexes?mapId=' + mapId);
+    return this.httpClient.get(HexesService.getHost() + '/hexes?mapId=' + mapId);
   }
 
   public postTile(tile: ITile) {
     return this.httpClient.post(
-      HexesService.host + '/hexes',
+      HexesService.getHost() + '/hexes',
       tile.serialize(),
       HexesService.httpOptions
     );
