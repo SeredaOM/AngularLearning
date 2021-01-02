@@ -198,6 +198,13 @@ export class HexComponent implements OnInit {
       .getMap(newMapSize)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
   }
+
+  testPostRequest(): void {
+    let tile = new ITile(1, 25, 'snow', 'gold');
+    this.hexesService.postTile(tile).subscribe((id: number) => {
+      console.log(`PostTitle id=${id}`);
+    });
+  }
   
   protected animate(): void {
     // console.log("render called");

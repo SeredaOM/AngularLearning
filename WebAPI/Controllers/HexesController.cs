@@ -31,5 +31,13 @@ namespace WebAPI.Controllers
             IMap map = Map.CreateRoundMap(mapId);   //  temporarily use id as radius
             return Ok(map);
         }
+
+        [HttpPost]
+        public ActionResult<int> PostTile(Tile tile)
+        {
+            //  return some value from the incoming object to allow testing/debugging
+            //return CreatedAtAction()
+            return Ok(tile.Y + (tile.Resource == ResourceType.Gold ? 10 : 0));
+        }
     }
 }

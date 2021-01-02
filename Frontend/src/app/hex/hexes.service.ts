@@ -1,5 +1,7 @@
 import { Injectable, isDevMode } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { ITile } from './itile';
 
 @Injectable({
   providedIn: 'root',
@@ -7,8 +9,23 @@ import { HttpClient } from '@angular/common/http';
 export class HexesService {
   constructor(private httpClient: HttpClient) {}
 
-  public get() {
-    let host = isDevMode() ? 'https://localhost:44362' : '/api';
-    return this.httpClient.get(host + '/hexes?mapId=3');
+  private static host = isDevMode() ? 'https://localhost:44362' : '/api';
+
+  private static httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+    }),
+  };
+
+  public getMap(mapId: number) {
+    return this.httpClient.get(HexesService.host + '/hexes?mapId=' + mapId);
+  }
+
+  public postTile(tile: ITile) {
+    return this.httpClient.post(
+      HexesService.host + '/hexes',
+      tile.serialize(),
+      HexesService.httpOptions
+    );
   }
 }
