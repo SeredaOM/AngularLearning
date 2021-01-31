@@ -16,6 +16,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule} from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HexComponent } from './hex/hex.component';
+import { ArenaComponent } from './arena/arena.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { HexComponent } from './hex/hex.component';
     HomeComponent,
     AboutComponent,
     PingballComponent,
-    HexComponent
+    HexComponent,
+    ArenaComponent
   ],
   imports: [
     BrowserModule,
