@@ -1,0 +1,7 @@
+{
+   "editor.formatOnSave": true,
+   "html.format.wrapLineLength": 140,
+   "prettier.disableLanguages": [
+      "html"
+   ]
+}
