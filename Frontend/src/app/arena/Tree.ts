@@ -2,7 +2,7 @@ export class Tree {
     private static get innerRadius() { return 30; }
     private static get outerRadius() { return 80; }
 
-    constructor(public ctx, public x, public y) { }
+    constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) { }
 
     public static generateTrees(ctx: CanvasRenderingContext2D, numberOfTrees: number, fieldWidth: number, fieldHeight: number): Array<Tree> {
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Tree } from './Tree';
+import { Player } from './Player';
 
 @Component({
   selector: 'app-arena',
@@ -10,12 +11,7 @@ export class ArenaComponent implements OnInit {
 
   constructor() { }
 
-
-
-
   ngOnInit(): void {
-
-
     var canvas = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
     var ctx = canvas.getContext('2d'); // Canvas 2d rendering context
 
@@ -29,24 +25,10 @@ export class ArenaComponent implements OnInit {
     ctx.fillStyle = 'green'; // Fill color of rectangle drawn
     ctx.lineWidth = 1;
 
-
     let numTree1s = 200;
 
-    var playersX = canvas.width / 2;
-    var playersY = canvas.height / 2;
-
     var trees: Array<Tree> = Tree.generateTrees(ctx, numTree1s, fieldWidth, fieldHeight);
-
-    function drawPlayer() {
-      var R = 30;
-      ctx.beginPath();
-      ctx.arc(playersX, playersY, R, 0, 2 * Math.PI, false);
-      ctx.lineWidth = 3;
-      ctx.fillStyle = '#ebe6a7';
-      ctx.strokeStyle = '#14140e';
-      ctx.stroke();
-      ctx.fill();
-    }
+    var player = new Player(ctx, canvas.width / 2, canvas.height / 2);
 
     function drawAll() {
       ctx.fillStyle = "lime";
@@ -65,11 +47,9 @@ export class ArenaComponent implements OnInit {
         ctx.moveTo(0, i + centerY);
         ctx.lineTo(fieldWidth, i + centerY);
         ctx.stroke();
-
       }
 
-      drawPlayer();
-
+      player.drawPlayer();
 
       for (let i = 0; i < numTree1s; i++)
         trees[i].drawTree(centerX, centerY);
