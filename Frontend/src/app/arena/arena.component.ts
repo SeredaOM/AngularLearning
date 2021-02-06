@@ -18,8 +18,11 @@ export class ArenaComponent implements OnInit {
     var canvas = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
     var ctx = canvas.getContext('2d'); // Canvas 2d rendering context
 
-    var fieldHeight = canvas.height;
-    var fieldWidth = canvas.width;
+    var fieldHeight = 4000;//canvas.height;
+    var fieldWidth = 4000;// canvas.width;
+
+    var centerX: number = 0;
+    var centerY: number = 0;
 
     ctx.strokeStyle = 'black'; // Fill color of rectangle drawn
     ctx.fillStyle = 'green'; // Fill color of rectangle drawn
@@ -28,21 +31,23 @@ export class ArenaComponent implements OnInit {
 
     let numTree1s = 200;
 
-    var playersX = [Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50)];
-    var playersY = [Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50)];
+    // var playersX = [Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50)];
+    // var playersY = [Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50)];
+    var playersX = canvas.width / 2;
+    var playersY = canvas.height / 2;
 
-    var tree1X = [];
-    var tree1Y = [];
+    var tree1X: Array<number> = [];
+    var tree1Y: Array<number> = [];
 
     for (let i = 0; i < numTree1s; i++) {
-      tree1X[i] = [Math.floor((Math.random() * fieldWidth - 100) + 100)];
-      tree1Y[i] = [Math.floor((Math.random() * fieldHeight - 100) + 100)];
+      tree1X[i] = Math.floor((Math.random() * (fieldWidth - 200)) + 100);
+      tree1Y[i] = Math.floor((Math.random() * (fieldHeight - 200)) + 100);
     }
 
-    function drawPlayer(index) {
+    function drawPlayer() {
       var R = 30;
       ctx.beginPath();
-      ctx.arc(playersX[index], playersY[index], R, 0, 2 * Math.PI, false);
+      ctx.arc(playersX, playersY, R, 0, 2 * Math.PI, false);
       ctx.lineWidth = 3;
       ctx.fillStyle = '#ebe6a7';
       ctx.strokeStyle = '#14140e';
@@ -53,15 +58,16 @@ export class ArenaComponent implements OnInit {
     function drawTree(index) {
       var R = 30;
       ctx.beginPath();
-      ctx.arc(tree1X[index], tree1Y[index], R, 0, 2 * Math.PI, false);
+      ctx.arc(centerX + tree1X[index], centerY + tree1Y[index], R, 0, 2 * Math.PI, false);
       ctx.lineWidth = 3;
       ctx.fillStyle = '#CD853F';
       ctx.strokeStyle = '#A0522D';
       ctx.stroke();
       ctx.fill();
+
       var RR = 80;
       ctx.beginPath();
-      ctx.arc(tree1X[index], tree1Y[index], RR, 0, 2 * Math.PI, false);
+      ctx.arc(centerX + tree1X[index], centerY + tree1Y[index], RR, 0, 2 * Math.PI, false);
       ctx.fillStyle = '#8080A97D';
       ctx.strokeStyle = '#8084c586';
       ctx.stroke();
@@ -75,55 +81,59 @@ export class ArenaComponent implements OnInit {
 
       for (let i = 0; i < fieldWidth; i += 70) {
         ctx.beginPath();
-        ctx.lineWidth = 0.5;
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, fieldHeight);
+        ctx.lineWidth = 1;
+        ctx.moveTo(centerX + i, 0);
+        ctx.lineTo(centerX + i, + fieldHeight);
         ctx.stroke();
       }
-
       for (let i = 0; i < fieldWidth; i += 70) {
         ctx.beginPath();
-        ctx.lineWidth = 0.5;
-        ctx.moveTo(0, i);
-        ctx.lineTo(fieldWidth, i);
+        ctx.lineWidth = 1;
+        ctx.moveTo(0, i + centerY);
+        ctx.lineTo(fieldWidth, i + centerY);
         ctx.stroke();
 
       }
 
-      for (let i = 0; i < 4; i++) {
-        drawPlayer(0);
-      }
+      drawPlayer();
 
-      for (let i = 0; i < numTree1s; i++) {
+
+      for (let i = 0; i < numTree1s; i++)
         drawTree(i);
-      }
     }
 
     setInterval(drawAll, 5);
-
-    //move rectangle inside the canvas using arrow keys
-    window.onkeydown = function (event) {
-      var keyPr = event.keyCode; //Key code of key pressed
-
-      if (keyPr === 68) {
-        playersX[0] = playersX[0] + 8; //right arrow add 20 from current
+    var map = {};
+    onkeydown = onkeyup = function (e) {
+      map[e.code] = e.type == 'keydown';
+      /* insert conditional here */
+      if (map['KeyA']) {
+        centerX = centerX + 8; //right arrow add 20 from current
+        if (map['KeyW'] || map['KeyS']) {
+          centerX = centerX - 2;
+        }
       }
 
-      else if (keyPr === 68 && 65) {
-        playersX[0] = playersX[0] + 8;
-        playersY[0] = playersY[0] + 8;
+      if (map['KeyD']) {
+        centerX = centerX - 8; //left arrow subtract 20 from current
+        if (map['KeyW'] || map['KeyS']) {
+          centerX = centerX + 2;
+        }
       }
 
-      else if (keyPr === 65) {
-        playersX[0] = playersX[0] - 8; //left arrow subtract 20 from current
+      if (map['KeyW']) {
+        centerY = centerY + 8; //bottom arrow add 20 from current
+        if (map['KeyA'] || map['KeyD']) {
+          centerY = centerY - 2;
+        }
       }
-      else if (keyPr === 87) {
-        playersY[0] = playersY[0] - 8; //top arrow subtract 20 from current
-      }
-      else if (keyPr === 83) {
-        playersY[0] = playersY[0] + 8; //bottom arrow add 20 from current
+
+      if (map['KeyS']) {
+        centerY = centerY - 8; //top arrow subtract 20 from current
+        if (map['KeyA'] || map['KeyD']) {
+          centerY = centerY + 2;
+        }
       }
     }
   }
-
 }
