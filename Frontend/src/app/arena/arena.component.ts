@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Tree } from './Tree';
 
 @Component({
   selector: 'app-arena',
@@ -34,13 +35,7 @@ export class ArenaComponent implements OnInit {
     var playersX = canvas.width / 2;
     var playersY = canvas.height / 2;
 
-    var tree1X: Array<number> = [];
-    var tree1Y: Array<number> = [];
-
-    for (let i = 0; i < numTree1s; i++) {
-      tree1X[i] = Math.floor((Math.random() * (fieldWidth - 200)) + 100);
-      tree1Y[i] = Math.floor((Math.random() * (fieldHeight - 200)) + 100);
-    }
+    var trees: Array<Tree> = Tree.generateTrees(ctx, numTree1s, fieldWidth, fieldHeight);
 
     function drawPlayer() {
       var R = 30;
@@ -51,26 +46,6 @@ export class ArenaComponent implements OnInit {
       ctx.strokeStyle = '#14140e';
       ctx.stroke();
       ctx.fill();
-    }
-
-    function drawTree(index) {
-      var R = 30;
-      ctx.beginPath();
-      ctx.arc(centerX + tree1X[index], centerY + tree1Y[index], R, 0, 2 * Math.PI, false);
-      ctx.lineWidth = 3;
-      ctx.fillStyle = '#CD853F';
-      ctx.strokeStyle = '#A0522D';
-      ctx.stroke();
-      ctx.fill();
-
-      var RR = 80;
-      ctx.beginPath();
-      ctx.arc(centerX + tree1X[index], centerY + tree1Y[index], RR, 0, 2 * Math.PI, false);
-      ctx.fillStyle = '#8080A97D';
-      ctx.strokeStyle = '#8084c586';
-      ctx.stroke();
-      ctx.fill();
-
     }
 
     function drawAll() {
@@ -97,7 +72,7 @@ export class ArenaComponent implements OnInit {
 
 
       for (let i = 0; i < numTree1s; i++)
-        drawTree(i);
+        trees[i].drawTree(centerX, centerY);
     }
 
     setInterval(drawAll, 5);
