@@ -31,8 +31,6 @@ export class ArenaComponent implements OnInit {
 
     let numTree1s = 200;
 
-    // var playersX = [Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50), Math.floor((Math.random() * 1800) + 50)];
-    // var playersY = [Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50), Math.floor((Math.random() * 750) + 50)];
     var playersX = canvas.width / 2;
     var playersY = canvas.height / 2;
 
