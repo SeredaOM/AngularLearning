@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Tree } from './Tree';
+import { Tree } from './Obstacles/Tree';
 import { Player } from './Player';
+import { Rock } from './Obstacles/Rock';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
   selector: 'app-arena',
@@ -26,9 +28,11 @@ export class ArenaComponent implements OnInit {
     ctx.lineWidth = 1;
 
     let numTree1s = 200;
+    let numRocks = 50;
 
     var trees: Array<Tree> = Tree.generateTrees(ctx, numTree1s, fieldWidth, fieldHeight);
-    var player = new Player(ctx, canvas.width / 2, canvas.height / 2);
+    var rocks: Array<Rock> = Rock.generateRocks(ctx, numRocks, fieldWidth, fieldHeight);
+    var player = new Player(ctx, 950, 480);
 
     function drawAll() {
       ctx.fillStyle = "lime";
@@ -49,10 +53,16 @@ export class ArenaComponent implements OnInit {
         ctx.stroke();
       }
 
+      for (let i = 0; i < numRocks; i++) {
+        rocks[i].drawRock(centerX, centerY);
+      }
+
       player.drawPlayer();
 
-      for (let i = 0; i < numTree1s; i++)
+      for (let i = 0; i < numTree1s; i++) {
         trees[i].drawTree(centerX, centerY);
+      }
+
     }
 
     setInterval(drawAll, 5);
@@ -60,32 +70,48 @@ export class ArenaComponent implements OnInit {
     onkeydown = onkeyup = function (e) {
       map[e.code] = e.type == 'keydown';
       /* insert conditional here */
+      let newCenterX: number = centerX;
+      let newCenterY: number = centerY;
+
       if (map['KeyA']) {
-        centerX = centerX + 8; //right arrow add 20 from current
+        newCenterX = centerX + 8; //right arrow add 20 from current
         if (map['KeyW'] || map['KeyS']) {
-          centerX = centerX - 2;
+          newCenterX = newCenterX - 2;
         }
       }
 
       if (map['KeyD']) {
-        centerX = centerX - 8; //left arrow subtract 20 from current
+        newCenterX = centerX - 8; //left arrow subtract 20 from current
         if (map['KeyW'] || map['KeyS']) {
-          centerX = centerX + 2;
+          newCenterX = newCenterX + 2;
         }
       }
 
       if (map['KeyW']) {
-        centerY = centerY + 8; //bottom arrow add 20 from current
+        newCenterY = centerY + 8; //bottom arrow add 20 from current
         if (map['KeyA'] || map['KeyD']) {
-          centerY = centerY - 2;
+          newCenterY = newCenterY - 2;
         }
       }
 
       if (map['KeyS']) {
-        centerY = centerY - 8; //top arrow subtract 20 from current
+        newCenterY = centerY - 8; //top arrow subtract 20 from current
         if (map['KeyA'] || map['KeyD']) {
-          centerY = centerY + 2;
+          newCenterY = newCenterY + 2;
         }
+      }
+
+      //console.log(`newCenterX = ${newCenterX},newCenterY = ${newCenterY} `);
+
+      let moveIsAllowed = true;
+
+      moveIsAllowed = player.isMoveAllowed(newCenterX, newCenterY, trees);
+      if (moveIsAllowed) {
+        moveIsAllowed = player.isMoveAllowed(newCenterX, newCenterY, rocks);
+      }
+      if (moveIsAllowed) {
+        centerX = newCenterX;
+        centerY = newCenterY;
       }
     }
   }

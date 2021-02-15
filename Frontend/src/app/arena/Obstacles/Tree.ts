@@ -1,8 +1,12 @@
-export class Tree {
+import { RoundObstacle } from './RoundObstacle';
+
+export class Tree extends RoundObstacle {
     private static get innerRadius() { return 30; }
     private static get outerRadius() { return 80; }
 
-    constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) { }
+    constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) {
+        super(x, y, Tree.innerRadius);
+    }
 
     public static generateTrees(ctx: CanvasRenderingContext2D, numberOfTrees: number, fieldWidth: number, fieldHeight: number): Array<Tree> {
 
