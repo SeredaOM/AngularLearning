@@ -7,10 +7,9 @@ import { connectableObservableDescriptor } from 'rxjs/internal/observable/Connec
 @Component({
   selector: 'app-arena',
   templateUrl: './arena.component.html',
-  styleUrls: ['./arena.component.css']
+  styleUrls: ['./arena.component.css'],
 })
 export class ArenaComponent implements OnInit {
-
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 
@@ -23,17 +22,15 @@ export class ArenaComponent implements OnInit {
   private centerY: number = 0;
 
 
-  private fieldHeight = 4000;//canvas.height;
-  private fieldWidth = 4000;// canvas.width;
+  private fieldHeight = 4000; //canvas.height;
+  private fieldWidth = 4000; // canvas.width;
 
   private numTree1s = 200;
   private numRocks = 50;
 
-  constructor() { }
+  constructor() {}
 
   private move(code, keyAction) {
-    console.log(`moved: code=${code}`);
-
     this.map[code] = keyAction == 'keydown';
 
     let newCenterX: number = this.centerX;
@@ -88,17 +85,14 @@ export class ArenaComponent implements OnInit {
     // Lookup of key codes to timer ID, or null for no repeat
     //
     var timers = {};
+    let _this = this;
 
     // When key is pressed and we don't already think it's pressed, call the
     // key action callback and set a timer to generate another one after a delay
     //
     document.onkeydown = function (event) {
-      //console.log(`'onkeydown' was called:`);
-      //console.log(event);
-
       var key = event.code;
       if (!(key in keys)) {
-        console.log('key is not in keys');
         return true;
       }
 
@@ -107,8 +101,9 @@ export class ArenaComponent implements OnInit {
 
         timers[key] = null;
         keys[key]('keydown');
-        if (repeat !== 0)
+        if (repeat !== 0) {
           timers[key] = setInterval(() => keys[key]('keydown'), repeat);
+        }
       }
 
       return false;
@@ -117,13 +112,13 @@ export class ArenaComponent implements OnInit {
     // Cancel timeout and mark key as released on keyup
     //
     document.onkeyup = function (event) {
-      //console.log(`'onkeyup' was called, event:`);
-      //console.log(event);
+      _this.map[event.code] = false;
 
       var key = event.code;
       if (key in timers) {
-        if (timers[key] !== null)
+        if (timers[key] !== null) {
           clearInterval(timers[key]);
+        }
         delete timers[key];
       }
     };
@@ -131,14 +126,16 @@ export class ArenaComponent implements OnInit {
     // When window is unfocused we may not get key events. To prevent this
     // causing a key to 'get stuck down', cancel all held keys
     //
-    /*  window.onblur = function () {
-        for (key in timers)
-          if (timers[key] !== null)
-            clearInterval(timers[key]);
-        timers = {};
-      };*/
-    console.log(`Controller was called`);
-  };
+    window.onblur = function () {
+      _this.map = {};
+
+      for (let key in timers)
+        if (timers[key] !== null) {
+          clearInterval(timers[key]);
+        }
+      timers = {};
+    };
+  }
 
   private drawAll() {
     this.ctx.fillStyle = "lime";
@@ -148,7 +145,7 @@ export class ArenaComponent implements OnInit {
       this.ctx.beginPath();
       this.ctx.lineWidth = 1;
       this.ctx.moveTo(this.centerX + i, 0);
-      this.ctx.lineTo(this.centerX + i, + this.fieldHeight);
+      this.ctx.lineTo(this.centerX + i, +this.fieldHeight);
       this.ctx.stroke();
     }
     for (let i = 0; i < this.fieldWidth; i += 70) {
@@ -168,7 +165,6 @@ export class ArenaComponent implements OnInit {
     for (let i = 0; i < this.numTree1s; i++) {
       this.trees[i].drawTree(this.centerX, this.centerY);
     }
-
   }
 
   ngOnInit(): void {
