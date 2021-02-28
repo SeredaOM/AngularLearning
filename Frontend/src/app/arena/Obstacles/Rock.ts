@@ -8,7 +8,7 @@ export class Rock extends RoundObstacle {
     }
     // constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) { }
 
-    public static generateRocks(ctx: CanvasRenderingContext2D, numberOfRocks: number, fieldWidth: number, fieldHeight: number): Array<Tree> {
+    public static generateRocks(ctx: CanvasRenderingContext2D, numberOfRocks: number, fieldWidth: number, fieldHeight: number): Array<Rock> {
 
         var rocks: Array<Rock> = [];
 
