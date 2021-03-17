@@ -28,7 +28,7 @@ export class ArenaComponent implements OnInit {
   private numTree1s = 200;
   private numRocks = 50;
 
-  constructor() {}
+  constructor() { }
 
   private move(code, keyAction) {
     this.map[code] = keyAction == 'keydown';
@@ -39,28 +39,28 @@ export class ArenaComponent implements OnInit {
     if (this.map['KeyA']) {
       newCenterX = this.centerX + 8; //right arrow add 20 from current
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX - 2;
+        newCenterX = newCenterX - 4;
       }
     }
 
     if (this.map['KeyD']) {
       newCenterX = this.centerX - 8; //left arrow subtract 20 from current
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX + 2;
+        newCenterX = newCenterX + 4;
       }
     }
 
     if (this.map['KeyW']) {
       newCenterY = this.centerY + 8; //bottom arrow add 20 from current
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY - 2;
+        newCenterY = newCenterY - 4;
       }
     }
 
     if (this.map['KeyS']) {
       newCenterY = this.centerY - 8; //top arrow subtract 20 from current
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY + 2;
+        newCenterY = newCenterY + 4;
       }
     }
 
@@ -174,7 +174,7 @@ export class ArenaComponent implements OnInit {
       KeyS: function (keyAction) { _this.move('KeyS', keyAction); },
       KeyD: function (keyAction) { _this.move('KeyD', keyAction); },
       KeyW: function (keyAction) { _this.move('KeyW', keyAction); }
-    }, 200);
+    }, 50);
 
     this.canvas = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
     this.ctx = this.canvas.getContext('2d'); // Canvas 2d rendering context
