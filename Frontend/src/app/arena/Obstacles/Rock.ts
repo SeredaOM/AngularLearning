@@ -3,7 +3,7 @@ import { RoundObstacle } from './RoundObstacle';
 export class Rock extends RoundObstacle {
     private static get radius() { return 35; }
 
-    constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) {
+    constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number, public name: string) {
         super(x, y, Rock.radius);
     }
     // constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) { }
@@ -16,8 +16,11 @@ export class Rock extends RoundObstacle {
             let x = Math.floor((Math.random() * (fieldWidth - 200)) + 100);
             let y = Math.floor((Math.random() * (fieldHeight - 200)) + 100);
 
-            rocks.push(new Rock(ctx, x, y));
+            rocks.push(new Rock(ctx, x, y, i.toString()));
         }
+        // for (let i = 0; i < 10; i++) {
+        //     rocks.push(new Rock(ctx, 500 + i * 200, 600, i.toString()));
+        // }
 
         return rocks;
     }
@@ -31,5 +34,7 @@ export class Rock extends RoundObstacle {
         this.ctx.strokeStyle = '#a6a5a2';
         this.ctx.stroke();
         this.ctx.fill();
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillText(this.name, centerX + this.x, centerY + this.y);
     }
 }

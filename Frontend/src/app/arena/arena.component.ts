@@ -24,6 +24,8 @@ export class ArenaComponent implements OnInit {
 
   private fieldHeight = 4000; //canvas.height;
   private fieldWidth = 4000; // canvas.width;
+  private gridSize = 80;
+
 
   private numTree1s = 200;
   private numRocks = 50;
@@ -141,30 +143,40 @@ export class ArenaComponent implements OnInit {
     this.ctx.fillStyle = "lime";
     this.ctx.fillRect(0, 0, this.canvas.width, this.fieldHeight);
 
-    for (let i = 0; i < this.fieldWidth; i += 70) {
-      this.ctx.beginPath();
-      this.ctx.lineWidth = 1;
-      this.ctx.moveTo(this.centerX + i, 0);
-      this.ctx.lineTo(this.centerX + i, +this.fieldHeight);
-      this.ctx.stroke();
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeStyle = '#a6a5a2';
+    for (let i = 0; i < this.fieldWidth; i += this.gridSize) {
+      let x = this.centerX + i;
+      if (x >= 0 && x <= this.canvas.width) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.centerX + i, 0);
+        this.ctx.lineTo(this.centerX + i, this.canvas.height);
+        this.ctx.stroke();
+      }
     }
-    for (let i = 0; i < this.fieldWidth; i += 70) {
-      this.ctx.beginPath();
-      this.ctx.lineWidth = 1;
-      this.ctx.moveTo(0, i + this.centerY);
-      this.ctx.lineTo(this.fieldWidth, i + this.centerY);
-      this.ctx.stroke();
+    for (let i = 0; i < this.fieldHeight; i += this.gridSize) {
+      let y = this.centerY + i;
+      if (y >= 0 && y <= this.canvas.height) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, i + this.centerY);
+        this.ctx.lineTo(this.canvas.width, i + this.centerY);
+        this.ctx.stroke();
+      }
     }
 
-    for (let i = 0; i < this.numRocks; i++) {
-      this.rocks[i].drawRock(this.centerX, this.centerY);
+    for (let i = 0; i < this.rocks.length; i++) {
+      let rock = this.rocks[i];
+
+      // let y = -rock.y + i;
+      // if (y >= 0 && y <= this.canvas.height && x >= 0 && x <= this.canvas.height) {
+      rock.drawRock(this.centerX, this.centerY);
+    }
+    for (let i = 0; i < this.trees.length; i++) {
+      this.trees[i].drawTree(this.centerX, this.centerY);
     }
 
     this.player.drawPlayer();
 
-    for (let i = 0; i < this.numTree1s; i++) {
-      this.trees[i].drawTree(this.centerX, this.centerY);
-    }
   }
 
   ngOnInit(): void {
@@ -178,6 +190,7 @@ export class ArenaComponent implements OnInit {
 
     this.canvas = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
     this.ctx = this.canvas.getContext('2d'); // Canvas 2d rendering context
+    this.ctx.font = "30px Georgia";
 
     this.ctx.strokeStyle = 'black'; // Fill color of rectangle drawn
     this.ctx.fillStyle = 'green'; // Fill color of rectangle drawn

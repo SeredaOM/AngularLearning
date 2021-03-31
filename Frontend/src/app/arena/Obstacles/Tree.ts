@@ -12,11 +12,14 @@ export class Tree extends RoundObstacle {
 
         var trees: Array<Tree> = [];
 
-        for (let i = 0; i < numberOfTrees; i++) {
-            let x = Math.floor((Math.random() * (fieldWidth - 200)) + 100);
-            let y = Math.floor((Math.random() * (fieldHeight - 200)) + 100);
+        // for (let i = 0; i < numberOfTrees; i++) {
+        //     let x = Math.floor((Math.random() * (fieldWidth - 200)) + 100);
+        //     let y = Math.floor((Math.random() * (fieldHeight - 200)) + 100);
 
-            trees.push(new Tree(ctx, x, y));
+        //     trees.push(new Tree(ctx, x, y));
+        // }
+        for (let i = 0; i < 20; i++) {
+            trees.push(new Tree(ctx, 400 + i * 200, 200));
         }
 
         return trees;
