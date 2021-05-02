@@ -8,9 +8,9 @@ describe('ArenaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ArenaComponent ]
+      declarations: [ArenaComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
