@@ -10,6 +10,8 @@ import { connectableObservableDescriptor } from 'rxjs/internal/observable/Connec
   styleUrls: ['./arena.component.css'],
 })
 export class ArenaComponent implements OnInit {
+  private canvasVisible: HTMLCanvasElement;
+  private ctxVisible: CanvasRenderingContext2D;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 
@@ -39,30 +41,30 @@ export class ArenaComponent implements OnInit {
     let newCenterY: number = this.centerY;
 
     if (this.map['KeyA']) {
-      newCenterX = this.centerX + 8; //right arrow add 20 from current
+      newCenterX = this.centerX + 2; //right arrow add 20 from current
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX - 4;
+        newCenterX = newCenterX - 1;
       }
     }
 
     if (this.map['KeyD']) {
-      newCenterX = this.centerX - 8; //left arrow subtract 20 from current
+      newCenterX = this.centerX - 2; //left arrow subtract 20 from current
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX + 4;
+        newCenterX = newCenterX + 1;
       }
     }
 
     if (this.map['KeyW']) {
-      newCenterY = this.centerY + 8; //bottom arrow add 20 from current
+      newCenterY = this.centerY + 2; //bottom arrow add 20 from current
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY - 4;
+        newCenterY = newCenterY - 1;
       }
     }
 
     if (this.map['KeyS']) {
-      newCenterY = this.centerY - 8; //top arrow subtract 20 from current
+      newCenterY = this.centerY - 2; //top arrow subtract 20 from current
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY + 4;
+        newCenterY = newCenterY + 1;
       }
     }
 
@@ -140,7 +142,7 @@ export class ArenaComponent implements OnInit {
   }
 
   private drawAll() {
-    this.ctx.fillStyle = "lime";
+    this.ctx.fillStyle = 'lime';
     this.ctx.fillRect(0, 0, this.canvas.width, this.fieldHeight);
 
     this.ctx.lineWidth = 1;
@@ -177,20 +179,39 @@ export class ArenaComponent implements OnInit {
 
     this.player.drawPlayer();
 
+    this.ctxVisible.drawImage(this.canvas, 0, 0);
+    window.requestAnimationFrame(() => this.drawAll());
   }
 
   ngOnInit(): void {
     let _this = this;
-    this.KeyboardController({
-      KeyA: function (keyAction) { _this.move('KeyA', keyAction); },
-      KeyS: function (keyAction) { _this.move('KeyS', keyAction); },
-      KeyD: function (keyAction) { _this.move('KeyD', keyAction); },
-      KeyW: function (keyAction) { _this.move('KeyW', keyAction); }
-    }, 50);
+    this.KeyboardController(
+      {
+        KeyA: function (keyAction) {
+          _this.move('KeyA', keyAction);
+        },
+        KeyS: function (keyAction) {
+          _this.move('KeyS', keyAction);
+        },
+        KeyD: function (keyAction) {
+          _this.move('KeyD', keyAction);
+        },
+        KeyW: function (keyAction) {
+          _this.move('KeyW', keyAction);
+        },
+      },
+      10
+    );
 
-    this.canvas = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
+    this.canvasVisible = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
+    this.ctxVisible = this.canvasVisible.getContext('2d'); // Canvas 2d rendering context
+
+    this.canvas = document.createElement('canvas');
+    this.canvas.width = this.canvasVisible.width;
+    this.canvas.height = this.canvasVisible.height;
+
     this.ctx = this.canvas.getContext('2d'); // Canvas 2d rendering context
-    this.ctx.font = "30px Georgia";
+    this.ctx.font = '30px Georgia';
 
     this.ctx.strokeStyle = 'black'; // Fill color of rectangle drawn
     this.ctx.fillStyle = 'green'; // Fill color of rectangle drawn
@@ -200,6 +221,6 @@ export class ArenaComponent implements OnInit {
     this.rocks = Rock.generateRocks(this.ctx, this.numRocks, this.fieldWidth, this.fieldHeight);
     this.player = new Player(this.ctx, 950, 480);
 
-    setInterval(() => this.drawAll(), 50);
+    window.requestAnimationFrame(() => this.drawAll());
   }
 }
