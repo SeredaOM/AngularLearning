@@ -42,6 +42,7 @@ pipeline {
 					echo 'FrontEnd result is true'
 					bat 'npx --version'
 
+					powershell script:'cd Frontend'
 					powershell script:'npx ng build'
 				} else {
 					echo 'FrontEnd result is false'
@@ -57,10 +58,10 @@ pipeline {
 				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD WebAPI/'), returnStdout:true
 				echo result;
 				if (result) {
-					echo 'WebAPI result is true';
+					echo 'WebAPI result is true'
+					bat 'echo compile .NET project'
 				} else {
 					echo 'WebAPI result is false'
-					bat 'echo compile .NET project'
 					Utils.markStageSkippedForConditional(env.STAGE_NAME)
 					echo 'echo WebAPI after markStageSkippedForConditional'
 				}
