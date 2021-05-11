@@ -41,6 +41,8 @@ pipeline {
 				if (result) {
 					echo 'FrontEnd result is true'
 					bat 'npx --version'
+
+					powershell script:'npx ng build'
 				} else {
 					echo 'FrontEnd result is false'
 					Utils.markStageSkippedForConditional(env.STAGE_NAME)
