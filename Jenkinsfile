@@ -46,7 +46,9 @@ pipeline {
 						bat 'echo The current directory is %CD%'
 						powershell (returnStdout: true, script: '''
 							npm ci
-							npx ng build
+							npx ng build --prod
+							Get-ChildItem -Path C:\Project\Hosted\hexes\ -Include * -File -Recurse | foreach { $_.Delete()}
+							Copy-Item -Path .\dist\angular-example\* -Destination C:\Project\Hosted\hexes\ -recurse -Force
 						''')						
 					}
 				} else {
