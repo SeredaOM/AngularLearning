@@ -47,8 +47,8 @@ pipeline {
 						powershell (returnStdout: true, script: '''
 							npm ci
 							npx ng build --prod
-							Get-ChildItem -Path C:\Project\Hosted\hexes\ -Include * -File -Recurse | foreach { $_.Delete()}
-							Copy-Item -Path .\dist\angular-example\* -Destination C:\Project\Hosted\hexes\ -recurse -Force
+							Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}
+							Copy-Item -Path .\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\hexes\\ -recurse -Force
 						''')						
 					}
 				} else {
