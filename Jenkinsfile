@@ -44,7 +44,10 @@ pipeline {
 
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
-						powershell script:'npx ng build'
+						powershell (returnStdout, script: '''
+							npm install
+							npx ng build
+						''')						
 					}
 				} else {
 					echo 'FrontEnd result is false'
