@@ -42,8 +42,10 @@ pipeline {
 					echo 'FrontEnd result is true'
 					bat 'npx --version'
 
-					powershell script:'cd Frontend'
-					powershell script:'npx ng build'
+					dir("./Frontend") {
+						bat 'echo The current directory is %CD%'
+						powershell script:'npx ng build'
+					}
 				} else {
 					echo 'FrontEnd result is false'
 					Utils.markStageSkippedForConditional(env.STAGE_NAME)
