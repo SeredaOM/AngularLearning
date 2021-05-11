@@ -15,7 +15,7 @@ pipeline {
 			if( !remotes.contains('github') )
 			{
 				echo 'Adding github remote'
-				powershell script:'git remote add github https://github.com/SeredaOM/JenkinsLearning.git'
+				powershell script:'git remote add github https://github.com/SeredaOM/AngularLearning.git'
 				powershell script:'git fetch github master'
 			}
 					
