@@ -79,7 +79,7 @@ function ownJS() {
 
     // let nx = Math.round(x2);
     // let ny = Math.round(y2);
-    
+
     // if (zMap[nx] === undefined) {
     //   console.log(`New nx=${nx}`);
     //   zMap[nx] = new Map();
@@ -99,8 +99,7 @@ function ownJS() {
     //   }
     // }
 
-    if (visible)
-    drawPixel(x2, y2);
+    if (visible) drawPixel(x2, y2);
   }
 
   function myFunc(x, y) {
@@ -195,12 +194,6 @@ function ownJS() {
    };*/
 }
 
-import './pingball.js';
-import '../../assets/custom.js';
-
-//let pingballJsTest2: any;
-declare const pingball_Test2: any;
-
 @Component({
   selector: 'app-pingball',
   templateUrl: './pingball.component.html',
@@ -211,8 +204,5 @@ export class PingballComponent implements OnInit {
 
   ngOnInit(): void {
     ownJS();
-    pingball_Test2();
-    /*initMethod();
-    helloPB();*/
   }
 }

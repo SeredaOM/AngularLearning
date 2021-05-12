@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HexComponent } from './hex.component';
@@ -8,9 +9,9 @@ describe('HexComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HexComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientModule],
+      declarations: [HexComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
