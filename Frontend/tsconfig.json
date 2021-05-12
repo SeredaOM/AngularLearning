@@ -12,6 +12,12 @@
     },
     {
       "path": "./tsconfig.spec.json"
-    }
-]
+    }      
+  ],
+  "compilerOptions": {      
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  }
 }
