@@ -44,13 +44,11 @@ pipeline {
 
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
-						powershell (returnStdout: true, script: '''
-							npm ci
-							npx ng build --prod
-							npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false
-							Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}
-							Copy-Item -Path .\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force
-						''')						
+						powershell script: 'npm ci'
+						powershell script: 'npx ng build --prod'
+						powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
+						powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
+						powershell script: 'Copy-Item -Path .\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
 					}
 				} else {
 					echo 'FrontEnd result is false'
