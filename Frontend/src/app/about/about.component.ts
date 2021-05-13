@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment';
 
-//import { version } from '../../../package.json';
+import { myTest } from './test.json';
+import { myPackage } from '../../../package.json';
 //import { version2 } from '../../package.json';
 
 @Component({
