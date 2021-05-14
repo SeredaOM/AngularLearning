@@ -15,6 +15,10 @@ pipeline {
 			def buildNumber = currentBuild.number
 			echo "Build number is ${currentBuild.number}"
 			echo "BN from script is "+buildNumber
+
+			String folder = powershell script:'$MyInvocation.MyCommand.Path', returnStdout:true
+			echo 'Folder: '+folder
+
 			String branch = powershell script:'git branch', returnStdout:true
 			echo 'Branch: '+branch
 
