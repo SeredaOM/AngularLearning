@@ -31,17 +31,8 @@ pipeline {
 
 def props = readJSON text: '''{
   "name": "angular-example",
-  "version": "0.1.1",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
-    "generate": "node ./server/generate.js > ./server/database.json",
-    "server": "json-server --watch ./server/database.json"
-  }}'''
+  "version": "0.1.1"
+  }'''
 echo 'prop kscriptsey:'+ props['scripts']
 
 						groovy.json.JsonSlurper parser = new groovy.json.JsonSlurper()
