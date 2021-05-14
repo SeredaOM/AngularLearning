@@ -31,8 +31,9 @@ pipeline {
 
 						def props = readJSON file: './package.json'
 						props.find {
-							echo it
-							//it.name == 'version' }.version = "0.1.${currentBuild.number}"
+							//echo it
+							it.value == 'version'
+							}.value = "0.1.${currentBuild.number}"
 						}
 						echo props
 						//writeJson file: './package.json', json: props
