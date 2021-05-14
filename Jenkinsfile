@@ -29,7 +29,7 @@ pipeline {
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
 
-						JsonSlurper parser = new groovy.json.JsonSlurper()
+						groovy.json.JsonSlurper parser = new groovy.json.JsonSlurper()
 						def json = readFile("./package.json")
 						Map prop = parser.parseText(json)
 echo json
