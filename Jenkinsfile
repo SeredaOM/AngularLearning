@@ -15,7 +15,8 @@ pipeline {
 			def buildNumber = currentBuild.number
 			echo "Build number is ${currentBuild.number}"
 			echo "BN from script is "+buildNumber
-			echo powershell script:'git branch'
+			String branch = powershell script:'git branch', returnStdout:true
+			echo 'Branch: '+branch
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
@@ -23,7 +24,7 @@ pipeline {
 			{
 				echo 'Adding github remote'
 				powershell script:'git remote add github https://github.com/SeredaOM/AngularLearning.git'
-				powershell script:'git fetch github master'
+				String res = powershell script:'git fetch github master'
 			}
 					
 			//	This command helped to spot the remote branches in the history
