@@ -31,15 +31,73 @@ pipeline {
 
 def props = readJSON text: '''{
   "name": "angular-example",
-  "version": "0.1.1"
-  }'''
-echo 'prop kscriptsey:'+ props['scripts']
+  "version": "0.1.1",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "generate": "node ./server/generate.js > ./server/database.json",
+    "server": "json-server --watch ./server/database.json"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~10.0.11",
+    "@angular/cdk": "^10.1.3",
+    "@angular/common": "~10.0.11",
+    "@angular/compiler": "~10.0.11",
+    "@angular/core": "~10.0.11",
+    "@angular/fire": "^6.0.2",
+    "@angular/forms": "~10.0.11",
+    "@angular/material": "^10.1.3",
+    "@angular/platform-browser": "~10.0.11",
+    "@angular/platform-browser-dynamic": "~10.0.11",
+    "@angular/router": "~10.0.11",
+    "@types/offscreencanvas": "^2019.6.2",
+    "faker": "^4.1.0",
+    "firebase": "^7.13.1",
+    "json-server": "^0.16.1",
+    "ngx-cookie-service": "^10.0.1",
+    "rxjs": "~6.5.5",
+    "tslib": "^2.0.0",
+    "zone.js": "~0.10.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/architect": ">= 0.900 < 0.1100",
+    "@angular-devkit/build-angular": "~0.1000.7",
+    "@angular/cli": "^10.0.8",
+    "@angular/compiler-cli": "~10.0.11",
+    "@types/jasmine": "~3.5.0",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
+    "codelyzer": "^6.0.0",
+    "firebase-tools": "^8.0.0",
+    "fuzzy": "^0.1.3",
+    "inquirer": "^6.2.2",
+    "inquirer-autocomplete-prompt": "^1.0.1",
+    "jasmine-core": "~3.5.0",
+    "jasmine-spec-reporter": "~5.0.0",
+    "karma": "~5.0.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage-istanbul-reporter": "~3.0.2",
+    "karma-jasmine": "~3.3.0",
+    "karma-jasmine-html-reporter": "^1.5.0",
+    "open": "^7.0.3",
+    "protractor": "~7.0.0",
+    "ts-node": "~8.3.0",
+    "tslint": "~6.1.0",
+    "typescript": "~3.9.5"
+  }
+}'''
+echo 'prop kscriptsey:'+ props['devDependencies']
 
-						groovy.json.JsonSlurper parser = new groovy.json.JsonSlurper()
-						def json = readFile("./package.json")
-						Map prop = parser.parseText(json)
-echo json
-echo prop
+// 						groovy.json.JsonSlurper parser = new groovy.json.JsonSlurper()
+// 						def json = readFile("./package.json")
+// 						Map prop = parser.parseText(json)
+// echo json
+// echo prop
 
 						//def props = readJSON file: './package.json'
 						//echo props
