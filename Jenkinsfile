@@ -10,8 +10,9 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
 		script {
-			String bn = powershell script:'$BUILD_NUMBER', returnStdout:true
-			echo 'BN: '+bn
+			def buildNumber = currentBuild.number
+			echo "Build number is ${currentBuild.number}"
+			exit(-1)
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
 			if( !remotes.contains('github') )
