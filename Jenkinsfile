@@ -29,8 +29,20 @@ pipeline {
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
 
-def props = readJSON text: '{ "key": "value" }'
-echo 'prop key:'+ props['key']
+def props = readJSON text: '''{
+  "name": "angular-example",
+  "version": "0.1.1",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "generate": "node ./server/generate.js > ./server/database.json",
+    "server": "json-server --watch ./server/database.json"
+  }}'''
+echo 'prop kscriptsey:'+ props['scripts']
 
 						groovy.json.JsonSlurper parser = new groovy.json.JsonSlurper()
 						def json = readFile("./package.json")
