@@ -9,12 +9,10 @@ pipeline {
       steps {
 			echo 'The current directory is %CD%'
 			echo 'git branch'
-			
+
         bat 'echo The current directory is %CD%'
         bat 'dir'
 		script {
-			def buildNumber = currentBuild.number
-			
 			def buildNumber = currentBuild.number
 			echo "Build number is ${currentBuild.number}"
 			echo "BN from script is "+buildNumber
