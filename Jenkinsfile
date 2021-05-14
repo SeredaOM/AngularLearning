@@ -31,10 +31,10 @@ pipeline {
 
 						def props = readJSON file: './package.json'
 						echo props
-						def vvv = props.find { it.value.name == 'version' }
-						echo vvv
-						vvv.value = "0.1.${currentBuild.number}"
-						writeJson file: './package.json', json: props
+						//def vvv = props.find { it.name == 'version' }
+						//echo vvv
+						//vvv.value = "0.1.${currentBuild.number}"
+						//writeJson file: './package.json', json: props
 					}
 
 			String remotes = powershell script:'git remote', returnStdout:true
