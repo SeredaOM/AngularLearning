@@ -10,7 +10,7 @@ pipeline {
 			bat 'git branch'
 
         bat 'echo The current directory is %CD%'
-		  echo 'BN0: %BUILD_NUMBER%'
+		  bat 'BN0: %BUILD_NUMBER%'
         bat 'dir'
 		script {
 			echo "Build number is ${currentBuild.number}"
