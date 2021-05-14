@@ -12,8 +12,8 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
 		script {
-			def buildNumber = currentBuild.number
 			echo "Build number is ${currentBuild.number}"
+			def buildNumber = currentBuild.number			
 			echo "BN from script is "+buildNumber
 
 			String BranchPrName = powershell (returnStdout:true, script: '''
@@ -24,7 +24,7 @@ pipeline {
 				''')
 			echo 'BranchPrName: '+BranchPrName
 		
-			String BN2 = powershell script:'echo ${env:currentBuild.number}', returnStdout:true
+			String BN2 = powershell script:'echo env:currentBuild.number', returnStdout:true
 			echo 'BN2: '+BN2	
 
 			String remotes = powershell script:'git remote', returnStdout:true
