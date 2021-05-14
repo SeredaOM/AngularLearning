@@ -7,11 +7,9 @@ pipeline {
   stages {
     stage('Prepare'){
       steps {
-			bat 'git branch'
-
-        bat 'echo The current directory is %CD%'
-		  bat 'BN0: %BUILD_NUMBER%'
-        bat 'dir'
+			bat 'eco BN0: %BUILD_NUMBER%'
+        	bat 'echo The current directory is %CD%'
+		  	bat 'dir'
 		script {
 			echo "Build number is ${currentBuild.number}"
 			def buildNumber = currentBuild.number			
