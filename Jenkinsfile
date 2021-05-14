@@ -56,7 +56,7 @@ pipeline {
 				def props = readJSON file: 'package.json'
 				props.find { it.name == 'angular-example' }.version = "0.1.${currentBuild.number}"
 				echo props
-				writeJson file: 'package.json' json: props
+				writeJson file: 'package.json', json: props
 				
 				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
 				echo result;
