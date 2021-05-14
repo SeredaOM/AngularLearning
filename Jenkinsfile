@@ -53,11 +53,6 @@ pipeline {
           steps {
 			script {
 
-				def props = readJSON file: './package.json'
-				props.find { it.name == 'angular-example' }.version = "0.1.${currentBuild.number}"
-				echo props
-				writeJson file: './package.json', json: props
-				
 				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
 				echo result;
 				if (result) {
@@ -66,6 +61,12 @@ pipeline {
 
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
+
+						def props = readJSON file: './package.json'
+						props.find { it.name == 'angular-example' }.version = "0.1.${currentBuild.number}"
+						echo props
+						writeJson file: './package.json', json: props
+
 						powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
 						powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
