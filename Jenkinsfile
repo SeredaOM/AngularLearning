@@ -7,8 +7,7 @@ pipeline {
   stages {
     stage('Prepare'){
       steps {
-			echo 'The current directory is %CD%'
-			echo 'git branch'
+			bat 'git branch'
 
         bat 'echo The current directory is %CD%'
         bat 'dir'
@@ -16,6 +15,7 @@ pipeline {
 			def buildNumber = currentBuild.number
 			echo "Build number is ${currentBuild.number}"
 			echo "BN from script is "+buildNumber
+			echo powershell script:'git branch'
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
