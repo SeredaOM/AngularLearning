@@ -22,7 +22,7 @@ pipeline {
 				$end = $p.IndexOf('@',$start+1);
 				echo $p.substring($start+1, $end-$start-1)
 				''')
-			echo 'BranchPrName: '+folder
+			echo 'BranchPrName: '+BranchPrName
 		
 			String BN2 = powershell script:'${currentBuild.number}', returnStdout:true
 			echo 'BN2: '+BN2	
