@@ -102,8 +102,8 @@ echo 'prop kscriptsey:'+ props['devDependencies']
             def data = readFile(file: './package.json')
             println(data)
 
-						def props = readJSON text: data
-						echo props
+						def props2 = readJSON text: data
+						echo props2
 						//def vvv = props.find { it.name == 'version' }
 						//echo vvv
 						//vvv.value = "0.1.${currentBuild.number}"
