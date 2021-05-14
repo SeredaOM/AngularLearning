@@ -10,6 +10,7 @@ pipeline {
 			bat 'git branch'
 
         bat 'echo The current directory is %CD%'
+		  echo 'BN0: %BUILD_NUMBER%'
         bat 'dir'
 		script {
 			echo "Build number is ${currentBuild.number}"
@@ -28,9 +29,7 @@ pipeline {
 			echo 'BN2: '+BN2	
 
 			String BN3 = powershell script:'''echo $env:BUILD_NUMBER''', returnStdout:true
-			echo 'BN3: '+BN3	
-
-			echo "BN4: " :: %BUILD_NUMBER%
+			echo 'BN3: '+BN3			
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
