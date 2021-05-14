@@ -30,13 +30,11 @@ pipeline {
 						bat 'echo The current directory is %CD%'
 
 						def props = readJSON file: './package.json'
-						props.find {
-							//echo it
-							it.value == 'version'
-							}.value = "0.1.${currentBuild.number}"
-						}
 						echo props
-						//writeJson file: './package.json', json: props
+						def vvv = props.find { it.value.name == 'version' }
+						echo vvv
+						vvv.value = "0.1.${currentBuild.number}"
+						writeJson file: './package.json', json: props
 					}
 
 			String remotes = powershell script:'git remote', returnStdout:true
