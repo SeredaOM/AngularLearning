@@ -1,6 +1,7 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 def gitLastCommonAncestor = ''
+def buildNumberString = ''
 
 pipeline {
   agent { label 'master' }
@@ -10,26 +11,20 @@ pipeline {
 		  	bat 'echo The current directory is %CD%'
 		  	bat 'dir'
 		script {
-			String BranchPrName = powershell (returnStdout:true, script: '''
+			String buildNumberString = powershell (returnStdout:true, script: '''
 				$p = $MyInvocation.MyCommand.Path
 				$start = $p.LastIndexOf('_');
 				$end = $p.IndexOf('@',$start+1);
 				$folder = $p.substring($start+1, $end-$start-1)
 				if( $folder -eq 'master')
 				{
-					echo 2
 					$bn = $env:BUILD_NUMBER
 				}else{
-					echo 3
-					$bn = $folder+'_'+$env:BUILD_NUMBER
+					$bn = $folder+'_run-'+$env:BUILD_NUMBER
 				}
-				echo $env:BUILD_NUMBER
-				echo 'bn: '+$bn
+				echo $bn
 				''')
-			echo 'BranchPrName: '+BranchPrName
-		
-			String BN3 = powershell script:'''echo $env:BUILD_NUMBER''', returnStdout:true
-			echo 'BN3: '+BN3			
+			echo 'buildNumberString: '+buildNumberString
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
@@ -57,6 +52,12 @@ pipeline {
         stage('Build Frontend') {
           steps {
 			script {
+
+				def props = readJSON file: 'package.json'
+				props.find { it.name == 'angular-example' }.version = "0.1.${currentBuild.number}"
+				echo props
+				writeJson file: 'package.json' json: props
+				
 				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
 				echo result;
 				if (result) {
