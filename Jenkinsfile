@@ -14,9 +14,17 @@ pipeline {
 				$p = $MyInvocation.MyCommand.Path
 				$start = $p.LastIndexOf('_');
 				$end = $p.IndexOf('@',$start+1);
-				echo $p.substring($start+1, $end-$start-1)
-				
+				$folder = $p.substring($start+1, $end-$start-1)
+				if( $folder -eq 'master')
+				{
+					echo 2
+					$bn = $env:BUILD_NUMBER
+				}else{
+					echo 3
+					$bn = $folder+'_'+$env:BUILD_NUMBER
+				}
 				echo $env:BUILD_NUMBER
+				echo 'bn: '+$bn
 				''')
 			echo 'BranchPrName: '+BranchPrName
 		
