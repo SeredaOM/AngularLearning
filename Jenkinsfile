@@ -12,6 +12,7 @@ pipeline {
 		  	bat 'dir'
 		script {
 			echo "Build number is ${currentBuild.number}"
+			echo "BN1: %BUILD_NUMBER%"
 			def buildNumber = currentBuild.number			
 			echo "BN from script is "+buildNumber
 
