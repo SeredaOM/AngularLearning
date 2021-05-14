@@ -12,7 +12,8 @@ pipeline {
 		script {
 			def buildNumber = currentBuild.number
 			echo "Build number is ${currentBuild.number}"
-			exit(-1)
+			echo "BN from script is "+buildNumber
+			
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
 			if( !remotes.contains('github') )
