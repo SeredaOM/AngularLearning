@@ -26,6 +26,15 @@ pipeline {
 				''')
 			echo 'buildNumberString: '+buildNumberString
 
+					dir("./Frontend") {
+						bat 'echo The current directory is %CD%'
+
+						def props = readJSON file: './package.json'
+						props.find { it.name == 'angular-example' }.version = "0.1.${currentBuild.number}"
+						echo props
+						writeJson file: './package.json', json: props
+					}
+					
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
 			if( !remotes.contains('github') )
