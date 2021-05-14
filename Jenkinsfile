@@ -9,6 +9,8 @@ pipeline {
       steps {
         bat 'echo The current directory is %CD%'
         bat 'dir'
+        bat 'echo $BUILD_NUMBER'
+          bat 'exit(-1)'
 		script {
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
