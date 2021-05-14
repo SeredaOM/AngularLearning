@@ -16,8 +16,6 @@ pipeline {
 			def buildNumber = currentBuild.number			
 			echo "BN from script is "+buildNumber
 
-			echo "BN0: "+$BUILD_NUMBER
-
 			String BranchPrName = powershell (returnStdout:true, script: '''
 				$p = $MyInvocation.MyCommand.Path
 				$start = $p.LastIndexOf('_');
@@ -31,6 +29,8 @@ pipeline {
 
 			String BN3 = powershell script:'''echo $env:BUILD_NUMBER''', returnStdout:true
 			echo 'BN3: '+BN3	
+
+			echo "BN4: "+$env:BUILD_NUMBER
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
