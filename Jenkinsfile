@@ -7,26 +7,19 @@ pipeline {
   stages {
     stage('Prepare'){
       steps {
-			bat 'echo BN0: %BUILD_NUMBER%'
-        	bat 'echo The current directory is %CD%'
+		  	bat 'echo The current directory is %CD%'
 		  	bat 'dir'
 		script {
-			echo "Build number is ${currentBuild.number}"
-			echo "BN1: %BUILD_NUMBER%"
-			def buildNumber = currentBuild.number			
-			echo "BN from script is "+buildNumber
-
 			String BranchPrName = powershell (returnStdout:true, script: '''
 				$p = $MyInvocation.MyCommand.Path
 				$start = $p.LastIndexOf('_');
 				$end = $p.IndexOf('@',$start+1);
 				echo $p.substring($start+1, $end-$start-1)
+				
+				echo $env:BUILD_NUMBER
 				''')
 			echo 'BranchPrName: '+BranchPrName
 		
-			String BN2 = powershell script:'''echo ${env:currentBuild.number}''', returnStdout:true
-			echo 'BN2: '+BN2	
-
 			String BN3 = powershell script:'''echo $env:BUILD_NUMBER''', returnStdout:true
 			echo 'BN3: '+BN3			
 
