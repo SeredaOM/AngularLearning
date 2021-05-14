@@ -11,7 +11,7 @@ pipeline {
 		  	bat 'echo The current directory is %CD%'
 		  	bat 'dir'
 		script {
-			String buildNumberString = powershell (returnStdout:true, script: '''
+			buildNumberString = powershell (returnStdout:true, script: '''
 				$p = $MyInvocation.MyCommand.Path
 				$start = $p.LastIndexOf('_');
 				$end = $p.IndexOf('@',$start+1);
