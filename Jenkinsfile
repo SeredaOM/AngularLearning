@@ -102,7 +102,7 @@ echo 'prop kscriptsey:'+ props['devDependencies']
             def data = readFile(file: './package.json')
             println(data)
 
-						def props2 = readJSON text: data
+						def props2 = readJSON text: data, returnPojo: true
 						echo props2
 						//def vvv = props.find { it.name == 'version' }
 						//echo vvv
