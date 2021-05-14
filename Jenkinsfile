@@ -9,9 +9,9 @@ pipeline {
       steps {
         bat 'echo The current directory is %CD%'
         bat 'dir'
-        bat 'echo $BUILD_NUMBER'
-          bat 'exit(-1)'
 		script {
+			String bn = powershell script:'$BUILD_NUMBER', returnStdout:true
+			echo 'BN: '+bn
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
 			if( !remotes.contains('github') )
