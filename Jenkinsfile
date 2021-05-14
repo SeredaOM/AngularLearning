@@ -29,6 +29,7 @@ pipeline {
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
 
+
 						def props = readJSON file: './package.json'
 						echo props
 						//def vvv = props.find { it.name == 'version' }
