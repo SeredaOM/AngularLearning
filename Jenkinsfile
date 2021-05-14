@@ -7,7 +7,7 @@ pipeline {
   stages {
     stage('Prepare'){
       steps {
-			bat 'eco BN0: %BUILD_NUMBER%'
+			bat 'echo BN0: %BUILD_NUMBER%'
         	bat 'echo The current directory is %CD%'
 		  	bat 'dir'
 		script {
