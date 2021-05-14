@@ -30,7 +30,7 @@ pipeline {
 			String BN3 = powershell script:'''echo $env:BUILD_NUMBER''', returnStdout:true
 			echo 'BN3: '+BN3	
 
-			echo "BN4: " :: $BUILD_NUMBER
+			echo "BN4: " :: %BUILD_NUMBER%
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
