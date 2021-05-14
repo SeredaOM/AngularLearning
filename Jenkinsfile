@@ -16,11 +16,16 @@ pipeline {
 			echo "Build number is ${currentBuild.number}"
 			echo "BN from script is "+buildNumber
 
-			String folder = powershell script:'$MyInvocation.MyCommand.Path', returnStdout:true
-			echo 'Folder: '+folder
-
-			String branch = powershell script:'git branch', returnStdout:true
-			echo 'Branch: '+branch
+			String BranchPrName = powershell (returnStdout:true, script: '''
+				$p = $MyInvocation.MyCommand.Path
+				$start = $p.LastIndexOf('_');
+				$end = $p.IndexOf('@',$start+1);
+				echo $p.substring($start+1, $end-$start-1)
+				''')
+			echo 'BranchPrName: '+folder
+		
+			String BN2 = powershell script:'${currentBuild.number}', returnStdout:true
+			echo 'BN2: '+BN2	
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
