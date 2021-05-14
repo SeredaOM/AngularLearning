@@ -29,9 +29,14 @@ pipeline {
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
 
+						JsonSlurper parser = new groovy.json.JsonSlurper()
+						def json = readFile("./package.json")
+						Map prop = parser.parseText(json)
+echo json
+echo prop
 
-						def props = readJSON file: './package.json'
-						echo props
+						//def props = readJSON file: './package.json'
+						//echo props
 						//def vvv = props.find { it.name == 'version' }
 						//echo vvv
 						//vvv.value = "0.1.${currentBuild.number}"
