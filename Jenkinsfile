@@ -24,7 +24,7 @@ pipeline {
           echo 'Folder: '+branchFolder
           if( branchFolder != 'master' )
           {
-            echo 111
+            echo '111'
             buildNumberString = branchFolder + '_run-'
           }
           echo '1: '+buildNumberString
