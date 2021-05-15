@@ -104,6 +104,8 @@ echo 'prop kscriptsey:'+ props['devDependencies']
 
 						def props2 = readJSON text: data, returnPojo: true
 						echo "json from data: "+ props2
+            echo "and again"
+            echo props2
 						//def vvv = props.find { it.name == 'version' }
 						//echo vvv
 						//vvv.value = "0.1.${currentBuild.number}"
