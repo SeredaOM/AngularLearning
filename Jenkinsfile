@@ -63,8 +63,10 @@ pipeline {
             def packageFilePath = './package.json'
             def props = readJSON(file: packageFilePath)
             echo "json from data: " + props
-            def newVersion = "$props['version'].value" + buildNumberString
+            echo "newVersion: ------------------- " 
+            def newVersion = "" + props['version'].value + buildNumberString
             echo "newVersion: " + newVersion
+            echo "newVersion: ------------------- " 
             props['version'] = newVersion
             echo "updated props: " + props
             writeJSON file: packageFilePath, json: props
