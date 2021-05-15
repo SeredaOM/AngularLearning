@@ -66,10 +66,10 @@ pipeline {
             echo "updated props: " + props
             writeJSON file: packageFilePath, json: props
 
-						def props2 = readJSON(file: packageFilePath)
+            def props2 = readJSON(file: packageFilePath)
             echo "json from data 2: " + props2
             
-            powershell script: 'npm ci'
+						powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
 						powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
 						powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
