@@ -71,7 +71,7 @@ pipeline {
             
             powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
-						//powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
+						powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
 						powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
 						powershell script: 'Copy-Item -Path .\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
 					}
