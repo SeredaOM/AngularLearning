@@ -20,7 +20,7 @@ pipeline {
             $folder = $p.substring($start+1, $end-$start-1)
             echo $folder
             ''')
-          branchFolder = branchFolder.substring(0,folder.length()-2)
+          branchFolder = branchFolder.substring(0,branchFolder.length()-2)
           echo branchFolder
           if( branchFolder != 'master' )
           {
