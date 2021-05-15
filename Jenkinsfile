@@ -47,7 +47,7 @@ pipeline {
 						def vvv = props.find { it.key == 'version' }
 						echo 'version 1: '+vvv
             echo '0.1.'+buildNumberString
-						def newValue = ('0.1.'+buildNumberString.toString())
+						def newValue = '0.1.'+buildNumberString
             echo newValue
             vvv.value = newValue
             echo 'version 2: '+vvv
