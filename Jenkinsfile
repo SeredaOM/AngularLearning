@@ -63,16 +63,7 @@ pipeline {
             def packageFilePath = './package.json'
             def props = readJSON file: packageFilePath, returnPojo: true
             echo "json from data: " + props
-            echo 'classname: "' + props['version'].value.getClass().getName() + '"'
-            echo "newVersion: ------------------- 1" 
-            def newVersion = "" + props['version']
-            echo "newVersion: " + newVersion
-            echo "newVersion: ------------------- 2" 
-            def i = newVersion.indexOf(':')
-            newVersion = newVersion.substring(i+1)
-            echo "newVersion: " + newVersion
-            echo "newVersion: ------------------- 3" 
-            newVersion = newVersion + buildNumberString
+            def newVersion = new String(props['version'].value) + buildNumberString
             echo "newVersion: " + newVersion
             echo "newVersion: ------------------- 4" 
             props['version'] = newVersion
