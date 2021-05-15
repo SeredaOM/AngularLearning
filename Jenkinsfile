@@ -42,7 +42,7 @@ pipeline {
 						echo "json from data: "+ props
             // echo "and again"
             // echo props
-						def vvv = props.find { it.name == 'version' }
+						def vvv = props.find { it.value == 'version' }
 						echo 'version 1: '+vvv
 						vvv.value = "0.1.${currentBuild.number}"
             echo 'version 2: '+vvv
