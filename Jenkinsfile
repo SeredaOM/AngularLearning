@@ -21,7 +21,7 @@ pipeline {
             echo $folder
             ''')
           branchFolder = branchFolder.substring(0,branchFolder.length()-2)
-          echo branchFolder
+          echo 'Folder: '+branchFolder
           if( branchFolder != 'master' )
           {
             echo 111
