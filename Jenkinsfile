@@ -44,7 +44,7 @@ pipeline {
             // echo props
 						def vvv = props.find { it.key == 'version' }
 						echo 'version 1: '+vvv
-						vvv.value = "0.1.${currentBuild.number}"
+						vvv.value = "0.1."+buildNumberString
             echo 'version 2: '+vvv
 						writeJson file: './package.json', json: props
 					}
