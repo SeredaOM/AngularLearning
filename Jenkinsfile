@@ -53,7 +53,7 @@ pipeline {
             // echo 'version 2: '+vvv
             props['version'] = '0.1.'+buildNumberString
             echo "updated props: "+ props
-						writeJson file: './package.json', json: props
+						writeJSON file: './package.json', json: props
 					}
 
 			String remotes = powershell script:'git remote', returnStdout:true
