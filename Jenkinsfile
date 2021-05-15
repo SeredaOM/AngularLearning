@@ -104,11 +104,13 @@ pipeline {
     }
 
     stage{'Deploy'}	{
-      if( branchFolder == 'master' ) {
-        if(builtFrontend) {
-          powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
-          powershell script: 'Copy-Item -Path .\\FrontEnd\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
-          powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
+      steps {
+        if( branchFolder == 'master' ) {
+          if(builtFrontend) {
+            powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
+            powershell script: 'Copy-Item -Path .\\FrontEnd\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
+            powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
+          }
         }
       }
     }
