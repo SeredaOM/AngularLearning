@@ -21,10 +21,13 @@ pipeline {
             echo $folder
             ''')
           branchFolder = branchFolder.substring(0,folder.length()-2)
-          if(branchFolder != 'master')
+          echo branchFolder
+          if( branchFolder != 'master' )
           {
+            echo 111
             buildNumberString = branchFolder + '_run-'
           }
+          echo '1: '+buildNumberString
           buildNumberString += ${BUILD_NUMBER}
           echo 'buildNumberString: '+buildNumberString
 
