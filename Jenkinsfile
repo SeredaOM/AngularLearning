@@ -46,7 +46,7 @@ pipeline {
 						echo 'version 1: '+vvv
 						vvv.value = "0.1.${currentBuild.number}"
             echo 'version 2: '+vvv
-						//writeJson file: './package.json', json: props
+						writeJson file: './package.json', json: props
 					}
 
 			String remotes = powershell script:'git remote', returnStdout:true
