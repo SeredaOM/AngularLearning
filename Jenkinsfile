@@ -44,13 +44,14 @@ pipeline {
 						echo "json from data: "+ props
             // echo "and again"
             // echo props
-						def vvv = props.find { it.key == 'version' }
-						echo 'version 1: '+vvv
-            echo '0.1.'+buildNumberString
-						def newValue = '0.1.'+buildNumberString
-            echo newValue
-            vvv.value = newValue
-            echo 'version 2: '+vvv
+						// def vvv = props.find { it.key == 'version' }
+						// echo 'version 1: '+vvv
+            // echo '0.1.'+buildNumberString
+						// def newValue = '0.1.'+buildNumberString
+            // echo newValue
+            // vvv.value = newValue
+            // echo 'version 2: '+vvv
+            props['version'] = '0.1.'+buildNumberString
 						writeJson file: './package.json', json: props
 					}
 
