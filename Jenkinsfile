@@ -26,9 +26,9 @@ pipeline {
           {
             echo '111'
             buildNumberString = branchFolder + '_run-'
+            echo '1: '+buildNumberString
           }
-          echo '1: '+buildNumberString
-          buildNumberString += ${BUILD_NUMBER}
+          buildNumberString += currentBuild.number
           echo 'buildNumberString: '+buildNumberString
 
           String remotes = powershell script:'git remote', returnStdout:true
