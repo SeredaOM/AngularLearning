@@ -1,6 +1,7 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 def gitLastCommonAncestor = ''
+def buildNumberString = ''
 
 pipeline {
   agent { label 'master' }
@@ -10,6 +11,22 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
 		script {
+      buildNumberString = powershell (returnStdout:true, script: '''
+        $p = $MyInvocation.MyCommand.Path
+        $start = $p.LastIndexOf('_');
+        $end = $p.IndexOf('@',$start+1);
+        $folder = $p.substring($start+1, $end-$start-1)
+        if( $folder -eq 'master')
+        {
+          $bn = $env:BUILD_NUMBER
+        }else{
+          $bn = $folder+'_run-'+$env:BUILD_NUMBER
+        }
+        echo $bn
+        ''')
+      buildNumberString = buildNumberString.substring(0,buildNumberString.length()-2)
+      echo 'buildNumberString: '+buildNumberString
+
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
 			if( !remotes.contains('github') )
@@ -36,14 +53,22 @@ pipeline {
         stage('Build Frontend') {
           steps {
 			script {
-				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
-				echo result;
-				if (result) {
-					echo 'FrontEnd result is true'
-					bat 'npx --version'
 
+				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
+				echo result
+				if (result) {
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
+
+            def packageFilePath = './package.json'
+            def props = readJSON file: packageFilePath, returnPojo: true
+            props['version'] = new String(props['version'].value) + buildNumberString
+            echo "updated props: " + props
+            writeJSON file: packageFilePath, json: props
+
+            def props2 = readJSON(file: packageFilePath)
+            echo "json from data 2: " + props2
+            
 						powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
 						powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
