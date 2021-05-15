@@ -52,6 +52,7 @@ pipeline {
             // vvv.value = newValue
             // echo 'version 2: '+vvv
             props['version'] = '0.1.'+buildNumberString
+            echo "updated props: "+ props
 						writeJson file: './package.json', json: props
 					}
 
