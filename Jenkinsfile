@@ -1,53 +1,55 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 def gitLastCommonAncestor = ''
+def branchFolder = ''
 def buildNumberString = ''
+def builtFrontend = false
 
 pipeline {
   agent { label 'master' }
   stages {
-    stage('Prepare'){
+    stage('Prepare') {
       steps {
         bat 'echo The current directory is %CD%'
         bat 'dir'
-		script {
-      buildNumberString = powershell (returnStdout:true, script: '''
-        $p = $MyInvocation.MyCommand.Path
-        $start = $p.LastIndexOf('_');
-        $end = $p.IndexOf('@',$start+1);
-        $folder = $p.substring($start+1, $end-$start-1)
-        if( $folder -eq 'master')
-        {
-          $bn = $env:BUILD_NUMBER
-        }else{
-          $bn = $folder+'_run-'+$env:BUILD_NUMBER
+		    script {
+          branchFolder = powershell (returnStdout:true, script: '''
+            $p = $MyInvocation.MyCommand.Path
+            $start = $p.LastIndexOf('_');
+            $end = $p.IndexOf('@',$start+1);
+            $folder = $p.substring($start+1, $end-$start-1)
+            echo $folder
+            ''')
+          branchFolder = branchFolder.substring(0,branchFolder.length()-2)
+          if( branchFolder != 'master' )
+          {
+            buildNumberString = branchFolder + '_run-'
+          }
+          buildNumberString += currentBuild.number
+          echo 'buildNumberString: '+buildNumberString
+
+          String remotes = powershell script:'git remote', returnStdout:true
+          echo 'Remotes: '+remotes				
+          if( !remotes.contains('github') )
+          {
+            echo 'Adding github remote'
+            powershell script:'git remote add github https://github.com/SeredaOM/AngularLearning.git'
+            powershell script:'git fetch github master'
+          }
+              
+          //	This command helped to spot the remote branches in the history
+          //	echo powershell script:'git log --graph --decorate --oneline', returnStdout:true
+              
+          String gitMasterBranchLastCommitHash = powershell script:'git rev-parse github/master', returnStdout:true
+          echo 'MasterBranchLatestCommitHash: '+gitMasterBranchLastCommitHash
+
+          gitLatestCommonAncestor = powershell script:'git merge-base HEAD github/master', returnStdout:true
+          gitLatestCommonAncestor = gitLatestCommonAncestor.substring(0,gitLatestCommonAncestor.length()-2)
+          echo 'LatestCommonAncestor: "'+gitLatestCommonAncestor+'".'
         }
-        echo $bn
-        ''')
-      buildNumberString = buildNumberString.substring(0,buildNumberString.length()-2)
-      echo 'buildNumberString: '+buildNumberString
-
-			String remotes = powershell script:'git remote', returnStdout:true
-			echo 'Remotes: '+remotes				
-			if( !remotes.contains('github') )
-			{
-				echo 'Adding github remote'
-				powershell script:'git remote add github https://github.com/SeredaOM/AngularLearning.git'
-				powershell script:'git fetch github master'
-			}
-					
-			//	This command helped to spot the remote branches in the history
-			//	echo powershell script:'git log --graph --decorate --oneline', returnStdout:true
-					
-			String gitMasterBranchLastCommitHash = powershell script:'git rev-parse github/master', returnStdout:true
-			echo 'MasterBranchLatestCommitHash: '+gitMasterBranchLastCommitHash
-
-			gitLatestCommonAncestor = powershell script:'git merge-base HEAD github/master', returnStdout:true
-			gitLatestCommonAncestor = gitLatestCommonAncestor.substring(0,gitLatestCommonAncestor.length()-2)
-			echo 'LatestCommonAncestor: "'+gitLatestCommonAncestor+'".'
-		}
       }
     }
+
     stage('Build') {
       parallel {
         stage('Build Frontend') {
@@ -72,8 +74,7 @@ pipeline {
 						powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
 						powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
-						powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
-						powershell script: 'Copy-Item -Path .\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
+            builtFrontend = true
 					}
 				} else {
 					echo 'FrontEnd result is false'
@@ -101,7 +102,22 @@ pipeline {
         }
       }
     }
-	
+
+    stage('Deploy')	{
+      steps {
+        script {
+          if( branchFolder == 'master' ) {
+            if(builtFrontend) {
+              echo 'Deploying Frontend'
+              powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
+              powershell script: 'Copy-Item -Path .\\FrontEnd\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
+              powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
+              echo 'Completed Frontend deployment'
+            }
+          }
+        }
+      }
+    }
   }
   
 }

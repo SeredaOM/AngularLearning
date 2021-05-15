@@ -1,3 +1,4 @@
 Change to trigger CI running for Frontend project
 Change.
 Testing PublishToLocalIIS.
+Change to trigger 'deploy' stage script, recently implemented in JenkinsFile.
