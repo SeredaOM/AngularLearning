@@ -24,37 +24,8 @@ pipeline {
 				}
 				echo $bn
 				''')
-        buildNumberString = buildNumberString.substring(0,buildNumberString.length()-2)
-
+      buildNumberString = buildNumberString.substring(0,buildNumberString.length()-2)
 			echo 'buildNumberString: '+buildNumberString
-
-					dir("./Frontend") {
-						bat 'echo The current directory is %CD%'
-
-// 						groovy.json.JsonSlurper parser = new groovy.json.JsonSlurper()
-// 						def json = readFile("./package.json")
-// 						Map prop = parser.parseText(json)
-// echo json
-// echo prop
-
-            def data = readFile(file: './package.json')
-            echo "read from file: "+data
-
-						def props = readJSON text: data, returnPojo: true
-						echo "json from data: "+ props
-            // echo "and again"
-            // echo props
-						// def vvv = props.find { it.key == 'version' }
-						// echo 'version 1: '+vvv
-            // echo '0.1.'+buildNumberString
-						// def newValue = '0.1.'+buildNumberString
-            // echo newValue
-            // vvv.value = newValue
-            // echo 'version 2: '+vvv
-            props['version'] = '0.1.'+buildNumberString
-            echo "updated props: "+ props
-						writeJSON file: './package.json', json: props
-					}
 
 			String remotes = powershell script:'git remote', returnStdout:true
 			echo 'Remotes: '+remotes				
@@ -84,13 +55,18 @@ pipeline {
 			script {
 
 				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
-				echo result;
+				echo result
 				if (result) {
-					echo 'FrontEnd result is true'
 					bat 'npx --version'
 
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
+
+            def props = readJSON(file: './package.json')
+            echo "json from data: "+ props
+            props['version'] = '0.1.'+buildNumberString
+            echo "updated props: "+ props
+						writeJSON file: './package.json', json: props
 
 						powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
