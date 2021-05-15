@@ -21,12 +21,9 @@ pipeline {
             echo $folder
             ''')
           branchFolder = branchFolder.substring(0,branchFolder.length()-2)
-          echo 'Folder: '+branchFolder
           if( branchFolder != 'master' )
           {
-            echo '111'
             buildNumberString = branchFolder + '_run-'
-            echo '1: '+buildNumberString
           }
           buildNumberString += currentBuild.number
           echo 'buildNumberString: '+buildNumberString
@@ -109,7 +106,7 @@ pipeline {
     stage('Deploy')	{
       steps {
         script {
-          if( branchFolder != 'master' ) {
+          if( branchFolder == 'master' ) {
             if(builtFrontend) {
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
               powershell script: 'Copy-Item -Path .\\FrontEnd\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
