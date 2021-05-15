@@ -24,6 +24,8 @@ pipeline {
 				}
 				echo $bn
 				''')
+        buildNumberString = buildNumberString.substring(0,buildNumberString.length()-2)
+
 			echo 'buildNumberString: '+buildNumberString
 
 					dir("./Frontend") {
