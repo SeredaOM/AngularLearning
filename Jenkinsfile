@@ -57,19 +57,20 @@ pipeline {
 				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
 				echo result
 				if (result) {
-					bat 'npx --version'
-
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
 
             def packageFilePath = './package.json'
             def props = readJSON(file: packageFilePath)
-            echo "json from data: "+ props
-            props['version'] = props['version'].value+buildNumberString
-            echo "updated props: "+ props
+            echo "json from data: " + props
+            props['version'] = props['version'].value.toString()+buildNumberString
+            echo "updated props: " + props
             writeJSON file: packageFilePath, json: props
 
-						powershell script: 'npm ci'
+						def props2 = readJSON(file: packageFilePath)
+            echo "json from data 2: " + props2
+            
+            powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
 						//powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
 						powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
