@@ -64,7 +64,9 @@ pipeline {
 
             def packageFilePath = './package.json'
             def props = readJSON file: packageFilePath, returnPojo: true
-            props['version'] = new String(props['version'].value) + buildNumberString
+            def version = new String(props['version'].value)
+            def versionCut = version.substring(0, version.lastIndexOf('.')+1)
+            props['version'] = versionCut + buildNumberString
             echo "updated props: " + props
             writeJSON file: packageFilePath, json: props
 
