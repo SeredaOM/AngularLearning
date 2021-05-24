@@ -28,7 +28,7 @@ import { ArenaComponent } from './arena/arena.component';
     ArenaComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
