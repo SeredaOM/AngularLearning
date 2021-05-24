@@ -110,7 +110,7 @@ pipeline {
             if(builtFrontend) {
               echo 'Deploying Frontend'
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
-              powershell script: 'Copy-Item -Path .\\FrontEnd\\dist\\angular-example\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
+              powershell script: 'Copy-Item -Path .\\FrontEnd\\dist\\angular-example\\browser\\* -Destination C:\\Project\\Hosted\\hexes\\ -recurse -Force'
               powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
               echo 'Completed Frontend deployment'
             }
