@@ -88,18 +88,26 @@ pipeline {
         }
         stage('Build WebAPI') {
           steps {
-			script {
-				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD WebAPI/'), returnStdout:true
-				echo result;
-				if (result) {
-					echo 'WebAPI result is true'
-					bat 'echo compile .NET project'
-				} else {
-					echo 'WebAPI result is false'
-					Utils.markStageSkippedForConditional(env.STAGE_NAME)
-					echo 'echo WebAPI after markStageSkippedForConditional'
-				}
-			}
+            script {
+              String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD WebAPI/'), returnStdout:true
+              echo result;
+              if (result) {
+                dir("./WebAPI") {
+                  echo 'WebAPI result is true'
+                  bat 'echo compile .NET project'
+
+                  echo 'Reading original AssemblyInfo ----------------------------------------------'
+                  powershell script:('Get-Content ./Properties/AssemblyInfo.cs')
+                  powershell script:('''(Get-Content ./Properties/AssemblyInfo.cs) -replace '(Assembly[File]*Version\\("[\\d+]+.[\\d+]+).([\\d+]+).0', '$1.''' + buildNumberString + '''.0' | Set-Content ./Properties/AssemblyInfo.cs''')
+                  echo 'Reading alterred AssemblyInfo ----------------------------------------------'
+                  powershell script:('Get-Content ./Properties/AssemblyInfo.cs')
+                }
+              } else {
+                echo 'WebAPI result is false'
+                Utils.markStageSkippedForConditional(env.STAGE_NAME)
+                echo 'echo WebAPI after markStageSkippedForConditional'
+              }
+            }
           }
         }
       }
