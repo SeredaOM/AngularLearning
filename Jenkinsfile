@@ -63,16 +63,18 @@ pipeline {
 					dir("./Frontend") {
 						bat 'echo The current directory is %CD%'
 
-            def packageFilePath = './package.json'
-            def props = readJSON file: packageFilePath, returnPojo: true
-            def version = new String(props['version'].value)
-            def versionCut = version.substring(0, version.lastIndexOf('.')+1)
-            props['version'] = versionCut + buildNumberString
-            echo "updated props: " + props
-            writeJSON file: packageFilePath, json: props
+            if( branchFolder == 'master' ) {
+              def packageFilePath = './package.json'
+              def props = readJSON file: packageFilePath, returnPojo: true
+              def version = new String(props['version'].value)
+              def versionCut = version.substring(0, version.lastIndexOf('.')+1)
+              props['version'] = versionCut + buildNumberString
+              echo "updated props: " + props
+              writeJSON file: packageFilePath, json: props
 
-            def props2 = readJSON(file: packageFilePath)
-            echo "json from data 2: " + props2
+              def props2 = readJSON(file: packageFilePath)
+              echo "json from data 2: " + props2
+            }
             
 						powershell script: 'npm ci'
 						powershell script: 'npx ng build --prod'
