@@ -4,6 +4,7 @@ def gitLastCommonAncestor = ''
 def branchFolder = ''
 def buildNumberString = ''
 def builtFrontend = false
+def builtWebApi = false
 
 pipeline {
   agent { label 'master' }
@@ -23,7 +24,7 @@ pipeline {
           branchFolder = branchFolder.substring(0,branchFolder.length()-2)
           if( branchFolder != 'master' )
           {
-            buildNumberString = branchFolder + '_run-'
+            buildNumberString = branchFolder.replace('-','') + '+'
           }
           buildNumberString += currentBuild.number
           echo 'buildNumberString: '+buildNumberString
@@ -88,18 +89,33 @@ pipeline {
         }
         stage('Build WebAPI') {
           steps {
-			script {
-				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD WebAPI/'), returnStdout:true
-				echo result;
-				if (result) {
-					echo 'WebAPI result is true'
-					bat 'echo compile .NET project'
-				} else {
-					echo 'WebAPI result is false'
-					Utils.markStageSkippedForConditional(env.STAGE_NAME)
-					echo 'echo WebAPI after markStageSkippedForConditional'
-				}
-			}
+            script {
+              String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD WebAPI/'), returnStdout:true
+              echo result;
+              if (result) {
+                dir("./WebAPI") {
+                  echo 'WebAPI result is true'
+                  bat 'echo compile .NET project'
+
+                  String suffix = ''
+                  if( branchFolder == 'master' ) {
+                    echo 'Replacing version'
+                    powershell script:('''(Get-Content ./Properties/AssemblyInfo.cs) -replace '(Assembly[File]*Version\\("[\\d+]+.[\\d+]+).([\\d+]+).0', '$1.''' + buildNumberString + '''.0' | Set-Content ./Properties/AssemblyInfo.cs''')
+                    echo 'Replaced 3rd number in the version'
+                  } else {
+                    suffix = ' --version-suffix ' + buildNumberString
+                  }
+                  
+                  powershell script:('dotnet build WebAPI.sln --configuration Release' + suffix)
+
+                  builtWebApi = true;
+                }
+              } else {
+                echo 'WebAPI result is false'
+                Utils.markStageSkippedForConditional(env.STAGE_NAME)
+                echo 'echo WebAPI after markStageSkippedForConditional'
+              }
+            }
           }
         }
       }
@@ -117,6 +133,14 @@ pipeline {
               echo 'Completed Frontend deployment'
             }
           }
+          //if( branchFolder == 'master' ) {
+            if(builtWebApi) {
+              echo 'Deploying WebApi'
+              powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
+              powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
+              echo 'Completed WebApi deployment'
+            }
+          //}
         }
       }
     }
