@@ -111,6 +111,13 @@ pipeline {
                   powershell script:('dotnet build WebAPI.sln --configuration Release' + suffix)
 
                   builtWebApi = true;
+
+                  if(builtWebApi) {
+                    echo 'Deploying WebApi'
+                    powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
+                    powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
+                    echo 'Completed WebApi deployment'
+                  }
                 }
               } else {
                 echo 'WebAPI result is false'
