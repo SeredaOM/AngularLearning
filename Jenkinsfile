@@ -4,6 +4,7 @@ def gitLastCommonAncestor = ''
 def branchFolder = ''
 def buildNumberString = ''
 def builtFrontend = false
+def builtWebApi = false
 
 pipeline {
   agent { label 'master' }
@@ -96,11 +97,18 @@ pipeline {
                   echo 'WebAPI result is true'
                   bat 'echo compile .NET project'
 
-                  echo 'Reading original AssemblyInfo ----------------------------------------------'
-                  powershell script:('Get-Content ./Properties/AssemblyInfo.cs')
-                  powershell script:('''(Get-Content ./Properties/AssemblyInfo.cs) -replace '(Assembly[File]*Version\\("[\\d+]+.[\\d+]+).([\\d+]+).0', '$1.''' + buildNumberString + '''.0' | Set-Content ./Properties/AssemblyInfo.cs''')
-                  echo 'Reading alterred AssemblyInfo ----------------------------------------------'
-                  powershell script:('Get-Content ./Properties/AssemblyInfo.cs')
+                  String suffix = ''
+                  if( branchFolder == 'master' ) {
+                    echo 'Replacing version'
+                    powershell script:('''(Get-Content ./Properties/AssemblyInfo.cs) -replace '(Assembly[File]*Version\\("[\\d+]+.[\\d+]+).([\\d+]+).0', '$1.''' + buildNumberString + '''.0' | Set-Content ./Properties/AssemblyInfo.cs''')
+                    echo 'Replaced 3rd number in the version'
+                  } else {
+                    suffix = ' --version-suffix ' + buildNumberString
+                  }
+                  
+                  powershell script:('dotnet build --configuration Release' + suffix)
+
+                  builtWebApi = true;
                 }
               } else {
                 echo 'WebAPI result is false'
@@ -124,6 +132,12 @@ pipeline {
               powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
               echo 'Completed Frontend deployment'
             }
+            //if(builtWebApi) {
+              echo 'Deploying WebApi'
+              powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
+              powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
+              echo 'Completed Frontend deployment'
+            //}
           }
         }
       }
