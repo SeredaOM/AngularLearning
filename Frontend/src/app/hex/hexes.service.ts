@@ -10,7 +10,7 @@ export class HexesService {
   constructor(private httpClient: HttpClient) {}
 
   private static getHost() {
-    return isDevMode() ? 'https://localhost:44362' : '/api';
+    return isDevMode() ? 'https://localhost:44362' : 'http://localhost:83';
   }
 
   private static httpOptions = {

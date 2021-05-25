@@ -22,4 +22,8 @@ describe('AboutComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should pull version from API', () => {
+    fail
+  });
 });
