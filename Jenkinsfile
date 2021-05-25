@@ -24,7 +24,7 @@ pipeline {
           branchFolder = branchFolder.substring(0,branchFolder.length()-2)
           if( branchFolder != 'master' )
           {
-            buildNumberString = branchFolder + '_run-'
+            buildNumberString = branchFolder.replace('-','') + '+'
           }
           buildNumberString += currentBuild.number
           echo 'buildNumberString: '+buildNumberString
