@@ -106,7 +106,7 @@ pipeline {
                     suffix = ' --version-suffix ' + buildNumberString
                   }
                   
-                  powershell script:('dotnet build --configuration Release' + suffix)
+                  powershell script:('dotnet build WebAPI.sln --configuration Release' + suffix)
 
                   builtWebApi = true;
                 }
@@ -132,13 +132,15 @@ pipeline {
               powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
               echo 'Completed Frontend deployment'
             }
-            //if(builtWebApi) {
+          }
+          //if( branchFolder == 'master' ) {
+            if(builtWebApi) {
               echo 'Deploying WebApi'
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
               powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
-              echo 'Completed Frontend deployment'
-            //}
-          }
+              echo 'Completed WebApi deployment'
+            }
+          //}
         }
       }
     }
