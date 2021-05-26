@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <Product>BrowserWarsWebApi</Product>
+    <Company>BuddaSoft</Company>
+    <Authors>$(Company)</Authors>
+    <Copyright>Copyright © $(Company) 2021</Copyright>
+    <BuildNumber>0</BuildNumber>
+    <Version Condition="'$(VersionPrefix)' != '1.0.0'">$(VersionPrefix).$(BuildNumber).0</Version>
+  </PropertyGroup>
+</Project>
