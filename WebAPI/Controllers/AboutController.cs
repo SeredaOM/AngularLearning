@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
@@ -12,9 +13,9 @@ namespace WebAPI.Controllers
     public class AboutController : ControllerBase
     {
         [HttpGet]
-        public ActionResult<Tuple<string,string>> GetVersion()
+        public ActionResult<Tuple<string, string>> GetVersion()
         {
-            string version = typeof(AboutController).Assembly.GetName().Version.ToString();
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             return Ok(Tuple.Create(version, Environment.Version));
         }
     }
