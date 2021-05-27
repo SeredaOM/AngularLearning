@@ -1,8 +1,6 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 def gitLastCommonAncestor = ''
-def branchFolder = ''
-def buildNumberString = ''
 def builtFrontend = false
 def builtWebApi = false
 
@@ -13,21 +11,25 @@ pipeline {
       steps {
         bat 'echo The current directory is %CD%'
         bat 'dir'
-		    script {
-          branchFolder = powershell (returnStdout:true, script: '''
-            $p = $MyInvocation.MyCommand.Path
-            $start = $p.LastIndexOf('_');
-            $end = $p.IndexOf('@',$start+1);
-            $folder = $p.substring($start+1, $end-$start-1)
-            echo $folder
-            ''')
-          branchFolder = branchFolder.substring(0,branchFolder.length()-2)
-          if( branchFolder != 'master' )
-          {
-            buildNumberString = branchFolder.replace('-','') + '+'
-          }
-          buildNumberString += currentBuild.number
-          echo 'buildNumberString: '+buildNumberString
+        script {
+          // //  example of MyInvocation.MyCommand.Path values:
+          // //  ...\AngularLearning_PR-14, ...\AngularLearning_PR-14@2, ...\AngularLearning_master@tmp, ...\AngularLearning_master
+          // branchFolder = powershell (returnStdout:true, script: '''
+          //   $p = $MyInvocation.MyCommand.Path
+          //   $start = $p.LastIndexOf('_');
+          //   $end = $p.IndexOf('@',$start+1);
+          //   $folder = $p.substring($start+1, $end-$start-1)
+          //   echo $folder
+          //   ''')
+          // branchFolder = branchFolder.substring(0,branchFolder.length()-2)
+          // if( branchFolder == 'master' )
+          // {
+          //   buildNumberString = currentBuild.number
+          // }else{
+          //   buildNumberString = '9999';
+          // }
+          
+          // echo 'buildNumberString: '+buildNumberString
 
           String remotes = powershell script:'git remote', returnStdout:true
           echo 'Remotes: '+remotes				
@@ -55,36 +57,46 @@ pipeline {
       parallel {
         stage('Build Frontend') {
           steps {
-			script {
+            script {
 
-				String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
-				echo result
-				if (result) {
-					dir("./Frontend") {
-						bat 'echo The current directory is %CD%'
+              String result = powershell script:('git diff '+gitLatestCommonAncestor+' HEAD Frontend/'), returnStdout:true
+              echo result
+              if (result) {
+                dir("./Frontend") {
+                  bat 'echo The current directory is %CD%'
 
-            def packageFilePath = './package.json'
-            def props = readJSON file: packageFilePath, returnPojo: true
-            def version = new String(props['version'].value)
-            def versionCut = version.substring(0, version.lastIndexOf('.')+1)
-            props['version'] = versionCut + buildNumberString
-            echo "updated props: " + props
-            writeJSON file: packageFilePath, json: props
+                  // if( branchFolder == 'master' ) {
+                  //   def packageFilePath = './package.json'
+                  //   def props = readJSON file: packageFilePath, returnPojo: true
+                  //   def version = new String(props['version'].value)
+                  //   def versionCut = version.substring(0, version.lastIndexOf('.')+1)
+                  //   props['version'] = versionCut + buildNumberString
+                  //   echo "updated props: " + props
+                  //   writeJSON file: packageFilePath, json: props
 
-            def props2 = readJSON(file: packageFilePath)
-            echo "json from data 2: " + props2
-            
-						powershell script: 'npm ci'
-						powershell script: 'npx ng build --prod'
-						powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
-            builtFrontend = true
-					}
-				} else {
-					echo 'FrontEnd result is false'
-					Utils.markStageSkippedForConditional(env.STAGE_NAME)
-					echo 'echo FrontEnd after markStageSkippedForConditional'					
-				}
-			}
+                  //   def props2 = readJSON(file: packageFilePath)
+                  //   echo "json from data 2: " + props2
+                  // }
+                  if (env.CHANGE_ID == null) {
+                    powershell \
+                      label: 'Updating version patch with the build number',
+                      script: """
+                        [string] \$version = \$(node -p "require('./package.json').version") -replace '\\d+\$', '${currentBuild.number}'
+                        npm --no-git-tag-version version \$version
+                      """
+                  }
+
+                  powershell script: 'npm ci'
+                  powershell script: 'npx ng build --prod'
+                  powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
+                  builtFrontend = true
+                }
+              } else {
+                echo 'FrontEnd result is false'
+                Utils.markStageSkippedForConditional(env.STAGE_NAME)
+                echo 'echo FrontEnd after markStageSkippedForConditional'					
+              }
+            }
           }		  
         }
         stage('Build WebAPI') {
@@ -95,18 +107,19 @@ pipeline {
               if (result) {
                 dir("./WebAPI") {
                   echo 'WebAPI result is true'
-                  bat 'echo compile .NET project'
 
-                  String suffix = ''
-                  if( branchFolder == 'master' ) {
-                    echo 'Replacing version'
-                    powershell script:('''(Get-Content ./Properties/AssemblyInfo.cs) -replace '(Assembly[File]*Version\\("[\\d+]+.[\\d+]+).([\\d+]+).0', '$1.''' + buildNumberString + '''.0' | Set-Content ./Properties/AssemblyInfo.cs''')
-                    echo 'Replaced 3rd number in the version'
-                  } else {
-                    suffix = ' --version-suffix ' + buildNumberString
-                  }
+                  // if( branchFolder == 'master' ) {
+                  //   echo 'Replacing version'
+                  //   powershell script:('''(Get-Content ./Properties/AssemblyInfo.cs) -replace '(Assembly[File]*Version\\("[\\d+]+.[\\d+]+).([\\d+]+).0', '$1.''' + buildNumberString + '''.0' | Set-Content ./Properties/AssemblyInfo.cs''')
+                  //   echo 'Replaced 3rd number in the version'
+                  //   powershell script:('Get-Content ./Properties/AssemblyInfo.cs')
+                  // }
                   
-                  powershell script:('dotnet build WebAPI.sln --configuration Release' + suffix)
+                  // echo 'Building WebApi...'
+                  // powershell script:('dotnet build --configuration Release')
+                  powershell \
+                    label: 'Compile .NET project',
+                    script: "dotnet build WebAPI.sln --configuration Release -property:BuildNumber=${env.CHANGE_ID == null ? currentBuild.number : 0}"
 
                   builtWebApi = true;
                 }
@@ -124,7 +137,7 @@ pipeline {
     stage('Deploy')	{
       steps {
         script {
-          if( branchFolder == 'master' ) {
+          if( env.CHANGE_ID == null ) {
             if(builtFrontend) {
               echo 'Deploying Frontend'
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
@@ -132,18 +145,15 @@ pipeline {
               powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
               echo 'Completed Frontend deployment'
             }
-          }
-          //if( branchFolder == 'master' ) {
             if(builtWebApi) {
               echo 'Deploying WebApi'
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
               powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
               echo 'Completed WebApi deployment'
             }
-          //}
+          }
         }
       }
     }
-  }
-  
+  }  
 }

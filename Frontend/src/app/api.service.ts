@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import {  throwError } from 'rxjs';
@@ -13,6 +13,10 @@ export class ApiService {
   private SERVER_URL = "http://localhost:3000/products";
 
   constructor(private httpClient: HttpClient) { }
+
+  private static getHost() {
+    return isDevMode() ? 'https://localhost:44362' : 'http://localhost:83';
+  }
 
   handleError(error: HttpErrorResponse) {
     let errorMessage = 'Unknown error!';
@@ -29,5 +33,9 @@ export class ApiService {
 
   public sendGetRequest(){
     return this.httpClient.get(this.SERVER_URL).pipe(catchError(this.handleError));
+  }
+
+  public getVersion() {
+    return this.httpClient.get(ApiService.getHost() + '/about');
   }
 }
