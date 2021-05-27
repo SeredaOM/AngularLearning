@@ -3,16 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>aaea2b00-a948-4540-837e-27fea9948e14</UserSecretsId>
-    <VersionPrefix>2.0</VersionPrefix>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <Product>BrowserWarsWebApi</Product>
-    <Company>BuddaSoft</Company>
-    <Authors>$(Company)</Authors>
-    <Copyright>Copyright © $(Company) 2021</Copyright>
-    <BuildNumber>0</BuildNumber>
-    <Version>1.0.0.0</Version>
+    <VersionPrefix>1.0</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
