@@ -11,7 +11,7 @@ pipeline {
       steps {
         bat 'echo The current directory is %CD%'
         bat 'dir'
-		    script {
+        script {
           // //  example of MyInvocation.MyCommand.Path values:
           // //  ...\AngularLearning_PR-14, ...\AngularLearning_PR-14@2, ...\AngularLearning_master@tmp, ...\AngularLearning_master
           // branchFolder = powershell (returnStdout:true, script: '''
@@ -77,14 +77,14 @@ pipeline {
                   //   def props2 = readJSON(file: packageFilePath)
                   //   echo "json from data 2: " + props2
                   // }
-                  //if (env.CHANGE_ID == null) {
+                  if (env.CHANGE_ID == null) {
                     powershell \
                       label: 'Updating version patch with the build number',
                       script: """
                         [string] \$version = \$(node -p "require('./package.json').version") -replace '\\d+\$', '${currentBuild.number}'
                         npm --no-git-tag-version version \$version
                       """
-                  //}
+                  }
 
                   powershell script: 'npm ci'
                   powershell script: 'npx ng build --prod'
@@ -137,7 +137,7 @@ pipeline {
     stage('Deploy')	{
       steps {
         script {
-          //if( env.CHANGE_ID == null ) {
+          if( env.CHANGE_ID == null ) {
             if(builtFrontend) {
               echo 'Deploying Frontend'
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
@@ -145,17 +145,13 @@ pipeline {
               powershell script: 'Copy-Item -Path .\\FrontEnd\\web.config -Destination C:\\Project\\Hosted\\hexes\\ -Force'
               echo 'Completed Frontend deployment'
             }
-          //}
-          //if( env.CHANGE_ID == null ) {
             if(builtWebApi) {
               echo 'Deploying WebApi'
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
-              // need to stop site with 'api5'
               powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
-              // need to start site with 'api5'
               echo 'Completed WebApi deployment'
             }
-          //}
+          }
         }
       }
     }
