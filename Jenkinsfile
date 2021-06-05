@@ -119,7 +119,7 @@ pipeline {
                   // powershell script:('dotnet build --configuration Release')
                   powershell \
                     label: 'Compile .NET project',
-                    script: "dotnet build WebAPI.sln --configuration Release -property:BuildNumber=${env.CHANGE_ID == null ? currentBuild.number : 0}"
+                    script: "dotnet build WebAPI.sln --configuration Release -property:BuildNumber=${env.CHANGE_ID == null ? currentBuild.number : 1}"
 
                   builtWebApi = true;
                 }
@@ -137,7 +137,7 @@ pipeline {
     stage('Deploy')	{
       steps {
         script {
-          if( env.CHANGE_ID == null ) {
+          if( env.CHANGE_ID != null ) {
             if(builtFrontend) {
               echo 'Deploying Frontend'
               powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\hexes\\ -Include * -File -Recurse | foreach { $_.Delete()}'
@@ -146,10 +146,18 @@ pipeline {
               echo 'Completed Frontend deployment'
             }
             if(builtWebApi) {
-              echo 'Deploying WebApi'
-              powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
-              powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
-              echo 'Completed WebApi deployment'
+              dir("./WebAPI") {
+                powershell \
+                        label: 'Publishing WebApi',
+                        script: """
+                          $pathToHost = 'C:\\Project\\Hosted\\WebApiBuild\\'
+                          dotnet publish --output ${pathToHost} --configuration Release
+                          # Get-ChildItem -Path $pathToHost -Include * -File -Recurse | foreach { $_.Delete()}'
+                          # powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination $pathToHost -recurse -Force
+                          # Remove-Item -Path $pathToApp\\app_offline.htm
+                        """
+                echo 'Completed WebApi publishing'
+              }
             }
           }
         }
