@@ -119,7 +119,7 @@ pipeline {
                   // powershell script:('dotnet build --configuration Release')
                   powershell \
                     label: 'Compile .NET project',
-                    script: "dotnet build WebAPI.sln --configuration Release -property:BuildNumber=${env.CHANGE_ID == null ? currentBuild.number : 0}"
+                    script: "dotnet build WebAPI.sln --configuration Release -property:BuildNumber=${currentBuild.number}"
 
                   builtWebApi = true;
                 }
@@ -146,10 +146,44 @@ pipeline {
               echo 'Completed Frontend deployment'
             }
             if(builtWebApi) {
-              echo 'Deploying WebApi'
-              powershell script: 'Get-ChildItem -Path C:\\Project\\Hosted\\WebApiBuild\\ -Include * -File -Recurse | foreach { $_.Delete()}'
-              powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination C:\\Project\\Hosted\\WebApiBuild\\ -recurse -Force'
-              echo 'Completed WebApi deployment'
+              dir("./WebAPI") {
+                echo 'Publishing WebApi'
+                powershell \
+                        label: 'Publishing WebApi',
+                        script: '''
+                          $path = "C:\\Project\\Hosted\\WebApiBuild\\"
+                          $fp = "App_Offline.htm"
+                          Get-ChildItem -Path $path -Include * -File -Recurse | foreach { $_.Delete()}
+                          if( !( Test-Path $path$fp ) ) {
+                            New-Item -Path $path -Name $fp -ItemType "file" -Value "Shutting down..."
+                            echo "Created App_Offline.htm"
+                          }
+                          $failures = 0;
+                          [bool] $finish = $false
+                          Do {
+                            dotnet publish --output $path --configuration Release --no-build
+                            if( $? ) {
+                              echo "Published successfully"                              
+                              Remove-Item -Path $path$fp                              
+                              echo "Removed App_Offline.htm"
+                              $finish = $true
+                            } else {
+                              echo "Error publishing"
+                              if( $failures -le 5 ) {
+                                $failures++
+                                $sl = 10*$failures
+                                echo "Sleeping for ${sl} seconds..."
+                                Start-Sleep -s $sl
+                                echo "Publish again, failures: ${failures}"
+                              } else {
+                                echo "Feiled to publish after ${failures} attempts"
+                                $finish = $true
+                              }
+                            }
+                          } Until ( $finish )
+                        '''
+                echo 'Completed WebApi publishing'
+              }
             }
           }
         }
