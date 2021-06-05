@@ -14,7 +14,7 @@ export class ApiService {
 
   constructor(private httpClient: HttpClient) { }
 
-  private static getHost() {
+  public static getHost() {
     return isDevMode() ? 'https://localhost:44362' : 'http://localhost:83';
   }
 
