@@ -150,8 +150,8 @@ pipeline {
                 powershell \
                         label: 'Publishing WebApi',
                         script: """
-                          $pathToHost = 'C:\\Project\\Hosted\\WebApiBuild\\'
-                          dotnet publish --output ${pathToHost} --configuration Release
+                          # $pathToHost = 'C:\\Project\\Hosted\\WebApiBuild\\'
+                          dotnet publish --output 'C:\\Project\\Hosted\\WebApiBuild\\' --configuration Release
                           # Get-ChildItem -Path $pathToHost -Include * -File -Recurse | foreach { $_.Delete()}'
                           # powershell script: 'Copy-Item -Path .\\WebAPI\\bin\\Release\\net5.0\\* -Destination $pathToHost -recurse -Force
                           # Remove-Item -Path $pathToApp\\app_offline.htm
