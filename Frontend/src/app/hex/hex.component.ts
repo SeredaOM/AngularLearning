@@ -5,6 +5,7 @@ import {
   ViewChild,
   isDevMode,
 } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { HexesService } from './hexes.service';
 
@@ -25,7 +26,8 @@ export class HexComponent implements OnInit {
 
   constructor(
     private cookieService: CookieService,
-    private hexesService: HexesService
+    private hexesService: HexesService,
+    private route: ActivatedRoute
   ) {}
 
   private ctx: CanvasRenderingContext2D;
@@ -38,6 +40,8 @@ export class HexComponent implements OnInit {
   private mapDragLastOffsetY = 0;
 
   private squares = new Array();
+
+  private mapId: number = 0;
 
   canvasAction = '';
   animationTime = 0;
@@ -105,14 +109,23 @@ export class HexComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.UpdateGreeting('Hello World!!!');
+    this.UpdateGreeting(`Hello hex (mapId to be identified)!!!`);
+
     this.map = undefined;
-
-    this.hexesService
-      .getMap(3)
-      .subscribe((mapData: IMap) => this.handleNewMap(mapData));
-
     this.animate();
+
+    //this.mapId = this.route.snapshot.paramMap.get('mapId');
+    let _this = this;
+    this.route.queryParams.subscribe((params) => {
+      _this.mapId = Number(params['mapId']);
+      _this.UpdateGreeting(`Hello hex (mapId=${this.mapId})!!!`);
+
+      if (_this.mapId != 0) {
+        _this.hexesService
+          .getMap(_this.mapId)
+          .subscribe((mapData: IMap) => this.handleNewMap(mapData));
+      }
+    });
   }
 
   /* #region CanvasEvents */
@@ -205,7 +218,7 @@ export class HexComponent implements OnInit {
       console.log(`PostTitle id=${id}`);
     });
   }
-  
+
   protected animate(): void {
     // console.log("render called");
     var t0 = performance.now();

@@ -27,6 +27,7 @@ import { MapsComponent } from './maps/maps.component';
     PingballComponent,
     HexComponent,
     ArenaComponent,
+    MapsComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
