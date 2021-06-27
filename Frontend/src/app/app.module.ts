@@ -13,9 +13,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule} from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { HexComponent } from './hex/hex.component';
 import { ArenaComponent } from './arena/arena.component';
 
 @NgModule({
@@ -24,8 +23,7 @@ import { ArenaComponent } from './arena/arena.component';
     HomeComponent,
     AboutComponent,
     PingballComponent,
-    HexComponent,
-    ArenaComponent
+    ArenaComponent,
   ],
   imports: [
     BrowserModule,
