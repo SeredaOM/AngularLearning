@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Tree } from './Obstacles/Tree';
+import { RedTree } from './Obstacles/RedTree';
 import { Player } from './Player';
 import { Rock } from './Obstacles/Rock';
+import { BRock } from './Obstacles/BRock';
 import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import { RoundObstacle } from './Obstacles/RoundObstacle';
 
 @Component({
   selector: 'app-arena',
@@ -14,7 +17,10 @@ export class ArenaComponent implements OnInit {
   private ctx: CanvasRenderingContext2D;
 
   private trees: Array<Tree>;
+  private redtrees: Array<RedTree>;
   private rocks: Array<Rock>;
+  private bRocks: Array<BRock>;
+
   private player: Player;
 
   private map = {};
@@ -22,13 +28,15 @@ export class ArenaComponent implements OnInit {
   private centerY: number = 0;
 
 
-  private fieldHeight = 4000; //canvas.height;
-  private fieldWidth = 4000; // canvas.width;
+  private fieldHeight = 10000; //canvas.height;
+  private fieldWidth = 10000; // canvas.width;
   private gridSize = 80;
 
 
-  private numTree1s = 200;
-  private numRocks = 50;
+  private numTree1s = 500;
+  private numRedTrees = 500;
+  private numRocks = 200;
+  private numBRocks = 50;
 
   constructor() { }
 
@@ -37,6 +45,8 @@ export class ArenaComponent implements OnInit {
 
     let newCenterX: number = this.centerX;
     let newCenterY: number = this.centerY;
+
+
 
     if (this.map['KeyA']) {
       newCenterX = this.centerX + 8; //right arrow add 20 from current
@@ -68,15 +78,17 @@ export class ArenaComponent implements OnInit {
 
     //console.log(`newCenterX = ${newCenterX},newCenterY = ${newCenterY} `);
 
-    let moveIsAllowed = true;
+    let blockingObstacle: RoundObstacle = null;
 
-    moveIsAllowed = this.player.isMoveAllowed(newCenterX, newCenterY, this.trees);
-    if (moveIsAllowed) {
-      moveIsAllowed = this.player.isMoveAllowed(newCenterX, newCenterY, this.rocks);
+    blockingObstacle = this.player.isMoveAllowed(newCenterX, newCenterY, this.trees);
+    if (blockingObstacle == null) {
+      blockingObstacle = this.player.isMoveAllowed(newCenterX, newCenterY, this.rocks);
     }
-    if (moveIsAllowed) {
+    if (blockingObstacle == null) {
       this.centerX = newCenterX;
       this.centerY = newCenterY;
+    } else {
+      //this.trees.splice(blockingObstacle, 1)
     }
   }
 
@@ -127,7 +139,7 @@ export class ArenaComponent implements OnInit {
 
     // When window is unfocused we may not get key events. To prevent this
     // causing a key to 'get stuck down', cancel all held keys
-    //
+
     window.onblur = function () {
       _this.map = {};
 
@@ -138,6 +150,12 @@ export class ArenaComponent implements OnInit {
       timers = {};
     };
   }
+
+
+
+
+
+
 
   private drawAll() {
     this.ctx.fillStyle = "lime";
@@ -166,16 +184,27 @@ export class ArenaComponent implements OnInit {
 
     for (let i = 0; i < this.rocks.length; i++) {
       let rock = this.rocks[i];
-
-      // let y = -rock.y + i;
-      // if (y >= 0 && y <= this.canvas.height && x >= 0 && x <= this.canvas.height) {
       rock.drawRock(this.centerX, this.centerY);
     }
-    for (let i = 0; i < this.trees.length; i++) {
-      this.trees[i].drawTree(this.centerX, this.centerY);
+
+    for (let i = 0; i < this.bRocks.length; i++) {
+      let rock = this.bRocks[i];
+      rock.drawBRock(this.centerX, this.centerY);
     }
 
     this.player.drawPlayer();
+
+    for (let i = 0; i < this.trees.length; i++) {
+      let tree = this.trees[i];
+      tree.drawTree(this.centerX, this.centerY);
+    }
+
+    for (let i = 0; i < this.redtrees.length; i++) {
+      let tree = this.redtrees[i];
+      tree.drawTree(this.centerX, this.centerY);
+    }
+
+
 
   }
 
@@ -197,7 +226,9 @@ export class ArenaComponent implements OnInit {
     this.ctx.lineWidth = 1;
 
     this.trees = Tree.generateTrees(this.ctx, this.numTree1s, this.fieldWidth, this.fieldHeight);
+    this.redtrees = RedTree.generateTrees(this.ctx, this.numRedTrees, this.fieldWidth, this.fieldHeight);
     this.rocks = Rock.generateRocks(this.ctx, this.numRocks, this.fieldWidth, this.fieldHeight);
+    this.bRocks = BRock.generateBRocks(this.ctx, this.numBRocks, this.fieldWidth, this.fieldHeight);
     this.player = new Player(this.ctx, 950, 480);
 
     setInterval(() => this.drawAll(), 50);

@@ -1,32 +1,32 @@
 import { RoundObstacle } from './RoundObstacle';
 
-export class Rock extends RoundObstacle {
-    private static get radius() { return 35; }
+export class BRock extends RoundObstacle {
+    private static get radius() { return 135; }
 
     constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number, public name: string) {
-        super(x, y, Rock.radius);
+        super(x, y, BRock.radius);
     }
     // constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) { }
 
-    public static generateRocks(ctx: CanvasRenderingContext2D, numberOfRocks: number, fieldWidth: number, fieldHeight: number): Array<Rock> {
+    public static generateBRocks(ctx: CanvasRenderingContext2D, numberOfBRocks: number, fieldWidth: number, fieldHeight: number): Array<BRock> {
 
-        var rocks: Array<Rock> = [];
+        var bRocks: Array<BRock> = [];
 
-        for (let i = 0; i < numberOfRocks; i++) {
+        for (let i = 0; i < numberOfBRocks; i++) {
             let x = Math.floor((Math.random() * (fieldWidth - 200)) + 100);
             let y = Math.floor((Math.random() * (fieldHeight - 200)) + 100);
 
-            rocks.push(new Rock(ctx, x, y, i.toString()));
+            bRocks.push(new BRock(ctx, x, y, i.toString()));
         }
 
 
-        return rocks;
+        return bRocks;
     }
 
 
-    public drawRock(centerX, centerY) {
+    public drawBRock(centerX, centerY) {
         this.ctx.beginPath();
-        this.ctx.arc(centerX + this.x, centerY + this.y, Rock.radius, 0, 2 * Math.PI, false);
+        this.ctx.arc(centerX + this.x, centerY + this.y, BRock.radius, 0, 2 * Math.PI, false);
         this.ctx.lineWidth = 7;
         this.ctx.fillStyle = '#c2c1be';
         this.ctx.strokeStyle = '#a6a5a2';

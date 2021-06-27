@@ -24,17 +24,17 @@ export class Player {
         return d <= Player.radius + obstacle.radius;
     }
 
-    public isMoveAllowed(newCenterX: number, newCenterY: number, obstacles: RoundObstacle[]): boolean {
-        let moveIsAllowed = true;
+    public isMoveAllowed(newCenterX: number, newCenterY: number, obstacles: RoundObstacle[]): RoundObstacle {
+        let nearestObstacle = null;
 
         for (let i = 0; i < obstacles.length; i++) {
             let obstacle = obstacles[i];
 
             if (this.isMoveBlockedByObstacle(newCenterX, newCenterY, obstacle)) {
-                moveIsAllowed = false;
+                nearestObstacle = obstacle;
                 i = obstacles.length - 1;
             }
         }
-        return moveIsAllowed;
+        return nearestObstacle;
     }
 }
