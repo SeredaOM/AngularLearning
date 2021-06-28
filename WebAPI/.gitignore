@@ -28,7 +28,7 @@ bin/
 obj/
 Logs/
 TestResults/
-/.vs
+.vs/
 ###################
 # Web publish log #
 ###################

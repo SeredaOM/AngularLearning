@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using WebAPI.DAL;
 
 namespace WebAPI.Models
 {
@@ -9,6 +13,8 @@ namespace WebAPI.Models
         ITile[][] Tiles { get; }
         int[] XMins { get; }
         int[] XWidths { get; }
+
+        ITile GetTile(int x, int y);
     }
 
     public class Map : IMap
@@ -17,11 +23,11 @@ namespace WebAPI.Models
 
         #region Construction
 
-        public Map(string name, int radius, ITile[][] tiles, int[] xMins, int[] xWidths)
+        public Map(string name, ITile[][] tiles, int yMin, int[] xMins, int[] xWidths)
         {
             Name = name;
 
-            _radius = radius;
+            _yMin = yMin;
             _tiles = tiles;
             _xMins = xMins;
             _xWidths = xWidths;
@@ -70,7 +76,27 @@ namespace WebAPI.Models
                 xWidths[y + radius] = xWidth;
             }
 
-            return new Map("New round map", radius, tiles, xMins, xWidths);
+            return new Map("New round map", tiles, -radius, xMins, xWidths);
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public ITile GetTile(int x, int y)
+        {
+            var yIndex = y - _yMin;
+            if (yIndex < 0 || yIndex > XMins.Length)
+            {
+                throw new Exception(string.Format("Y coordinate ({0}) is out of bounds", yIndex));
+            }
+            var xIndex = x - _xMins[yIndex];
+            if (xIndex >= _xWidths[yIndex])
+            {
+                throw new Exception(string.Format("X coordinate ({0}) is out of bounds", xIndex));
+            }
+
+            return _tiles[yIndex][xIndex];
         }
 
         #endregion
@@ -95,6 +121,7 @@ namespace WebAPI.Models
 
         private int _radius;
         private readonly ITile[][] _tiles;
+        private readonly int _yMin;
         private readonly int[] _xMins;
         private readonly int[] _xWidths;
 
