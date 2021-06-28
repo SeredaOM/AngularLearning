@@ -33,6 +33,60 @@ namespace WebAPI.Models
             _xWidths = xWidths;
         }
 
+        internal static IMap FillMapFromData(string name, ICollection<DAL.MapTile> tilesData)
+        {
+            var rowNumbers = tilesData.GroupBy(tile => tile.Y).Select(g => g.Key).ToArray();
+            var xMins = new int[rowNumbers.Length];
+            var xWidths = new int[rowNumbers.Length];
+            ITile[][] tiles = new ITile[rowNumbers.Length][];
+
+            var minY = rowNumbers.Length == 0 ? 0 : rowNumbers.Min();
+            foreach (var y in rowNumbers)
+            {
+                var rowTiles = tilesData.Where(tile0 => tile0.Y == y).ToList();
+
+                var xMin = rowTiles.Min(tile => tile.X);
+                var xWidth = rowTiles.Max(tile => tile.X) - xMin + 1;
+                xMins[y - minY] = xMin;
+                xWidths[y - minY] = xWidth;
+
+                var tilesRow = new ITile[xWidth];
+                tiles[y - minY] = tilesRow;
+
+                foreach (var tileData in rowTiles)
+                {
+                    ITile tile = new Tile(tileData.X, tileData.Y, (TerrainType)tileData.MapTerrainTypeId, null);
+                    tilesRow[tileData.X - xMin] = tile;
+                }
+            }
+
+            var map = new Map(name, tiles, minY, xMins, xWidths);
+
+            return map;
+        }
+
+        public static IMap GetMap(int mapId)
+        {
+            IMap map;
+
+            string myConnectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
+            using (BrowserWarContext context = new BrowserWarContext())
+            {
+                var mapData = context.Maps.Where(map0 => map0.Id == mapId).FirstOrDefault();
+
+                if (mapData == null)
+                {
+                    map = null;
+                }
+                else
+                {
+                    map = FillMapFromData(mapData.Name, mapData.MapTiles);
+                }
+            }
+
+            return map;
+        }
+
         public static Map CreateRoundMap(int radius)
         {
             int diameter = 1 + 2 * radius;
