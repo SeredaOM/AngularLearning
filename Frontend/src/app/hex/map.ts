@@ -14,18 +14,17 @@ export class Map {
   constructor(
     private ctx: CanvasRenderingContext2D,
     public name: string,
-    radius: number,
     tileRadius: number,
-    private tiles: Array<Array<Tile>>,
+    private yMin: number,
     private xMins: Array<number>,
-    private xWidths: Array<number>
+    private xWidths: Array<number>,
+    private tiles: Array<Array<Tile>>
   ) {
-    this.radius = radius;
-
     this.tileR = tileRadius;
     this.tileW = Map.getTileWidth(this.tileR);
 
     this.tiles = tiles;
+    this.yMin = yMin;
     this.xMins = xMins;
     this.xWidths = xWidths;
   }
@@ -57,7 +56,7 @@ export class Map {
         colorStroke = '#008000';
         break;
 
-      case 'forest':
+      case 'hill':
         colorFill = '#00C000';
         colorStroke = '#000000';
         break;
@@ -132,28 +131,30 @@ export class Map {
   }
 
   private getTile(x: number, y: number): Tile {
-    if (y < -this.radius) {
+    if (y < this.yMin) {
       // console.warning('y (' + y + ') < -radius (' + -this._radius + ')');
       return undefined;
     }
-    if (y > this.radius) {
+    if (y > this.yMin + this.tiles.length) {
       // console.warning('y (' + y + ') > radius (' + this._radius + ')');
       return undefined;
     }
 
-    const xMin = this.xMins[y + this.radius];
+    var yIndex = y - this.yMin;
+    const xMin = this.xMins[yIndex];
     // console.log('y=' + y + ', xMin=' + xMin);
     if (x < xMin) {
       // console.warn('x (' + x + ') < xMin (' + xMin + ') for y=' + y);
       return undefined;
     }
-    const xWidth = this.xWidths[y + this.radius];
+    const row = this.tiles[yIndex];
+    const xWidth = row.length;
     if (x > xMin + xWidth) {
       // console.warn('x (' + x + ') > xWidth (' + xWidth + ') for y=' + y);
       return undefined;
     }
-    const raw = this.tiles[y + this.radius];
-    const tile = raw[x - xMin];
+    const xIndex = x - xMin;
+    const tile = row[xIndex];
 
     return tile;
   }
@@ -171,10 +172,6 @@ export class Map {
 
   static getTileWidth(tileR: number): number {
     return tileR * 0.866 * 2;
-  }
-
-  getMapRadius(): number {
-    return this.radius;
   }
 
   setTileRadius(tileRadius: number) {
@@ -322,13 +319,15 @@ export class Map {
   }
 
   drawMap(offsetX: number, offsetY: number): void {
-    const mapRadius = 2 * this.radius;
-
-    for (let y = -mapRadius; y <= mapRadius; y++) {
-      for (let x = -mapRadius; x <= mapRadius; x++) {
+    const yMin = this.yMin;
+    const yMax = this.tiles.length + this.yMin;
+    for (let y = yMin; y < yMax; y++) {
+      const yIndex = y - yMin;
+      const xMin = this.xMins[yIndex];
+      const xMax = this.xWidths[yIndex] + xMin;
+      for (let x = xMin; x < xMax; x++) {
         const tile = this.getTile(x, y);
-        //console.log(`x=${x}, y=${y}: tile is ` + (tile !== undefined ? tile.terrain : 'undefined'));
-        if (tile !== undefined) {
+        if (tile != null) {
           this.drawTile(tile, offsetX, offsetY);
         }
       }
@@ -338,7 +337,6 @@ export class Map {
   /* #endregion */
 
   public id: number;
-  public radius: number;
 
   private lastHovered: Tile;
 }

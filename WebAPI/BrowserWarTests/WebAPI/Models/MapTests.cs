@@ -31,7 +31,6 @@ namespace BrowserWarTests
 
             Assert.AreEqual(3, map.XMins.Length);
             Assert.AreEqual(-2, map.XMins[0]);
-
             Assert.AreEqual(3, map.XWidths[1]);
 
             var tileTest = map.GetTile(-2, -1);
@@ -59,11 +58,39 @@ namespace BrowserWarTests
         }
 
         [Test]
+        public void FillMapFromData_EnsureTileWithPositiveYCoordinateHasCorrectYMin()
+        {
+            var tilesData = new[]
+            {
+                new WebAPI.DAL.MapTile{ X = 1, Y = 1, MapTerrainTypeId = (byte)TerrainType.Plain },
+                new WebAPI.DAL.MapTile{ X = 1, Y = 2, MapTerrainTypeId = (byte)TerrainType.Plain },
+            };
+
+            var map = Map.FillMapFromData("Map1", tilesData);
+
+            Assert.AreEqual(1, map.YMin);
+            Assert.AreEqual(2, map.XMins.Length);
+            Assert.AreEqual(1, map.XMins[0]);
+            Assert.AreEqual(1, map.XWidths[0]);
+
+            ITile tileTest;
+
+            tileTest = map.GetTile(1, 1);
+            Assert.AreEqual(1, tileTest.X);
+            Assert.AreEqual(1, tileTest.Y);
+
+            tileTest = map.GetTile(1, 2);
+            Assert.AreEqual(1, tileTest.X);
+            Assert.AreEqual(2, tileTest.Y);
+        }
+
+        [Test]
         public void FillMapFromData_ShouldNotCrashForEmptyMap()
         {
             WebAPI.DAL.MapTile[] tilesData = System.Array.Empty<WebAPI.DAL.MapTile>();
 
             var map = Map.FillMapFromData("Map1", tilesData);
+            Assert.AreEqual(0, map.YMin);
             Assert.AreEqual(0, map.XMins.Length);
             Assert.AreEqual(0, map.XWidths.Length);
         }

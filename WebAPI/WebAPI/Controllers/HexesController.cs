@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
 
-            IMap map = Map.CreateRoundMap(mapId);   //  temporarily use id as radius
+            IMap map = Map.GetMap(mapId);
             return Ok(map);
         }
 

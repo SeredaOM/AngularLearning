@@ -5,14 +5,14 @@ namespace WebAPI.Models
 {
     public enum TerrainType
     {
-        Invalid,
-        Water,
-        Desert,
-        Swamp,
-        Plain,
-        Hill,
-        Mountain,
-        Snow,
+        Invalid = 0,
+        Water = 1,
+        Desert = 2,
+        Swamp = 3,
+        Plain = 4,
+        Hill = 5,
+        Mountain = 6,
+        Snow = 7,
     }
 
     public enum ResourceType

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace WebAPI.Models
     public interface IMap
     {
         string Name { get; }
-        int Radius { get; }
-        ITile[][] Tiles { get; }
+        int YMin { get; }
         int[] XMins { get; }
         int[] XWidths { get; }
+        ITile[][] Tiles { get; }
 
         ITile GetTile(int x, int y);
     }
@@ -72,7 +73,10 @@ namespace WebAPI.Models
             string myConnectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
             using (BrowserWarContext context = new BrowserWarContext())
             {
-                var mapData = context.Maps.Where(map0 => map0.Id == mapId).FirstOrDefault();
+                var mapData = context.Maps
+                    .Include(m => m.MapTiles)
+                    .Where(map0 => map0.Id == mapId)
+                    .FirstOrDefault();
 
                 if (mapData == null)
                 {
@@ -161,23 +165,22 @@ namespace WebAPI.Models
 
         public string Name { get; set; }
 
-        public int Radius { get { return _radius; } }
-
-        public ITile[][] Tiles { get { return _tiles; } }
+        public int YMin { get { return _yMin; } }
 
         public int[] XMins { get { return _xMins; } }
 
         public int[] XWidths { get { return _xWidths; } }
 
+        public ITile[][] Tiles { get { return _tiles; } }
+
         #endregion
 
         #region Private members
 
-        private int _radius;
-        private readonly ITile[][] _tiles;
         private readonly int _yMin;
         private readonly int[] _xMins;
         private readonly int[] _xWidths;
+        private readonly ITile[][] _tiles;
 
         #endregion
     }

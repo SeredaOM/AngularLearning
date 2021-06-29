@@ -80,16 +80,20 @@ export class HexComponent implements OnInit {
       mapData.tiles.forEach((rowTilesData) => {
         let rowTiles = new Array<Tile>();
         rowTilesData.forEach((tileData) => {
-          const tile = new Tile(
-            tileData.x,
-            tileData.y,
-            tileData.terrain.toLocaleLowerCase(),
-            tileData.resource == undefined || tileData.resource == 'null'
-              ? undefined
-              : tileData.resource.toLocaleLowerCase()
-          );
+          var tile;
+          if (tileData == null) {
+            tile = null;
+          } else {
+            tile = new Tile(
+              tileData.x,
+              tileData.y,
+              tileData.terrain.toLocaleLowerCase(),
+              tileData.resource == undefined || tileData.resource == 'null'
+                ? undefined
+                : tileData.resource.toLocaleLowerCase()
+            );
+          }
           rowTiles.push(tile);
-          tile.getTerrain();
         });
         tiles.push(rowTiles);
       });
@@ -97,11 +101,11 @@ export class HexComponent implements OnInit {
       this.map = new Map(
         this.ctx,
         mapData.name,
-        mapData.radius,
         tileRadius,
-        tiles,
+        mapData.yMin,
         mapData.xMins,
-        mapData.xWidths
+        mapData.xWidths,
+        tiles
       );
 
       this.UpdateGreeting(`Map: ${this.map.name}`);
@@ -205,10 +209,9 @@ export class HexComponent implements OnInit {
     this.squares.push(new Hex(this.ctx));
   }
 
-  increaseMapSize(): void {
-    let newMapSize = this.map.getMapRadius() + 1;
+  loadTestMap(): void {
     this.hexesService
-      .getMap(newMapSize)
+      .getMap(1)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
   }
 
