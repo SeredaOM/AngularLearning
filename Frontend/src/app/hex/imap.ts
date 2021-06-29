@@ -3,8 +3,8 @@ import { ITile } from './itile';
 export class IMap {
     id: number;
     name: string;
-    radius: number;
-    tiles: Array<Array<ITile>>;
+    yMin: number;
     xMins: Array<number>;
     xWidths: Array<number>;
+    tiles: Array<Array<ITile>>;
 }

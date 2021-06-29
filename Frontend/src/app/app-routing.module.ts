@@ -4,6 +4,7 @@ import { HexComponent } from './hex/hex.component';
 import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { ArenaComponent } from './arena/arena.component';
+import { MapsComponent } from './maps/maps.component';
 import { PingballComponent } from './pingball/pingball.component';
 
 const routes: Routes = [
@@ -13,12 +14,15 @@ const routes: Routes = [
   { path: 'pingball', component: PingballComponent },
   { path: 'hex', component: HexComponent },
   { path: 'arena', component: ArenaComponent },
+  { path: 'maps', component: MapsComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled'
-})],
+  imports: [
+    RouterModule.forRoot(routes, {
+      initialNavigation: 'enabled',
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

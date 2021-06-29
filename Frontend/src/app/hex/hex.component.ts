@@ -5,6 +5,7 @@ import {
   ViewChild,
   isDevMode,
 } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { HexesService } from './hexes.service';
 
@@ -25,7 +26,8 @@ export class HexComponent implements OnInit {
 
   constructor(
     private cookieService: CookieService,
-    private hexesService: HexesService
+    private hexesService: HexesService,
+    private route: ActivatedRoute
   ) {}
 
   private ctx: CanvasRenderingContext2D;
@@ -38,6 +40,8 @@ export class HexComponent implements OnInit {
   private mapDragLastOffsetY = 0;
 
   private squares = new Array();
+
+  private mapId: number = 0;
 
   canvasAction = '';
   animationTime = 0;
@@ -76,16 +80,20 @@ export class HexComponent implements OnInit {
       mapData.tiles.forEach((rowTilesData) => {
         let rowTiles = new Array<Tile>();
         rowTilesData.forEach((tileData) => {
-          const tile = new Tile(
-            tileData.x,
-            tileData.y,
-            tileData.terrain.toLocaleLowerCase(),
-            tileData.resource == undefined || tileData.resource == 'null'
-              ? undefined
-              : tileData.resource.toLocaleLowerCase()
-          );
+          var tile;
+          if (tileData == null) {
+            tile = null;
+          } else {
+            tile = new Tile(
+              tileData.x,
+              tileData.y,
+              tileData.terrain.toLocaleLowerCase(),
+              tileData.resource == undefined || tileData.resource == 'null'
+                ? undefined
+                : tileData.resource.toLocaleLowerCase()
+            );
+          }
           rowTiles.push(tile);
-          tile.getTerrain();
         });
         tiles.push(rowTiles);
       });
@@ -93,11 +101,11 @@ export class HexComponent implements OnInit {
       this.map = new Map(
         this.ctx,
         mapData.name,
-        mapData.radius,
         tileRadius,
-        tiles,
+        mapData.yMin,
         mapData.xMins,
-        mapData.xWidths
+        mapData.xWidths,
+        tiles
       );
 
       this.UpdateGreeting(`Map: ${this.map.name}`);
@@ -105,14 +113,23 @@ export class HexComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.UpdateGreeting('Hello World!!!');
+    this.UpdateGreeting(`Hello hex (mapId to be identified)!!!`);
+
     this.map = undefined;
-
-    this.hexesService
-      .getMap(3)
-      .subscribe((mapData: IMap) => this.handleNewMap(mapData));
-
     this.animate();
+
+    //this.mapId = this.route.snapshot.paramMap.get('mapId');
+    let _this = this;
+    this.route.queryParams.subscribe((params) => {
+      _this.mapId = Number(params['mapId']);
+      _this.UpdateGreeting(`Hello hex (mapId=${this.mapId})!!!`);
+
+      if (_this.mapId != 0) {
+        _this.hexesService
+          .getMap(_this.mapId)
+          .subscribe((mapData: IMap) => this.handleNewMap(mapData));
+      }
+    });
   }
 
   /* #region CanvasEvents */
@@ -192,10 +209,9 @@ export class HexComponent implements OnInit {
     this.squares.push(new Hex(this.ctx));
   }
 
-  increaseMapSize(): void {
-    let newMapSize = this.map.getMapRadius() + 1;
+  loadTestMap(): void {
     this.hexesService
-      .getMap(newMapSize)
+      .getMap(1)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
   }
 
@@ -205,7 +221,7 @@ export class HexComponent implements OnInit {
       console.log(`PostTitle id=${id}`);
     });
   }
-  
+
   protected animate(): void {
     // console.log("render called");
     var t0 = performance.now();

@@ -2,7 +2,9 @@ using System;
 using System.Configuration;
 using System.Linq;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using WebAPI.DAL;
 
 namespace WebAPI
@@ -11,7 +13,7 @@ namespace WebAPI
     {
         public static void Main(string[] args)
         {
-            //ValidateConnectionToDB();
+            ValidateConnectionToDB();
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -26,11 +28,12 @@ namespace WebAPI
                 //  Creating a Database with Code First in EF Core
                 //  https://dev.mysql.com/doc/connector-net/en/connector-net-entityframework-core-example.html
                 context.Database.EnsureCreated();
+                context.EnsureBasicDataCreated();
 
-                var game = context.Games.Where(game => game.Id == 1).First();
+                var game = context.Games.Where(game => game.Id == 1).OrderByDescending(game => game.Id).First();
                 Console.WriteLine(game.Name);
 
-                var map = context.Maps.Where(map => map.Id == game.Id).First();
+                var map = context.Maps.Where(map => map.Id == map.Id).OrderByDescending(map => map.Id).First();
                 Console.WriteLine(map.Name);
             }
         }
