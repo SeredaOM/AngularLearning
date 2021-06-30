@@ -153,7 +153,7 @@ pipeline {
                         script: '''
                           $path = "C:\\Project\\Hosted\\WebApiBuild\\"
                           $fp = "App_Offline.htm"
-                          Get-ChildItem -Path $path -Include * -File -Recurse | foreach { $_.Delete()}
+                          Get-ChildItem -Exclude Logs | Get-ChildItem -Path $path -Include * -File -Recurse | foreach { $_.Delete()}
                           if( !( Test-Path $path$fp ) ) {
                             New-Item -Path $path -Name $fp -ItemType "file" -Value "Shutting down..."
                             echo "Created App_Offline.htm"
