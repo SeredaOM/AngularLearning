@@ -133,11 +133,11 @@ export class Map {
   private getTile(x: number, y: number): Tile {
     if (y < this.yMin) {
       // console.warning('y (' + y + ') < -radius (' + -this._radius + ')');
-      return undefined;
+      return null;
     }
-    if (y > this.yMin + this.tiles.length) {
+    if (y >= this.yMin + this.tiles.length) {
       // console.warning('y (' + y + ') > radius (' + this._radius + ')');
-      return undefined;
+      return null;
     }
 
     var yIndex = y - this.yMin;
@@ -145,13 +145,13 @@ export class Map {
     // console.log('y=' + y + ', xMin=' + xMin);
     if (x < xMin) {
       // console.warn('x (' + x + ') < xMin (' + xMin + ') for y=' + y);
-      return undefined;
+      return null;
     }
     const row = this.tiles[yIndex];
     const xWidth = row.length;
     if (x > xMin + xWidth) {
       // console.warn('x (' + x + ') > xWidth (' + xWidth + ') for y=' + y);
-      return undefined;
+      return null;
     }
     const xIndex = x - xMin;
     const tile = row[xIndex];
@@ -160,12 +160,12 @@ export class Map {
   }
 
   hoverTile(x: number, y: number) {
-    if (this.lastHovered !== undefined) {
+    if (this.lastHovered != null) {
       this.lastHovered.setHovered(false);
     }
 
     this.lastHovered = this.getTile(x, y);
-    if (this.lastHovered !== undefined) {
+    if (this.lastHovered != null) {
       this.lastHovered.setHovered(true);
     }
   }
