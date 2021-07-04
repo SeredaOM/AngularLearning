@@ -1,9 +1,9 @@
 /* groovylint-disable DuplicateStringLiteral, LineLength, NestedBlockDepth */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
-def gitLastCommonAncestor = ''
-def builtFrontend = false
-def builtWebApi = false
+gitLastCommonAncestor = ''
+builtFrontend = false
+builtWebApi = false
 
 pipeline {
   agent { label 'master' }
@@ -157,7 +157,7 @@ pipeline {
               powershell \
                       label: 'Publishing WebApi',
                       script: '''
-                        $path = "C:\\Project\\Hosted\\WebApiBuild\\"
+                        $path = "''' + webpapiDeploymentRootFolder + '''"
                         $fp = "App_Offline.htm"
                         Get-ChildItem -Exclude Logs | Get-ChildItem -Path $path -Include * -File -Recurse | foreach { $_.Delete()}
                         if( !( Test-Path $path$fp ) ) {
