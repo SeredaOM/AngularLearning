@@ -40,7 +40,7 @@ namespace WebAPI
                                   builder =>
                                   {
                                       builder
-                                          .WithOrigins("http://localhost:81", "http://localhost:4200", "http://angularssr.1gb.ru/")
+                                          .WithOrigins("http://localhost:81", "http://localhost:91", "http://localhost:4200", "http://angularssr.1gb.ru/")
                                           .AllowAnyHeader()
                                           .AllowAnyMethod()
                                           ;

@@ -1,21 +1,20 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import {  throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class ApiService {
+  private SERVER_URL = 'http://localhost:3000/products';
 
-  private SERVER_URL = "http://localhost:3000/products";
-
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
   public static getHost() {
-    return isDevMode() ? 'https://localhost:44362' : 'http://localhost:83';
+    return environment.host;
   }
 
   handleError(error: HttpErrorResponse) {
@@ -31,8 +30,10 @@ export class ApiService {
     return throwError(errorMessage);
   }
 
-  public sendGetRequest(){
-    return this.httpClient.get(this.SERVER_URL).pipe(catchError(this.handleError));
+  public sendGetRequest() {
+    return this.httpClient
+      .get(this.SERVER_URL)
+      .pipe(catchError(this.handleError));
   }
 
   public getVersion() {
