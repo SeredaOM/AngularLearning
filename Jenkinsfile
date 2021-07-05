@@ -1,9 +1,9 @@
-/* groovylint-disable DuplicateStringLiteral, LineLength, NestedBlockDepth */
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
-gitLastCommonAncestor = ''
-builtFrontend = false
-builtWebApi = false
+String gitLatestCommonAncestor
+boolean builtFrontend = false
+boolean builtWebApi = false
 
 pipeline {
   agent { label 'master' }
@@ -47,7 +47,7 @@ pipeline {
           echo 'MasterBranchLatestCommitHash: ' + gitMasterBranchLastCommitHash
 
           gitLatestCommonAncestor = powershell script:'git merge-base HEAD github/master', returnStdout:true
-          gitLatestCommonAncestor = gitLatestCommonAncestor.substring(0, gitLatestCommonAncestor.length() - 2)
+          gitLatestCommonAncestor = gitLatestCommonAncestor[0..<-2]
           echo 'LatestCommonAncestor: "' + gitLatestCommonAncestor + '".'
         }
       }
@@ -178,11 +178,11 @@ pipeline {
                             if( $failures -le 5 ) {
                               $failures++
                               $sl = 10*$failures
-                              echo "Sleeping for ${sl} seconds..."
+                              echo "Sleeping for $sl seconds..."
                               Start-Sleep -s $sl
-                              echo "Publish again, failures: ${failures}"
+                              echo "Publish again, failures: $failures"
                             } else {
-                              echo "Feiled to publish after ${failures} attempts"
+                              echo "Feiled to publish after $failures attempts"
                               $finish = $true
                             }
                           }
