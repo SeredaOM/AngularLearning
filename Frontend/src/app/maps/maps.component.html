@@ -1,7 +1,28 @@
+<h1>Available Maps:</h1>
 <nav>
-    <h1>Maps: </h1>
-    <a [routerLink]="['/hex']" [queryParams]="{mapId: 1}" routerLinkActive="active">1st Hex Component</a>
-    | <a [routerLink]="['/hex']" [queryParams]="{mapId: 2}" routerLinkActive="active">2nd Hex Component</a>
-    | <a [routerLink]="['/hex']" [queryParams]="{mapId: 3}" routerLinkActive="active">3rd Hex Component</a>
-  </nav>
-  <hr/>
+  <a [routerLink]="['/hex']" [queryParams]="{mapId: 1}" routerLinkActive="active">1st Hex Component</a>
+  | <a [routerLink]="['/hex']" [queryParams]="{mapId: 2}" routerLinkActive="active">2nd Hex Component</a>
+  | <a [routerLink]="['/hex']" [queryParams]="{mapId: 3}" routerLinkActive="active">3rd Hex Component</a>
+</nav>
+<hr />
+<table border="1">
+  <thead>
+    <th>Map Name</th>
+    <th>Owner</th>
+    <th>Actions</th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let mapDescription of mapDescriptions">
+      <td>{{mapDescription.mapName}}</td>
+      <td>{{mapDescription.ownerNick}}</td>
+      <td>
+        <button (click)="loadMap(mapDescription.mapId)">View Map</button>
+        &middot;
+        <button [disabled]="mapDescription.ownerId!=1">Edit Map</button>
+        &middot;
+        <button [disabled]="true">Start Game</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<app-hex id="hexComponent"></app-hex>

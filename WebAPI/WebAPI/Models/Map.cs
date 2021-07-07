@@ -34,6 +34,23 @@ namespace WebAPI.Models
             _xWidths = xWidths;
         }
 
+        public static IEnumerable<IMapDescription> GetMapDataAvailableForPlayer(int playerId)
+        {
+            List<MapDescription> mapData;
+
+            string myConnectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
+            using (BrowserWarContext context = new BrowserWarContext())
+            {
+                mapData = context.Maps
+                    .Include(m => m.Owner)
+                    .Where(map0 => map0.OwnerId == playerId || map0.Published != 0)
+                    .Select(map0 => new MapDescription(map0, map0.Owner.Nick))
+                    .ToList();
+            }
+
+            return mapData;
+        }
+
         internal static IMap FillMapFromData(string name, ICollection<DAL.MapTile> tilesData)
         {
             var rowNumbers = tilesData.GroupBy(tile => tile.Y).Select(g => g.Key).ToArray();

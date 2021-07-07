@@ -20,8 +20,20 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public ActionResult<IMap> GetMap([FromQuery] int mapId)
+        [HttpGet("mapsForPlayer/{playerId:int}")]
+        public ActionResult<IEnumerable<IMapDescription>> GetMapDataAvailableForPlayer(int playerId)
+        {
+            if (playerId <= 0)
+            {
+                return NotFound();
+            }
+
+            var mapData = Map.GetMapDataAvailableForPlayer(playerId);
+            return Ok(mapData);
+        }
+
+        [HttpGet("map/{mapId:int}")]
+        public ActionResult<IMap> GetMap(int mapId)
         {
             if (mapId <= 0)
             {

@@ -210,8 +210,12 @@ export class HexComponent implements OnInit {
   }
 
   loadTestMap(): void {
+    this.loadMap(1);
+  }
+
+  public loadMap(mapId): void {
     this.hexesService
-      .getMap(1)
+      .getMap(mapId)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
   }
 
