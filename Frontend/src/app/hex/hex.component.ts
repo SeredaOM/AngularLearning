@@ -124,7 +124,7 @@ export class HexComponent implements OnInit {
       _this.mapId = Number(params['mapId']);
       _this.UpdateGreeting(`Hello hex (mapId=${this.mapId})!!!`);
 
-      if (_this.mapId != 0) {
+      if (_this.mapId != undefined && _this.mapId != 0) {
         _this.hexesService
           .getMap(_this.mapId)
           .subscribe((mapData: IMap) => this.handleNewMap(mapData));
@@ -210,8 +210,12 @@ export class HexComponent implements OnInit {
   }
 
   loadTestMap(): void {
+    this.loadMap(1);
+  }
+
+  public loadMap(mapId): void {
     this.hexesService
-      .getMap(1)
+      .getMap(mapId)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
   }
 

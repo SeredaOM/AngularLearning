@@ -16,8 +16,14 @@ export class HexesService {
     }),
   };
 
+  public getMapDataAvailableForPlayer(playerId: number) {
+    return this.httpClient.get(
+      ApiService.getHost() + '/hexes/mapsForPlayer/' + playerId
+    );
+  }
+
   public getMap(mapId: number) {
-    return this.httpClient.get(ApiService.getHost() + '/hexes?mapId=' + mapId);
+    return this.httpClient.get(ApiService.getHost() + '/hexes/map/' + mapId);
   }
 
   public postTile(tile: ITile) {

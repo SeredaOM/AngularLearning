@@ -1,5 +1,4 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 #nullable disable
@@ -50,7 +49,7 @@ namespace WebAPI.DAL
                 entity.Property(e => e.Explored)
                     .HasColumnType("tinyint")
                     .HasColumnName("explored")
-                    .HasComment("Is game terrain visible to all players on start");
+                    .HasComment("Is the whole game terrain visible to all players on start?");
 
                 entity.Property(e => e.MapId).HasColumnName("map_id");
 
@@ -73,12 +72,26 @@ namespace WebAPI.DAL
                 entity.HasIndex(e => e.Id, "map_id_UNIQUE")
                     .IsUnique();
 
+                entity.HasIndex(e => e.OwnerId, "owner_id_idx");
+
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(45)
                     .HasColumnName("name");
+
+                entity.Property(e => e.OwnerId).HasColumnName("owner_id");
+
+                entity.Property(e => e.Published)
+                    .HasColumnType("tinyint")
+                    .HasColumnName("published");
+
+                entity.HasOne(d => d.Owner)
+                    .WithMany(p => p.Maps)
+                    .HasForeignKey(d => d.OwnerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("owner_id");
             });
 
             modelBuilder.Entity<MapTerrainType>(entity =>
@@ -106,9 +119,7 @@ namespace WebAPI.DAL
                 entity.HasIndex(e => new { e.MapId, e.X, e.Y }, "x_y_unique")
                     .IsUnique();
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int unsigned")
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.MapId).HasColumnName("map_id");
 
@@ -141,9 +152,7 @@ namespace WebAPI.DAL
                 entity.HasIndex(e => e.Nick, "nick_UNIQUE")
                     .IsUnique();
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int unsigned")
-                    .HasColumnName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Email)
                     .IsRequired()
