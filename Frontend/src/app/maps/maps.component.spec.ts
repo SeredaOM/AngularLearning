@@ -1,9 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { HexComponent } from '../hex/hex.component';
 import { HexesService } from '../hex/hexes.service';
 import { IMapDescription } from '../ServiceData/MapDescription';
-
+import { MockComponent, MockInstance, ngMocks } from 'ng-mocks';
 import { MapsComponent } from './maps.component';
 
 class MockHexesService extends HexesService {
@@ -36,10 +37,12 @@ describe('MapsComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule],
-      declarations: [MapsComponent],
+      declarations: [MapsComponent, MockComponent(HexComponent)],
       providers: [HexesService],
     }).compileComponents();
   });
+
+  beforeEach(() => MockInstance(HexComponent, 'loadMap', jasmine.createSpy()));
 
   beforeEach(() => {
     TestBed.overrideComponent(MapsComponent, {
@@ -88,4 +91,21 @@ describe('MapsComponent', () => {
     expect(btns1[1].innerHTML).toBe('Edit Map');
     expect(btns1[1].disabled).toBeTrue();
   });
+
+  it('Click on "View" button should load the map', async(() => {
+    const hexComponent = ngMocks.findInstance(HexComponent);
+    expect(hexComponent).toBeDefined();
+    expect(hexComponent.loadMap).not.toHaveBeenCalled();
+
+    const btns = fixture.debugElement.nativeElement.querySelectorAll('button');
+    expect(btns.length).toBe(6);
+    const btnView = btns[0];
+    expect(btnView.innerHTML).toBe('View Map');
+
+    btnView.click();
+
+    fixture.whenStable().then(() => {
+      expect(hexComponent.loadMap).toHaveBeenCalled();
+    });
+  }));
 });
