@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { HexComponent } from '../hex/hex.component';
 import { HexesService } from '../hex/hexes.service';
@@ -92,7 +92,7 @@ describe('MapsComponent', () => {
     expect(btns1[1].disabled).toBeTrue();
   });
 
-  it('Click on "View" button should load the map', async(() => {
+  it('Click on "View" button should load the map', waitForAsync(() => {
     const hexComponent = ngMocks.findInstance(HexComponent);
     expect(hexComponent).toBeDefined();
     expect(hexComponent.loadMap).not.toHaveBeenCalled();
