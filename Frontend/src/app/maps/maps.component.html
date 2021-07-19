@@ -5,24 +5,27 @@
   | <a [routerLink]="['/hex']" [queryParams]="{mapId: 3}" routerLinkActive="active">3rd Hex Component</a>
 </nav>
 <hr />
-<table border="1">
-  <thead>
-    <th>Map Name</th>
-    <th>Owner</th>
-    <th>Actions</th>
-  </thead>
-  <tbody>
-    <tr *ngFor="let mapDescription of mapDescriptions">
-      <td>{{mapDescription.mapName}}</td>
-      <td>{{mapDescription.ownerNick}}</td>
-      <td>
-        <button (click)="loadMap(mapDescription.mapId)">View Map</button>
-        &middot;
-        <button [disabled]="mapDescription.ownerId!=1">Edit Map</button>
-        &middot;
-        <button [disabled]="true">Start Game</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<mat-radio-group [(ngModel)]="editMapId">
+  <table border="1">
+    <thead>
+      <th>Map Name</th>
+      <th>Owner</th>
+      <th>Actions</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let mapDescription of mapDescriptions">
+        <td>{{mapDescription.mapName}}</td>
+        <td>{{mapDescription.ownerNick}}</td>
+        <td>
+          <button mat-button (click)="loadMap(mapDescription.mapId)">View Map</button>
+          &middot;
+          <mat-radio-button (change)="editMapChange($event)" [disabled]="mapDescription.ownerId!=1" [value]="mapDescription.mapId">Edit Map
+          </mat-radio-button>
+          &middot;
+          <button mat-button [disabled]="true">Start Game</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</mat-radio-group>
 <app-hex></app-hex>

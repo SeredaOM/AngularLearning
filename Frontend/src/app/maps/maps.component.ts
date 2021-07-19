@@ -12,6 +12,7 @@ export class MapsComponent implements OnInit {
   @ViewChild(HexComponent) hexComponent: HexComponent;
 
   public mapDescriptions: IMapDescription[];
+  public editMapId: number = 0;
 
   constructor(public ngZone: NgZone, private hexesService: HexesService) {}
 
@@ -22,7 +23,13 @@ export class MapsComponent implements OnInit {
   }
 
   loadMap(mapId): void {
-    this.hexComponent.loadMap(mapId);
+    this.editMapId = 0;
+    this.hexComponent.loadMap(mapId, true);
+  }
+
+  editMapChange(event) {
+    //  editMapId still has its old value (${this.editMapId}), use the event instead: ${event.value}`
+    this.hexComponent.loadMap(event.value, false);
   }
 
   handleNewMap(mapDescriptions: IMapDescription[]): void {

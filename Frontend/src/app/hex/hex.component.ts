@@ -42,6 +42,7 @@ export class HexComponent implements OnInit {
   private squares = new Array();
 
   private mapId: number = 0;
+  private viewMode: boolean = true;
 
   canvasAction = '';
   animationTime = 0;
@@ -55,7 +56,10 @@ export class HexComponent implements OnInit {
     let ctxOS = this.offscreenCanvas.getContext('2d');
     ctxOS.font = 'italic bold 48px serif';
     ctxOS.textBaseline = 'hanging';
-    const text = greeting + (isDevMode() ? ' (DevMode: ON)' : '');
+    const text =
+      greeting +
+      (isDevMode() ? ' (DevMode: ON)' : '') +
+      (this.viewMode ? ', view only' : '');
     const measure = ctxOS.measureText(text);
     ctxOS.strokeText(
       text,
@@ -210,10 +214,11 @@ export class HexComponent implements OnInit {
   }
 
   loadTestMap(): void {
-    this.loadMap(1);
+    this.loadMap(1, true);
   }
 
-  public loadMap(mapId): void {
+  public loadMap(mapId: number, viewMode: boolean): void {
+    this.viewMode = viewMode;
     this.hexesService
       .getMap(mapId)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
