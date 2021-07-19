@@ -14,10 +14,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HexComponent } from './hex/hex.component';
 import { ArenaComponent } from './arena/arena.component';
 import { MapsComponent } from './maps/maps.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -34,11 +36,14 @@ import { MapsComponent } from './maps/maps.component';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    FormsModule,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
+    MatRadioModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
