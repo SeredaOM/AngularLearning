@@ -33,8 +33,6 @@ export class ArenaComponent implements OnInit {
   private fieldHeight = 10000; //canvas.height;
   private fieldWidth = 10000; // canvas.width;
   private gridSize = 80;
-
-
   private numTree1s = 500;
   private numRedTrees = 500;
   private numRocks = 200;
@@ -51,32 +49,34 @@ export class ArenaComponent implements OnInit {
 
 
     if (this.map['KeyA']) {
-      newCenterX = this.centerX + 2; //right arrow add 20 from current
+      newCenterX = this.centerX + 5; //Move Up
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX - 1;
+        newCenterX = newCenterX - 3;
       }
     }
 
     if (this.map['KeyD']) {
-      newCenterX = this.centerX - 2; //left arrow subtract 20 from current
+      newCenterX = this.centerX - 5; //Move Left
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX + 1;
+        newCenterX = newCenterX + 3;
       }
     }
 
     if (this.map['KeyW']) {
-      newCenterY = this.centerY + 2; //bottom arrow add 20 from current
+      newCenterY = this.centerY + 5; //Move Down
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY - 1;
+        newCenterY = newCenterY - 3;
       }
     }
 
     if (this.map['KeyS']) {
-      newCenterY = this.centerY - 2; //top arrow subtract 20 from current
+      newCenterY = this.centerY - 5; //Move Right
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY + 1;
+        newCenterY = newCenterY + 3;
       }
     }
+
+
 
     //console.log(`newCenterX = ${newCenterX},newCenterY = ${newCenterY} `);
 
@@ -86,6 +86,10 @@ export class ArenaComponent implements OnInit {
     if (blockingObstacle == null) {
       blockingObstacle = this.player.isMoveAllowed(newCenterX, newCenterY, this.rocks);
     }
+    else if (blockingObstacle == null) {
+      blockingObstacle = this.player.isMoveAllowed(newCenterX, newCenterY, this.redtrees);
+    }
+
     if (blockingObstacle == null) {
       this.centerX = newCenterX;
       this.centerY = newCenterY;
@@ -221,7 +225,7 @@ export class ArenaComponent implements OnInit {
           _this.move('KeyW', keyAction);
         },
       },
-      10
+      25
     );
 
     this.canvasVisible = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
@@ -242,7 +246,7 @@ export class ArenaComponent implements OnInit {
     this.redtrees = RedTree.generateTrees(this.ctx, this.numRedTrees, this.fieldWidth, this.fieldHeight);
     this.rocks = Rock.generateRocks(this.ctx, this.numRocks, this.fieldWidth, this.fieldHeight);
     this.bRocks = BRock.generateBRocks(this.ctx, this.numBRocks, this.fieldWidth, this.fieldHeight);
-    this.player = new Player(this.ctx, 950, 480);
+    this.player = new Player(this.ctx, 950, 550);
 
     window.requestAnimationFrame(() => this.drawAll());
   }
