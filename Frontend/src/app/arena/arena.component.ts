@@ -26,75 +26,88 @@ export class ArenaComponent implements OnInit {
   private player: Player;
 
   private map = {};
-  private centerX: number = 0;
-  private centerY: number = 0;
 
-
-  private fieldHeight = 10000; //canvas.height;
-  private fieldWidth = 10000; // canvas.width;
+  private fieldHeight = 2000; //canvas.height;
+  private fieldWidth = 2000; // canvas.width;
   private gridSize = 80;
-  private numTree1s = 500;
-  private numRedTrees = 500;
-  private numRocks = 200;
-  private numBRocks = 50;
+  private numTree1s = 0;
+  private numRedTrees = 0;
+  private numRocks = 20;
+  private numBRocks = 0;
 
-  constructor() { }
+  constructor() {}
 
   private move(code, keyAction) {
     this.map[code] = keyAction == 'keydown';
 
-    let newCenterX: number = this.centerX;
-    let newCenterY: number = this.centerY;
-
-
+    let newCenterX: number = this.player.x;
+    let newCenterY: number = this.player.y;
 
     if (this.map['KeyA']) {
-      newCenterX = this.centerX + 5; //Move Up
-      if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX - 3;
-      }
-    }
-
-    if (this.map['KeyD']) {
-      newCenterX = this.centerX - 5; //Move Left
+      newCenterX = newCenterX - 5; //Move Left
       if (this.map['KeyW'] || this.map['KeyS']) {
         newCenterX = newCenterX + 3;
       }
     }
 
-    if (this.map['KeyW']) {
-      newCenterY = this.centerY + 5; //Move Down
-      if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY - 3;
+    if (this.map['KeyD']) {
+      newCenterX = newCenterX + 5; //Move Right
+      if (this.map['KeyW'] || this.map['KeyS']) {
+        newCenterX = newCenterX - 3;
       }
     }
 
-    if (this.map['KeyS']) {
-      newCenterY = this.centerY - 5; //Move Right
+    if (this.map['KeyW']) {
+      newCenterY = newCenterY - 5; //Move Up
       if (this.map['KeyA'] || this.map['KeyD']) {
         newCenterY = newCenterY + 3;
       }
     }
 
-
+    if (this.map['KeyS']) {
+      newCenterY = newCenterY + 5; //Move Down
+      if (this.map['KeyA'] || this.map['KeyD']) {
+        newCenterY = newCenterY - 3;
+      }
+    }
 
     //console.log(`newCenterX = ${newCenterX},newCenterY = ${newCenterY} `);
 
     let blockingObstacle: RoundObstacle = null;
 
-    blockingObstacle = this.player.isMoveAllowed(newCenterX, newCenterY, this.trees);
-    if (blockingObstacle == null) {
-      blockingObstacle = this.player.isMoveAllowed(newCenterX, newCenterY, this.rocks);
-    }
-    else if (blockingObstacle == null) {
-      blockingObstacle = this.player.isMoveAllowed(newCenterX, newCenterY, this.redtrees);
-    }
-
-    if (blockingObstacle == null) {
-      this.centerX = newCenterX;
-      this.centerY = newCenterY;
+    blockingObstacle = Player.isMoveAllowed(newCenterX, newCenterY, this.trees);
+    if (blockingObstacle != null) {
+      console.log(
+        `Moving to (${newCenterX}, ${newCenterY}) is blocked by tree (${blockingObstacle.x}, ${blockingObstacle.y})`
+      );
     } else {
-      //this.trees.splice(blockingObstacle, 1)
+      blockingObstacle = Player.isMoveAllowed(
+        newCenterX,
+        newCenterY,
+        this.rocks
+      );
+      if (blockingObstacle != null) {
+        console.log(
+          `Moving to (${newCenterX}, ${newCenterY}) is blocked by rock`
+        );
+      } else {
+        blockingObstacle = Player.isMoveAllowed(
+          newCenterX,
+          newCenterY,
+          this.redtrees
+        );
+        if (blockingObstacle != null) {
+          console.log(
+            `Moving to (${newCenterX}, ${newCenterY}) is blocked by redtree`
+          );
+        } else {
+          console.log(
+            `Moving from (${this.player.x}, ${this.player.y}) to (${newCenterX}, ${newCenterY})`
+          );
+          this.player.x = newCenterX;
+          this.player.y = newCenterY;
+        }
+      }
     }
   }
 
@@ -164,45 +177,39 @@ export class ArenaComponent implements OnInit {
     this.ctx.lineWidth = 1;
     this.ctx.strokeStyle = '#a6a5a2';
     for (let i = 0; i < this.fieldWidth; i += this.gridSize) {
-      let x = this.centerX + i;
-      if (x >= 0 && x <= this.canvas.width) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.centerX + i, 0);
-        this.ctx.lineTo(this.centerX + i, this.canvas.height);
-        this.ctx.stroke();
-      }
+      this.ctx.beginPath();
+      this.ctx.moveTo(i, 0);
+      this.ctx.lineTo(i, this.canvas.height);
+      this.ctx.stroke();
     }
     for (let i = 0; i < this.fieldHeight; i += this.gridSize) {
-      let y = this.centerY + i;
-      if (y >= 0 && y <= this.canvas.height) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, i + this.centerY);
-        this.ctx.lineTo(this.canvas.width, i + this.centerY);
-        this.ctx.stroke();
-      }
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, i);
+      this.ctx.lineTo(this.canvas.width, i);
+      this.ctx.stroke();
     }
 
     for (let i = 0; i < this.rocks.length; i++) {
       let rock = this.rocks[i];
-      rock.drawRock(this.centerX, this.centerY);
+      rock.drawRock(this.player.x, this.player.y);
     }
 
-    for (let i = 0; i < this.bRocks.length; i++) {
-      let rock = this.bRocks[i];
-      rock.drawBRock(this.centerX, this.centerY);
-    }
+    // for (let i = 0; i < this.bRocks.length; i++) {
+    //   let rock = this.bRocks[i];
+    //   rock.drawBRock(this.viewX, this.viewY);
+    // }
 
     this.player.drawPlayer();
 
-    for (let i = 0; i < this.trees.length; i++) {
-      let tree = this.trees[i];
-      tree.drawTree(this.centerX, this.centerY);
-    }
+    // for (let i = 0; i < this.trees.length; i++) {
+    //   let tree = this.trees[i];
+    //   tree.drawTree(this.viewX, this.viewY);
+    // }
 
-    for (let i = 0; i < this.redtrees.length; i++) {
-      let tree = this.redtrees[i];
-      tree.drawTree(this.centerX, this.centerY);
-    }
+    // for (let i = 0; i < this.redtrees.length; i++) {
+    //   let tree = this.redtrees[i];
+    //   tree.drawTree(this.viewX, this.viewY);
+    // }
 
     this.ctxVisible.drawImage(this.canvas, 0, 0);
     window.requestAnimationFrame(() => this.drawAll());
@@ -242,11 +249,33 @@ export class ArenaComponent implements OnInit {
     this.ctx.fillStyle = 'green'; // Fill color of rectangle drawn
     this.ctx.lineWidth = 1;
 
-    this.trees = Tree.generateTrees(this.ctx, this.numTree1s, this.fieldWidth, this.fieldHeight);
-    this.redtrees = RedTree.generateTrees(this.ctx, this.numRedTrees, this.fieldWidth, this.fieldHeight);
-    this.rocks = Rock.generateRocks(this.ctx, this.numRocks, this.fieldWidth, this.fieldHeight);
-    this.bRocks = BRock.generateBRocks(this.ctx, this.numBRocks, this.fieldWidth, this.fieldHeight);
-    this.player = new Player(this.ctx, 950, 550);
+    this.trees = Tree.generateTrees(
+      this.ctx,
+      this.numTree1s,
+      this.fieldWidth,
+      this.fieldHeight
+    );
+    this.redtrees = RedTree.generateTrees(
+      this.ctx,
+      this.numRedTrees,
+      this.fieldWidth,
+      this.fieldHeight
+    );
+    this.rocks = Rock.generateRocks(
+      this.ctx,
+      this.numRocks,
+      this.fieldWidth,
+      this.fieldHeight,
+      950,
+      550
+    );
+    this.bRocks = BRock.generateBRocks(
+      this.ctx,
+      this.numBRocks,
+      this.fieldWidth,
+      this.fieldHeight
+    );
+    this.player = new Player(this.ctx, 950, 550, 950, 550);
 
     window.requestAnimationFrame(() => this.drawAll());
   }
