@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Tree } from './Obstacles/Tree';
+import { RedTree } from './Obstacles/RedTree';
 import { Player } from './Player';
-import { Rock } from './Obstacles/Rock';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
+import { BRock, NormalRock } from './Obstacles/BRock';
+import { RoundObstacle } from './Obstacles/RoundObstacle';
+import { ViewScreen } from './Obstacles/ViewScreen';
 
 @Component({
   selector: 'app-arena',
@@ -15,70 +17,90 @@ export class ArenaComponent implements OnInit {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 
-  private trees: Array<Tree>;
-  private rocks: Array<Rock>;
+  private trees: Array<RoundObstacle>;
+  private redtrees: Array<RoundObstacle>;
+  private rocks: Array<RoundObstacle>;
+  private bRocks: Array<RoundObstacle>;
+
   private player: Player;
 
   private map = {};
-  private centerX: number = 0;
-  private centerY: number = 0;
 
-
-  private fieldHeight = 4000; //canvas.height;
-  private fieldWidth = 4000; // canvas.width;
+  private fieldHeight = 10000; //canvas.height;
+  private fieldWidth = 10000; // canvas.width;
   private gridSize = 80;
+  private numTree1s = 500;
+  private numRedTrees = 500;
+  private numRocks = 200;
+  private numBRocks = 50;
 
-
-  private numTree1s = 200;
-  private numRocks = 50;
-
-  constructor() { }
+  constructor() {}
 
   private move(code, keyAction) {
     this.map[code] = keyAction == 'keydown';
 
-    let newCenterX: number = this.centerX;
-    let newCenterY: number = this.centerY;
+    let newCenterX: number = this.player.x;
+    let newCenterY: number = this.player.y;
 
     if (this.map['KeyA']) {
-      newCenterX = this.centerX + 2; //right arrow add 20 from current
+      newCenterX = newCenterX - 5; //Move Left
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX - 1;
+        newCenterX = newCenterX + 3;
       }
     }
 
     if (this.map['KeyD']) {
-      newCenterX = this.centerX - 2; //left arrow subtract 20 from current
+      newCenterX = newCenterX + 5; //Move Right
       if (this.map['KeyW'] || this.map['KeyS']) {
-        newCenterX = newCenterX + 1;
+        newCenterX = newCenterX - 3;
       }
     }
 
     if (this.map['KeyW']) {
-      newCenterY = this.centerY + 2; //bottom arrow add 20 from current
+      newCenterY = newCenterY - 5; //Move Up
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY - 1;
+        newCenterY = newCenterY + 3;
       }
     }
 
     if (this.map['KeyS']) {
-      newCenterY = this.centerY - 2; //top arrow subtract 20 from current
+      newCenterY = newCenterY + 5; //Move Down
       if (this.map['KeyA'] || this.map['KeyD']) {
-        newCenterY = newCenterY + 1;
+        newCenterY = newCenterY - 3;
       }
     }
 
     //console.log(`newCenterX = ${newCenterX},newCenterY = ${newCenterY} `);
 
-    let moveIsAllowed = true;
+    let blockingObstacle: RoundObstacle = null;
 
-    moveIsAllowed = this.player.isMoveAllowed(newCenterX, newCenterY, this.trees);
-    if (moveIsAllowed) {
-      moveIsAllowed = this.player.isMoveAllowed(newCenterX, newCenterY, this.rocks);
+    blockingObstacle = Player.isMoveAllowed(newCenterX, newCenterY, this.trees);
+    if (blockingObstacle == null) {
+      blockingObstacle = Player.isMoveAllowed(
+        newCenterX,
+        newCenterY,
+        this.redtrees
+      );
     }
-    if (moveIsAllowed) {
-      this.centerX = newCenterX;
-      this.centerY = newCenterY;
+    if (blockingObstacle == null) {
+      blockingObstacle = Player.isMoveAllowed(
+        newCenterX,
+        newCenterY,
+        this.rocks
+      );
+    }
+
+    if (blockingObstacle == null) {
+      blockingObstacle = Player.isMoveAllowed(
+        newCenterX,
+        newCenterY,
+        this.bRocks
+      );
+    }
+
+    if (blockingObstacle == null) {
+      this.player.x = newCenterX;
+      this.player.y = newCenterY;
     }
   }
 
@@ -129,7 +151,7 @@ export class ArenaComponent implements OnInit {
 
     // When window is unfocused we may not get key events. To prevent this
     // causing a key to 'get stuck down', cancel all held keys
-    //
+
     window.onblur = function () {
       _this.map = {};
 
@@ -148,36 +170,39 @@ export class ArenaComponent implements OnInit {
     this.ctx.lineWidth = 1;
     this.ctx.strokeStyle = '#a6a5a2';
     for (let i = 0; i < this.fieldWidth; i += this.gridSize) {
-      let x = this.centerX + i;
-      if (x >= 0 && x <= this.canvas.width) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.centerX + i, 0);
-        this.ctx.lineTo(this.centerX + i, this.canvas.height);
-        this.ctx.stroke();
-      }
+      this.ctx.beginPath();
+      this.ctx.moveTo(i, 0);
+      this.ctx.lineTo(i, this.canvas.height);
+      this.ctx.stroke();
     }
     for (let i = 0; i < this.fieldHeight; i += this.gridSize) {
-      let y = this.centerY + i;
-      if (y >= 0 && y <= this.canvas.height) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, i + this.centerY);
-        this.ctx.lineTo(this.canvas.width, i + this.centerY);
-        this.ctx.stroke();
-      }
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, i);
+      this.ctx.lineTo(this.canvas.width, i);
+      this.ctx.stroke();
     }
 
     for (let i = 0; i < this.rocks.length; i++) {
       let rock = this.rocks[i];
-
-      // let y = -rock.y + i;
-      // if (y >= 0 && y <= this.canvas.height && x >= 0 && x <= this.canvas.height) {
-      rock.drawRock(this.centerX, this.centerY);
+      rock.draw(this.player.x, this.player.y);
     }
-    for (let i = 0; i < this.trees.length; i++) {
-      this.trees[i].drawTree(this.centerX, this.centerY);
+
+    for (let i = 0; i < this.bRocks.length; i++) {
+      let rock = this.bRocks[i];
+      rock.draw(this.player.x, this.player.y);
     }
 
     this.player.drawPlayer();
+
+    for (let i = 0; i < this.trees.length; i++) {
+      let tree = this.trees[i];
+      tree.draw(this.player.x, this.player.y);
+    }
+
+    for (let i = 0; i < this.redtrees.length; i++) {
+      let tree = this.redtrees[i];
+      tree.draw(this.player.x, this.player.y);
+    }
 
     this.ctxVisible.drawImage(this.canvas, 0, 0);
     window.requestAnimationFrame(() => this.drawAll());
@@ -200,7 +225,7 @@ export class ArenaComponent implements OnInit {
           _this.move('KeyW', keyAction);
         },
       },
-      10
+      25
     );
 
     this.canvasVisible = <HTMLCanvasElement>document.getElementById('cnv'); // Get the canvas element by Id
@@ -217,10 +242,52 @@ export class ArenaComponent implements OnInit {
     this.ctx.fillStyle = 'green'; // Fill color of rectangle drawn
     this.ctx.lineWidth = 1;
 
-    this.trees = Tree.generateTrees(this.ctx, this.numTree1s, this.fieldWidth, this.fieldHeight);
-    this.rocks = Rock.generateRocks(this.ctx, this.numRocks, this.fieldWidth, this.fieldHeight);
-    this.player = new Player(this.ctx, 950, 480);
+    ViewScreen.centerX = 950;
+    ViewScreen.centerY = 550;
+
+    this.trees = this.generateObjects(
+      this.numTree1s,
+      (ctx: CanvasRenderingContext2D, x: number, y: number, name: string) =>
+        new Tree(ctx, x, y)
+    );
+    this.redtrees = this.generateObjects(
+      this.numRedTrees,
+      (ctx: CanvasRenderingContext2D, x: number, y: number, name: string) =>
+        new RedTree(ctx, x, y)
+    );
+    this.rocks = this.generateObjects(
+      this.numRocks,
+      (ctx: CanvasRenderingContext2D, x: number, y: number, name: string) =>
+        new NormalRock(ctx, x, y, name)
+    );
+    this.bRocks = this.generateObjects(
+      this.numBRocks,
+      (ctx: CanvasRenderingContext2D, x: number, y: number, name: string) =>
+        new BRock(ctx, x, y, name)
+    );
+
+    this.player = new Player(this.ctx, 950, 950);
 
     window.requestAnimationFrame(() => this.drawAll());
+  }
+
+  private generateObjects(
+    obstaclesCount: number,
+    createObstacle: (
+      ctx: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      i: string
+    ) => RoundObstacle
+  ): Array<RoundObstacle> {
+    let obstacles: Array<RoundObstacle> = [];
+
+    for (let i = 0; i < obstaclesCount; i++) {
+      let x = Math.floor(Math.random() * (this.fieldWidth - 200) + 100);
+      let y = Math.floor(Math.random() * (this.fieldHeight - 200) + 100);
+
+      obstacles.push(createObstacle(this.ctx, x, y, i.toString()));
+    }
+    return obstacles;
   }
 }
