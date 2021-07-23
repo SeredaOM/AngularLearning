@@ -1,29 +1,22 @@
 import { RoundObstacle } from './Obstacles/RoundObstacle';
+import { ViewScreen } from './Obstacles/ViewScreen';
 
 export class Player {
   public static get radius() {
     return 30;
   }
 
-  private static fieldCenterX: number = 0;
-  private static fieldCenterY: number = 0;
-
   constructor(
     public ctx: CanvasRenderingContext2D,
     public x: number,
-    public y: number,
-    screenCenterX: number,
-    screenCenterY: number
-  ) {
-    Player.fieldCenterX = screenCenterX;
-    Player.fieldCenterY = screenCenterY;
-  }
+    public y: number
+  ) {}
 
   public drawPlayer() {
     this.ctx.beginPath();
     this.ctx.arc(
-      Player.fieldCenterX,
-      Player.fieldCenterY,
+      ViewScreen.centerX,
+      ViewScreen.centerY,
       Player.radius,
       0,
       2 * Math.PI,
@@ -54,6 +47,11 @@ export class Player {
     obstacles: RoundObstacle[]
   ): RoundObstacle {
     let nearestObstacle = null;
+
+    // if(obstacles==null)
+    // {
+    //     return null;
+    // }
 
     for (let i = 0; i < obstacles.length; i++) {
       let obstacle = obstacles[i];

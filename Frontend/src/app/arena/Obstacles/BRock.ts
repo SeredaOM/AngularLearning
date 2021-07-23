@@ -1,37 +1,39 @@
-import { RoundObstacle } from './RoundObstacle';
+import { Rock } from './Rock';
 
-export class BRock extends RoundObstacle {
-    private static get radius() { return 135; }
+export class NormalRock extends Rock {
+  constructor(
+    public ctx: CanvasRenderingContext2D,
+    public x: number,
+    public y: number,
+    public name: string
+  ) {
+    super(ctx, x, y, name, 35);
+  }
 
-    constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number, public name: string) {
-        super(x, y, BRock.radius);
-    }
-    // constructor(public ctx: CanvasRenderingContext2D, public x: number, public y: number) { }
+  protected getFillColor(): string {
+    return '#c2c1be';
+  }
 
-    public static generateBRocks(ctx: CanvasRenderingContext2D, numberOfBRocks: number, fieldWidth: number, fieldHeight: number): Array<BRock> {
+  protected getStrokeColor(): string {
+    return '#a6a5a2';
+  }
+}
 
-        var bRocks: Array<BRock> = [];
+export class BRock extends Rock {
+  constructor(
+    public ctx: CanvasRenderingContext2D,
+    public x: number,
+    public y: number,
+    public name: string
+  ) {
+    super(ctx, x, y, name, 135);
+  }
 
-        for (let i = 0; i < numberOfBRocks; i++) {
-            let x = Math.floor((Math.random() * (fieldWidth - 200)) + 100);
-            let y = Math.floor((Math.random() * (fieldHeight - 200)) + 100);
+  protected getFillColor(): string {
+    return '#92918e';
+  }
 
-            bRocks.push(new BRock(ctx, x, y, i.toString()));
-        }
-
-
-        return bRocks;
-    }
-
-
-    public drawBRock(centerX, centerY) {
-        this.ctx.beginPath();
-        this.ctx.arc(centerX + this.x, centerY + this.y, BRock.radius, 0, 2 * Math.PI, false);
-        this.ctx.lineWidth = 7;
-        this.ctx.fillStyle = '#c2c1be';
-        this.ctx.strokeStyle = '#a6a5a2';
-        this.ctx.stroke();
-        this.ctx.fill();
-        this.ctx.fillStyle = '#000';
-    }
+  protected getStrokeColor(): string {
+    return '#767572';
+  }
 }
