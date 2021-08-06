@@ -1,16 +1,20 @@
-<canvas #canvas width="900" height="600" style="border: black 1px solid; margin: 5px; padding: 0px"
-  (click)="onCanvasMouseClick($event)"
-  (mousemove)="onCanvasMouseMove($event)"
-  (mousedown)="onCanvasMouseDown($event)"
-  (mouseup)="onCanvasMouseUp()"
-  (mousewheel)="onCanvasMouseWheel($event)"
->
+<canvas #canvas width="900" height="600" class="map" (click)="onCanvasMouseClick($event)" (mousemove)="onCanvasMouseMove($event)"
+  (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp()" (mousewheel)="onCanvasMouseWheel($event)">
 </canvas>
-<button (click)="addHex()">Add Hex</button>
+<div class="tileOperations">
+  <div>
+    Selected Tile: <mat-select class="terrainSelector">
+      <mat-option>Undefined</mat-option>
+      <mat-option *ngFor="let terrain of possibleTerrainTypes" [value]="terrain.toLowerCase()">{{terrain}}</mat-option>
+    </mat-select>({{ selectedTileCoordinateX }},{{ selectedTileCoordinateY }})
+  </div>
+  <hr />
+  <button (click)="addHex()">Add Hex</button>
 
-<button (click)="loadTestMap()">Load Test Map (Id=1)</button>
+  <button (click)="loadTestMap()">Load Test Map (Id=1)</button>
 
-<button (click)="testPostRequest()">Test Post Request</button>
+  <button (click)="testPostRequest()">Test Post Request</button>
 
-<h1>Action {{ canvasAction }}</h1>
-<h2>Animate time: {{animationTime}} ms</h2>
+  <h1>Action {{ canvasAction }}</h1>
+  <h2>Animate time: {{animationTime}} ms</h2>
+</div>

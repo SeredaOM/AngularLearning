@@ -66,7 +66,7 @@ export class Map {
         colorStroke = '#000000';
         break;
 
-      case 'loot':
+      case 'snow':
         colorFill = '#FFFFFF';
         colorStroke = '#000000';
         break;
@@ -130,7 +130,7 @@ export class Map {
     return { x: cx, y: cy };
   }
 
-  private getTile(x: number, y: number): Tile {
+  getTile(x: number, y: number): Tile {
     if (y < this.yMin) {
       // console.warning('y (' + y + ') < -radius (' + -this._radius + ')');
       return null;

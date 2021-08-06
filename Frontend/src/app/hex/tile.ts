@@ -27,5 +27,9 @@ export class Tile {
     return this.hovered;
   }
 
+  public static getTerrainTypes() {
+    return ['Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
+  }
+
   private hovered = false;
 }
