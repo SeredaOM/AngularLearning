@@ -21,6 +21,7 @@ import { HexComponent } from './hex/hex.component';
 import { ArenaComponent } from './arena/arena.component';
 import { MapsComponent } from './maps/maps.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TileInfoComponent } from './hex/tile-info/tile-info.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     HexComponent,
     ArenaComponent,
     MapsComponent,
+    TileInfoComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

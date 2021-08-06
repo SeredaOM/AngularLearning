@@ -3,10 +3,7 @@
 </canvas>
 <div class="tileOperations">
   <div>
-    Selected Tile: <mat-select class="terrainSelector">
-      <mat-option>Undefined</mat-option>
-      <mat-option *ngFor="let terrain of possibleTerrainTypes" [value]="terrain.toLowerCase()">{{terrain}}</mat-option>
-    </mat-select>({{ selectedTileCoordinateX }},{{ selectedTileCoordinateY }})
+    <app-tile-info [selectedTile]="selectedTile"></app-tile-info>
   </div>
   <hr />
   <button (click)="addHex()">Add Hex</button>

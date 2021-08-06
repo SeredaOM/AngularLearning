@@ -1,0 +1,6 @@
+<span *ngIf="selectedTile">
+    Selected Tile: <mat-select class="terrainSelector" [(value)]="selectedTile.terrain">
+        <mat-option value=''>Undefined</mat-option>
+        <mat-option *ngFor="let terrain of possibleTerrainTypes" [value]="terrain.toLowerCase()">{{terrain}}</mat-option>
+    </mat-select>({{ selectedTile.x }},{{ selectedTile.y }})
+</span>

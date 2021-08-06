@@ -44,10 +44,7 @@ export class HexComponent implements OnInit {
   private mapId: number = 0;
   private viewMode: boolean = true;
 
-  possibleTerrainTypes = Tile.getTerrainTypes();
   selectedTile = null;
-  selectedTileCoordinateX = null;
-  selectedTileCoordinateY = null;
 
   canvasAction = '';
   animationTime = 0;
@@ -150,8 +147,6 @@ export class HexComponent implements OnInit {
       this.mapOffsetX,
       this.mapOffsetY
     );
-    this.selectedTileCoordinateX = tileCoords.x;
-    this.selectedTileCoordinateY = tileCoords.y;
     this.selectedTile = this.map.getTile(tileCoords.x, tileCoords.y);
 
     this.canvasAction = 'click, ' + this.canvasAction;
