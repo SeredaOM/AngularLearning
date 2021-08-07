@@ -38,6 +38,7 @@ export class HexComponent implements OnInit {
   private mapDragModeOn = false;
   private mapDragLastOffsetX = 0;
   private mapDragLastOffsetY = 0;
+  private mapMouseDown = false;
 
   private squares = new Array();
 
@@ -141,6 +142,9 @@ export class HexComponent implements OnInit {
   /* #region CanvasEvents */
 
   onCanvasMouseClick(event: MouseEvent): void {
+    if (this.mapDragModeOn) {
+      this.mapDragModeOn = false;
+    } else {
     const tileCoords = this.map.getTileCoordinates(
       event.offsetX,
       event.offsetY,
@@ -148,6 +152,7 @@ export class HexComponent implements OnInit {
       this.mapOffsetY
     );
     this.selectedTile = this.map.getTile(tileCoords.x, tileCoords.y);
+    }
 
     this.canvasAction = 'click, ' + this.canvasAction;
   }
@@ -184,6 +189,11 @@ export class HexComponent implements OnInit {
     // console.log(
     //   `MouseMove: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y}), offset=(${this.mapOffsetX}, ${this.mapOffsetY}))`
     // );
+    if (this.mapMouseDown) {
+      if (!this.mapDragModeOn) {
+        this.mapDragModeOn = true;
+      }
+    }
 
     if (this.mapDragModeOn) {
       this.mapOffsetX += event.offsetX - this.mapDragLastOffsetX;
@@ -199,15 +209,14 @@ export class HexComponent implements OnInit {
   onCanvasMouseDown(event: MouseEvent): void {
     this.canvasAction = 'down';
 
-    this.mapDragModeOn = true;
+    this.mapMouseDown = true;
     this.mapDragLastOffsetX = event.offsetX;
     this.mapDragLastOffsetY = event.offsetY;
   }
 
   onCanvasMouseUp(): void {
     this.canvasAction = 'up';
-
-    this.mapDragModeOn = false;
+    this.mapMouseDown = false;
   }
 
   onCanvasMouseWheel(event: WheelEvent): void {
