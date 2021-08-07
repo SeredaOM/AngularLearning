@@ -12,9 +12,9 @@ import { IObjectWasChanged } from '../common/IObjectWasChanged';
 import { HexesService } from './hexes.service';
 
 import { Hex } from './hex';
-import { ITile } from './itile';
+import { TileModel } from '../Models/TileModel';
 import { Tile } from './tile';
-import { IMap } from './imap';
+import { MapModel } from '../Models/MapModel';
 import { Map } from './map';
 
 @Component({
@@ -78,7 +78,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     );
   }
 
-  private handleNewMap(mapData: IMap): void {
+  private handleNewMap(mapData: MapModel): void {
     console.log('Get: ');
     console.log(mapData);
 
@@ -144,7 +144,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
       if (_this.mapId != undefined && !isNaN(_this.mapId) && _this.mapId != 0) {
         _this.hexesService
           .getMap(_this.mapId)
-          .subscribe((mapData: IMap) => this.handleNewMap(mapData));
+          .subscribe((mapData: MapModel) => this.handleNewMap(mapData));
       }
     });
   }
@@ -250,11 +250,11 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.viewOnly = viewOnly;
     this.hexesService
       .getMap(mapId)
-      .subscribe((mapData: IMap) => this.handleNewMap(mapData));
+      .subscribe((mapData: MapModel) => this.handleNewMap(mapData));
   }
 
   testPostRequest(): void {
-    let tile = new ITile(1, 25, 'snow', 'gold');
+    let tile = new TileModel(1, 25, 'snow', 'gold');
     this.hexesService.postTile(tile).subscribe((id: number) => {
       console.log(`PostTitle id=${id}`);
     });

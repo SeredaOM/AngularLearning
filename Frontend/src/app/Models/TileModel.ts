@@ -1,4 +1,4 @@
-export class ITile {
+export class TileModel {
   x: number;
   y: number;
   terrain: string;

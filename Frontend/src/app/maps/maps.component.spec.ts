@@ -16,7 +16,7 @@ import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { HexComponent } from '../hex/hex.component';
 import { HexesService } from '../hex/hexes.service';
-import { IMapDescription } from '../ServiceData/MapDescription';
+import { IMapDescription } from '../Models/MapDescription';
 import { MockComponent, MockInstance, ngMocks } from 'ng-mocks';
 import { MapsComponent } from './maps.component';
 import { DebugElement } from '@angular/core';

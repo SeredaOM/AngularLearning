@@ -1,7 +1,7 @@
 import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { HexComponent } from '../hex/hex.component';
 import { HexesService } from '../hex/hexes.service';
-import { IMapDescription } from '../ServiceData/MapDescription';
+import { IMapDescription } from '../Models/MapDescription';
 
 @Component({
   selector: 'app-maps',

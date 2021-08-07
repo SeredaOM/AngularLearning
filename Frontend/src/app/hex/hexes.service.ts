@@ -1,7 +1,7 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { ITile } from './itile';
+import { TileModel } from '../Models/TileModel';
 import { ApiService } from '../api.service';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class HexesService {
     return this.httpClient.get(ApiService.getHost() + '/hexes/map/' + mapId);
   }
 
-  public postTile(tile: ITile) {
+  public postTile(tile: TileModel) {
     return this.httpClient.post(
       ApiService.getHost() + '/hexes',
       tile.serialize(),
