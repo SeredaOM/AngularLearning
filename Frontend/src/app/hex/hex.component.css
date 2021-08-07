@@ -4,12 +4,6 @@ canvas.map {
   padding: 0px;
   float: left;
 }
-.terrainSelector {
-  width: 80px;
-  border: 1px solid black;
-  margin: 1px;
-  padding: 1px;
-}
 div.tileOperations {
   border: 1px solid black;
   margin: 5px;

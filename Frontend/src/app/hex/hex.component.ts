@@ -43,7 +43,7 @@ export class HexComponent implements OnInit {
   private squares = new Array();
 
   private mapId: number = 0;
-  private viewMode: boolean = true;
+  viewOnly: boolean = true;
 
   selectedTile = null;
 
@@ -62,7 +62,7 @@ export class HexComponent implements OnInit {
     const text =
       greeting +
       (isDevMode() ? ' (DevMode: ON)' : '') +
-      (this.viewMode ? ', view only' : '');
+      (this.viewOnly ? ', view only' : '');
     const measure = ctxOS.measureText(text);
     ctxOS.strokeText(
       text,
@@ -75,6 +75,8 @@ export class HexComponent implements OnInit {
     {
       console.log('Get: ');
       console.log(mapData);
+
+      this.selectedTile = null;
 
       let tileRadius = parseInt(this.cookieService.get('tileRadius'));
       if (isNaN(tileRadius)) {
@@ -145,13 +147,13 @@ export class HexComponent implements OnInit {
     if (this.mapDragModeOn) {
       this.mapDragModeOn = false;
     } else {
-    const tileCoords = this.map.getTileCoordinates(
-      event.offsetX,
-      event.offsetY,
-      this.mapOffsetX,
-      this.mapOffsetY
-    );
-    this.selectedTile = this.map.getTile(tileCoords.x, tileCoords.y);
+      const tileCoords = this.map.getTileCoordinates(
+        event.offsetX,
+        event.offsetY,
+        this.mapOffsetX,
+        this.mapOffsetY
+      );
+      this.selectedTile = this.map.getTile(tileCoords.x, tileCoords.y);
     }
 
     this.canvasAction = 'click, ' + this.canvasAction;
@@ -236,8 +238,8 @@ export class HexComponent implements OnInit {
     this.loadMap(1, true);
   }
 
-  public loadMap(mapId: number, viewMode: boolean): void {
-    this.viewMode = viewMode;
+  public loadMap(mapId: number, viewOnly: boolean): void {
+    this.viewOnly = viewOnly;
     this.hexesService
       .getMap(mapId)
       .subscribe((mapData: IMap) => this.handleNewMap(mapData));
