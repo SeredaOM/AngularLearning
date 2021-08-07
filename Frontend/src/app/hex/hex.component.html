@@ -6,6 +6,8 @@
     <app-tile-info [selectedTile]="selectedTile" [viewOnly]="viewOnly"></app-tile-info>
   </div>
   <hr />
+  <button mat-stroked-button [disabled]="!mapIsModified">Save map</button>
+  <hr />
   <button (click)="addHex()">Add Hex</button>
 
   <button (click)="loadTestMap()">Load Test Map (Id=1)</button>

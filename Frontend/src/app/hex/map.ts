@@ -1,32 +1,53 @@
+import { IObjectWasChanged } from '../common/IObjectWasChanged';
 import { Tile } from './tile';
 
-export class Map {
+export class Map implements IObjectWasChanged {
   //  Pixel coordinates of the (0,0) tile on the maps
   private static readonly mapCenterX = 250;
   private static readonly mapCenterY = 200;
-  private tileR = 30;
+  private tileR: number;
   private tileW: number;
   private static readonly dist = 1.1; //  distance between tiles is 10% of the tile width
   private static readonly tileHorizontalShift = 1.5;
 
+  private tiles: Array<Array<Tile>>;
   /* #region  Construction */
 
   constructor(
+    private parent: IObjectWasChanged,
     private ctx: CanvasRenderingContext2D,
     public name: string,
     tileRadius: number,
     private yMin: number,
     private xMins: Array<number>,
-    private xWidths: Array<number>,
-    private tiles: Array<Array<Tile>>
+    private xWidths: Array<number>
   ) {
     this.tileR = tileRadius;
+    this.updateCanvasFont();
     this.tileW = Map.getTileWidth(this.tileR);
 
-    this.tiles = tiles;
     this.yMin = yMin;
     this.xMins = xMins;
     this.xWidths = xWidths;
+
+    this._isModified = false;
+  }
+
+  public assignTiles(tiles: Array<Array<Tile>>) {
+    this.tiles = tiles;
+  }
+
+  private _isModified: boolean;
+  private setIsModified() {
+    this._isModified = true;
+    this.parent.dataWereChanged();
+  }
+  isModified(): boolean {
+    return this._isModified;
+  }
+
+  dataWereChanged() {
+    this.setIsModified();
   }
 
   /* #endregion */
@@ -174,13 +195,16 @@ export class Map {
     return tileR * 0.866 * 2;
   }
 
-  setTileRadius(tileRadius: number) {
-    this.tileR = tileRadius;
+  private updateCanvasFont() {
+    let newFontSize: number = this.tileR;
+    this.ctx.font = `${newFontSize}px Arial`;
   }
 
   changeTileRadius(delta: number): number {
     this.tileR += delta;
     this.tileW = Map.getTileWidth(this.tileR);
+
+    this.updateCanvasFont();
 
     return this.tileR;
   }
@@ -278,8 +302,7 @@ export class Map {
       return;
     }
 
-    const terrain = tile.getTerrain(); // !== undefined ? tile.getTerrain() : tile[2];
-    const color = Map.GetTerrainColor(terrain);
+    const color = Map.GetTerrainColor(tile.terrain);
 
     if (tile.isHovered()) {
       this.drawHex(
@@ -306,6 +329,9 @@ export class Map {
       );
     }
 
+    if (tile.isModified()) {
+      this.ctx.strokeText('*', center.x, center.y);
+    }
     // this.ctx.font = '12px Arial';
     // this.ctx.textBaseline = 'hanging';
     // const text = `(${tile.getX()},${tile.getY()})`;

@@ -1,19 +1,40 @@
+import { IObjectWasChanged } from '../common/IObjectWasChanged';
+
 export class Tile {
+  private _terrain: string;
+  public get terrain(): string {
+    return this._terrain;
+  }
+  public set terrain(value: string) {
+    this._terrain = value;
+    this.setIsModified();
+  }
+
   constructor(
-    private x,
-    private y,
-    private terrain: string,
+    private parent: IObjectWasChanged,
+    private x: number,
+    private y: number,
+    terrain: string,
     private resource: string
-  ) {}
+  ) {
+    this._terrain = terrain;
+    this._isModified = false;
+  }
+
+  private _isModified: boolean;
+  private setIsModified() {
+    this._isModified = true;
+    this.parent.dataWereChanged();
+  }
+  isModified(): boolean {
+    return this._isModified;
+  }
 
   getX() {
     return this.x;
   }
   getY() {
     return this.y;
-  }
-  getTerrain() {
-    return this.terrain;
   }
   getResource() {
     return this.resource;

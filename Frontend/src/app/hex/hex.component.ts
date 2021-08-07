@@ -7,6 +7,8 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
+
+import { IObjectWasChanged } from '../common/IObjectWasChanged';
 import { HexesService } from './hexes.service';
 
 import { Hex } from './hex';
@@ -20,7 +22,7 @@ import { Map } from './map';
   templateUrl: './hex.component.html',
   styleUrls: ['./hex.component.css'],
 })
-export class HexComponent implements OnInit {
+export class HexComponent implements OnInit, IObjectWasChanged {
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
 
@@ -45,10 +47,15 @@ export class HexComponent implements OnInit {
   private mapId: number = 0;
   viewOnly: boolean = true;
 
+  mapIsModified = false;
   selectedTile = null;
 
   canvasAction = '';
   animationTime = 0;
+
+  dataWereChanged() {
+    this.mapIsModified = this.map.isModified();
+  }
 
   private UpdateGreeting(greeting: string) {
     this.ctx = this.canvas.nativeElement.getContext('2d');
@@ -72,53 +79,54 @@ export class HexComponent implements OnInit {
   }
 
   private handleNewMap(mapData: IMap): void {
-    {
-      console.log('Get: ');
-      console.log(mapData);
+    console.log('Get: ');
+    console.log(mapData);
 
-      this.selectedTile = null;
+    this.selectedTile = null;
 
-      let tileRadius = parseInt(this.cookieService.get('tileRadius'));
-      if (isNaN(tileRadius)) {
-        tileRadius = 30;
-        this.cookieService.set('tileRadius', tileRadius.toString());
-      }
-      //this.map = <Map>mapData;
-
-      let tiles = new Array<Array<Tile>>();
-      mapData.tiles.forEach((rowTilesData) => {
-        let rowTiles = new Array<Tile>();
-        rowTilesData.forEach((tileData) => {
-          var tile;
-          if (tileData == null) {
-            tile = null;
-          } else {
-            tile = new Tile(
-              tileData.x,
-              tileData.y,
-              tileData.terrain.toLocaleLowerCase(),
-              tileData.resource == undefined || tileData.resource == 'null'
-                ? undefined
-                : tileData.resource.toLocaleLowerCase()
-            );
-          }
-          rowTiles.push(tile);
-        });
-        tiles.push(rowTiles);
-      });
-
-      this.map = new Map(
-        this.ctx,
-        mapData.name,
-        tileRadius,
-        mapData.yMin,
-        mapData.xMins,
-        mapData.xWidths,
-        tiles
-      );
-
-      this.UpdateGreeting(`Map: ${this.map.name}`);
+    let tileRadius = parseInt(this.cookieService.get('tileRadius'));
+    if (isNaN(tileRadius)) {
+      tileRadius = 30;
+      this.cookieService.set('tileRadius', tileRadius.toString());
     }
+    //this.map = <Map>mapData;
+
+    this.map = new Map(
+      this,
+      this.ctx,
+      mapData.name,
+      tileRadius,
+      mapData.yMin,
+      mapData.xMins,
+      mapData.xWidths
+    );
+
+    let tiles = new Array<Array<Tile>>();
+    mapData.tiles.forEach((rowTilesData) => {
+      let rowTiles = new Array<Tile>();
+      rowTilesData.forEach((tileData) => {
+        var tile;
+        if (tileData == null) {
+          tile = null;
+        } else {
+          tile = new Tile(
+            this.map,
+            tileData.x,
+            tileData.y,
+            tileData.terrain.toLocaleLowerCase(),
+            tileData.resource == undefined || tileData.resource == 'null'
+              ? undefined
+              : tileData.resource.toLocaleLowerCase()
+          );
+        }
+        rowTiles.push(tile);
+      });
+      tiles.push(rowTiles);
+    });
+
+    this.map.assignTiles(tiles);
+    this.dataWereChanged();
+    this.UpdateGreeting(`Map: ${this.map.name}`);
   }
 
   ngOnInit(): void {
