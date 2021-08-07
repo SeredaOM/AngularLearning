@@ -21,7 +21,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("mapsForPlayer/{playerId:int}")]
-        public ActionResult<IEnumerable<IMapDescription>> GetMapDataAvailableForPlayer(int playerId)
+        public ActionResult<IEnumerable<MapDescription>> GetMapDataAvailableForPlayer(int playerId)
         {
             if (playerId <= 0)
             {
@@ -33,14 +33,14 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("map/{mapId:int}")]
-        public ActionResult<IMap> GetMap(int mapId)
+        public ActionResult<Map> GetMap(int mapId)
         {
             if (mapId <= 0)
             {
                 return NotFound();
             }
 
-            IMap map = Map.GetMap(mapId);
+            Map map = Map.GetMap(mapId);
             return Ok(map);
         }
 

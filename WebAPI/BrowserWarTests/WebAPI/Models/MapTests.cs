@@ -73,7 +73,7 @@ namespace BrowserWarTests
             Assert.AreEqual(1, map.XMins[0]);
             Assert.AreEqual(1, map.XWidths[0]);
 
-            ITile tileTest;
+            Tile tileTest;
 
             tileTest = map.GetTile(1, 1);
             Assert.AreEqual(1, tileTest.X);

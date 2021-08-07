@@ -23,18 +23,7 @@ namespace WebAPI.Models
         Wheet,
     }
 
-    public interface ITile
-    {
-        public int X { get; }
-
-        public int Y { get; }
-
-        public TerrainType Terrain { get; }
-
-        public ResourceType? Resource { get; }
-    }
-
-    public class Tile : ITile
+    public class Tile
     {
         public Tile() { }
 

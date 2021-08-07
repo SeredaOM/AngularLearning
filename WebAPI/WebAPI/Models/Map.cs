@@ -7,34 +7,23 @@ using WebAPI.DAL;
 
 namespace WebAPI.Models
 {
-    public interface IMap
-    {
-        string Name { get; }
-        int YMin { get; }
-        int[] XMins { get; }
-        int[] XWidths { get; }
-        ITile[][] Tiles { get; }
-
-        ITile GetTile(int x, int y);
-    }
-
-    public class Map : IMap
+    public class Map
     {
         //  https://www.redblobgames.com/grids/hexagons/
 
         #region Construction
 
-        public Map(string name, ITile[][] tiles, int yMin, int[] xMins, int[] xWidths)
+        public Map(string name, Tile[][] tiles, int yMin, int[] xMins, int[] xWidths)
         {
             Name = name;
 
             _yMin = yMin;
-            _tiles = tiles;
+            _tiles = (Tile[][])tiles;
             _xMins = xMins;
             _xWidths = xWidths;
         }
 
-        public static IEnumerable<IMapDescription> GetMapDataAvailableForPlayer(int playerId)
+        public static IEnumerable<MapDescription> GetMapDataAvailableForPlayer(int playerId)
         {
             List<MapDescription> mapData;
 
@@ -51,12 +40,12 @@ namespace WebAPI.Models
             return mapData;
         }
 
-        internal static IMap FillMapFromData(string name, ICollection<DAL.MapTile> tilesData)
+        internal static Map FillMapFromData(string name, ICollection<DAL.MapTile> tilesData)
         {
             var rowNumbers = tilesData.GroupBy(tile => tile.Y).Select(g => g.Key).ToArray();
             var xMins = new int[rowNumbers.Length];
             var xWidths = new int[rowNumbers.Length];
-            ITile[][] tiles = new ITile[rowNumbers.Length][];
+            Tile[][] tiles = new Tile[rowNumbers.Length][];
 
             var minY = rowNumbers.Length == 0 ? 0 : rowNumbers.Min();
             foreach (var y in rowNumbers)
@@ -68,12 +57,12 @@ namespace WebAPI.Models
                 xMins[y - minY] = xMin;
                 xWidths[y - minY] = xWidth;
 
-                var tilesRow = new ITile[xWidth];
+                Tile[] tilesRow = new Tile[xWidth];
                 tiles[y - minY] = tilesRow;
 
                 foreach (var tileData in rowTiles)
                 {
-                    ITile tile = new Tile(tileData.X, tileData.Y, (TerrainType)tileData.MapTerrainTypeId, null);
+                    Tile tile = new Tile(tileData.X, tileData.Y, (TerrainType)tileData.MapTerrainTypeId, null);
                     tilesRow[tileData.X - xMin] = tile;
                 }
             }
@@ -83,9 +72,9 @@ namespace WebAPI.Models
             return map;
         }
 
-        public static IMap GetMap(int mapId)
+        public static Map GetMap(int mapId)
         {
-            IMap map;
+            Map map;
 
             string myConnectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
             using (BrowserWarContext context = new BrowserWarContext())
@@ -112,7 +101,7 @@ namespace WebAPI.Models
         {
             int diameter = 1 + 2 * radius;
 
-            ITile[][] tiles = new ITile[diameter][];
+            Tile[][] tiles = new Tile[diameter][];
             int[] xMins = new int[diameter];
             int[] xWidths = new int[diameter];
             for (int y = -radius; y <= radius; y++)
@@ -122,7 +111,7 @@ namespace WebAPI.Models
                 int xMax = xMin + xWidth;
                 string log = $"Line y={y}, width={xWidth}:";
 
-                ITile[] raw = new Tile[xWidth + 1];
+                Tile[] raw = new Tile[xWidth + 1];
                 for (int x = xMin; x <= xMax; x++)
                 {
                     TerrainType terrain;
@@ -158,7 +147,7 @@ namespace WebAPI.Models
 
         #region Public Methods
 
-        public ITile GetTile(int x, int y)
+        public Tile GetTile(int x, int y)
         {
             var yIndex = y - _yMin;
             if (yIndex < 0 || yIndex > XMins.Length)
@@ -188,7 +177,7 @@ namespace WebAPI.Models
 
         public int[] XWidths { get { return _xWidths; } }
 
-        public ITile[][] Tiles { get { return _tiles; } }
+        public Tile[][] Tiles { get { return _tiles; } }
 
         #endregion
 
@@ -197,7 +186,7 @@ namespace WebAPI.Models
         private readonly int _yMin;
         private readonly int[] _xMins;
         private readonly int[] _xWidths;
-        private readonly ITile[][] _tiles;
+        private readonly Tile[][] _tiles;
 
         #endregion
     }
