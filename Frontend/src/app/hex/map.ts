@@ -1,4 +1,6 @@
 import { IObjectWasChanged } from '../common/IObjectWasChanged';
+import { MapModel } from '../Models/MapModel';
+import { TileModel } from '../Models/TileModel';
 import { Tile } from './tile';
 
 export class Map implements IObjectWasChanged {
@@ -16,6 +18,7 @@ export class Map implements IObjectWasChanged {
   constructor(
     private parent: IObjectWasChanged,
     private ctx: CanvasRenderingContext2D,
+    public id: number,
     public name: string,
     tileRadius: number,
     private yMin: number,
@@ -33,6 +36,22 @@ export class Map implements IObjectWasChanged {
     this._isModified = false;
   }
 
+  generateModelsForModifiedTiles(): TileModel[] {
+
+    let tileModels = [];
+    this.tiles.forEach((_tiles) => {
+      _tiles.forEach((tile) => {
+        if (tile != undefined && tile.isModified()) {
+          tileModels.push(tile.generateModel());
+        }
+      });
+    });
+
+    return tileModels;
+  }
+
+  /* #endregion */
+
   public assignTiles(tiles: Array<Array<Tile>>) {
     this.tiles = tiles;
   }
@@ -49,8 +68,6 @@ export class Map implements IObjectWasChanged {
   dataWereChanged() {
     this.setIsModified();
   }
-
-  /* #endregion */
 
   static GetTerrainColor(terrain: string): { fill: string; stroke: string } {
     let colorFill: string;
@@ -361,8 +378,6 @@ export class Map implements IObjectWasChanged {
   }
 
   /* #endregion */
-
-  public id: number;
 
   private lastHovered: Tile;
 }

@@ -1,8 +1,8 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { TileModel } from '../Models/TileModel';
 import { ApiService } from '../api.service';
+import { TileModel } from '../Models/TileModel';
 
 @Injectable({
   providedIn: 'root',
@@ -26,10 +26,18 @@ export class HexesService {
     return this.httpClient.get(ApiService.getHost() + '/hexes/map/' + mapId);
   }
 
+  public saveMapTiles(mapId: number, tiles: TileModel[]) {
+    return this.httpClient.post(
+      ApiService.getHost() + '/hexes/maptiles/' + mapId,
+      JSON.stringify(tiles),
+      HexesService.httpOptions
+    );
+  }
+
   public postTile(tile: TileModel) {
     return this.httpClient.post(
       ApiService.getHost() + '/hexes',
-      tile.serialize(),
+      JSON.stringify(tile),
       HexesService.httpOptions
     );
   }

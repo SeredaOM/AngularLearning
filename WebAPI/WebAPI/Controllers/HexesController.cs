@@ -20,7 +20,8 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet("mapsForPlayer/{playerId:int}")]
+        [Route("mapsForPlayer/{playerId:int}")]
+        [HttpGet]
         public ActionResult<IEnumerable<MapDescription>> GetMapDataAvailableForPlayer(int playerId)
         {
             if (playerId <= 0)
@@ -32,7 +33,8 @@ namespace WebAPI.Controllers
             return Ok(mapData);
         }
 
-        [HttpGet("map/{mapId:int}")]
+        [Route("map/{mapId:int}")]
+        [HttpGet]
         public ActionResult<Map> GetMap(int mapId)
         {
             if (mapId <= 0)
@@ -42,6 +44,13 @@ namespace WebAPI.Controllers
 
             Map map = Map.GetMap(mapId);
             return Ok(map);
+        }
+
+        [Route("maptiles/{mapId:int}")]
+        [HttpPost]
+        public ActionResult<int> SaveMapChanges(int mapId, List<Tile> tiles)
+        {   
+            return Ok(1);
         }
 
         [HttpPost]

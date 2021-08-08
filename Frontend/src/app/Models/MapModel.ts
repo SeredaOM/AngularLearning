@@ -1,10 +1,12 @@
 import { TileModel } from './TileModel';
 
 export class MapModel {
-  id: number;
-  name: string;
-  yMin: number;
-  xMins: Array<number>;
-  xWidths: Array<number>;
-  tiles: Array<Array<TileModel>>;
+  constructor(
+    public id: number,
+    public name: string,
+    public yMin: number,
+    public xMins: Array<number>,
+    public xWidths: Array<number>,
+    public tiles: Array<Array<TileModel>>
+  ) {}
 }

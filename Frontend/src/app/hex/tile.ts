@@ -1,4 +1,5 @@
 import { IObjectWasChanged } from '../common/IObjectWasChanged';
+import { TileModel } from '../Models/TileModel';
 
 export class Tile {
   private _terrain: string;
@@ -19,6 +20,10 @@ export class Tile {
   ) {
     this._terrain = terrain;
     this._isModified = false;
+  }
+
+  generateModel() {
+    return new TileModel(this.x, this.y, this.terrain, this.resource);
   }
 
   private _isModified: boolean;

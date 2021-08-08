@@ -10,12 +10,4 @@ export class TileModel {
     this.terrain = terrain;
     this.resource = resource;
   }
-
-  public serialize(): string {
-    let res =
-      this.resource === undefined || this.resource === ''
-        ? 'null'
-        : `"${this.resource}"`;
-    return `{"x":${this.x},"y":${this.y},"terrain":"${this.terrain}","resource":${res}}`;
-  }
 }

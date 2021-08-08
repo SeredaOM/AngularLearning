@@ -78,9 +78,9 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     );
   }
 
-  private handleNewMap(mapData: MapModel): void {
+  private handleNewMap(mapModel: MapModel): void {
     console.log('Get: ');
-    console.log(mapData);
+    console.log(mapModel);
 
     this.selectedTile = null;
 
@@ -94,15 +94,16 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.map = new Map(
       this,
       this.ctx,
-      mapData.name,
+      mapModel.id,
+      mapModel.name,
       tileRadius,
-      mapData.yMin,
-      mapData.xMins,
-      mapData.xWidths
+      mapModel.yMin,
+      mapModel.xMins,
+      mapModel.xWidths
     );
 
     let tiles = new Array<Array<Tile>>();
-    mapData.tiles.forEach((rowTilesData) => {
+    mapModel.tiles.forEach((rowTilesData) => {
       let rowTiles = new Array<Tile>();
       rowTilesData.forEach((tileData) => {
         var tile;
@@ -251,6 +252,16 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.hexesService
       .getMap(mapId)
       .subscribe((mapData: MapModel) => this.handleNewMap(mapData));
+  }
+
+  saveMap(): void {
+    console.log(`saving map...`);
+    let tiles = this.map.generateModelsForModifiedTiles();
+    this.hexesService
+      .saveMapTiles(this.map.id, tiles)
+      .subscribe((id: number) => {
+        console.log(`PostMap id=${id}`);
+      });
   }
 
   testPostRequest(): void {
