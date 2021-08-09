@@ -7,6 +7,11 @@ export class Tile {
     return this._terrain;
   }
   public set terrain(value: string) {
+    console.log(
+      `Tile (${this.getX()},${this.getY()}): Terrain has changed from ${
+        this._terrain
+      } to ${value}`
+    );
     this._terrain = value;
     this.setIsModified();
   }
@@ -41,6 +46,16 @@ export class Tile {
   getY() {
     return this.y;
   }
+
+  setX(newX: number) {
+    this.x = newX;
+    this.setIsModified();
+  }
+  setY(newY: number) {
+    this.y = newY;
+    this.setIsModified();
+  }
+
   getResource() {
     return this.resource;
   }
@@ -54,7 +69,20 @@ export class Tile {
   }
 
   public static getTerrainTypes() {
-    return ['Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
+    return [
+      'Invalid',
+      'Water',
+      'Desert',
+      'Swamp',
+      'Plain',
+      'Hill',
+      'Mountain',
+      'Snow',
+    ];
+  }
+
+  public static getEmptyTile() {
+    return new Tile(null, 1, 1, Tile.getTerrainTypes()[0].toLowerCase(), '');
   }
 
   private hovered = false;

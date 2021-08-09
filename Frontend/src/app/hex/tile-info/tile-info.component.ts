@@ -18,16 +18,7 @@ export class TileInfoComponent implements OnInit, OnChanges {
 
   constructor() {}
 
-  ngOnInit(): void {
-    console.log(`loaded tile info component`);
-  }
+  ngOnInit(): void {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(`viewOnly=${this.viewOnly}`);
-    if (changes.selectedTile) {
-      console.log(
-        `changed 'selectedTile' on tile info component, new coords: ${this.selectedTile.x},${this.selectedTile.y}`
-      );
-    }
-  }
+  ngOnChanges(changes: SimpleChanges): void {}
 }

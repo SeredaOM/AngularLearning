@@ -37,7 +37,6 @@ export class Map implements IObjectWasChanged {
   }
 
   generateModelsForModifiedTiles(): TileModel[] {
-
     let tileModels = [];
     this.tiles.forEach((_tiles) => {
       _tiles.forEach((tile) => {
@@ -166,6 +165,17 @@ export class Map implements IObjectWasChanged {
     //   tileY * (Map.tileR*Map.dist) * Map.tileHorizontalShift ;
 
     return { x: cx, y: cy };
+  }
+
+  addTile(tile: Tile) {
+    if (tile.getY() < this.yMin) {
+      this.yMin -= 1;
+      tile.setY(this.yMin);
+
+      this.xMins.unshift(tile.getX());
+      this.xWidths.unshift(1);
+      this.tiles.unshift([tile]);
+    }
   }
 
   getTile(x: number, y: number): Tile {

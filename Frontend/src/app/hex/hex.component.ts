@@ -48,7 +48,8 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   viewOnly: boolean = true;
 
   mapIsModified = false;
-  selectedTile = null;
+  selectedTile = Tile.getEmptyTile();
+  defaultTerrain = Tile.getTerrainTypes()[0].toLowerCase();
 
   canvasAction = '';
   animationTime = 0;
@@ -82,7 +83,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     console.log('Get: ');
     console.log(mapModel);
 
-    this.selectedTile = null;
+    this.selectedTile = Tile.getEmptyTile();
 
     let tileRadius = parseInt(this.cookieService.get('tileRadius'));
     if (isNaN(tileRadius)) {
@@ -163,6 +164,18 @@ export class HexComponent implements OnInit, IObjectWasChanged {
         this.mapOffsetY
       );
       this.selectedTile = this.map.getTile(tileCoords.x, tileCoords.y);
+
+      if (this.selectedTile == null && this.viewOnly == false) {
+        const newTile = new Tile(
+          this.map,
+          tileCoords.x,
+          tileCoords.y,
+          this.defaultTerrain,
+          ''
+        );
+        this.map.addTile(newTile);
+        this.selectedTile = newTile;
+      }
     }
 
     this.canvasAction = 'click, ' + this.canvasAction;

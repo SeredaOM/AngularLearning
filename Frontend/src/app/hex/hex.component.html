@@ -1,12 +1,13 @@
 <canvas #canvas width="900" height="600" class="map" (click)="onCanvasMouseClick($event)" (mousemove)="onCanvasMouseMove($event)"
   (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp()" (mousewheel)="onCanvasMouseWheel($event)">
 </canvas>
-<div class="tileOperations">
+<div class="tileOperations" style="height: 400px;">
   <div>
     <app-tile-info [selectedTile]="selectedTile" [viewOnly]="viewOnly"></app-tile-info>
   </div>
   <hr />
   <button mat-stroked-button (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
+  | New tile terrain: <app-terrain-selector [viewOnly]="viewOnly" [(selectedTerrain)]="defaultTerrain"></app-terrain-selector>
   <hr />
   <button (click)="addHex()">Add Hex</button>
 
