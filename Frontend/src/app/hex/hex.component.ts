@@ -171,7 +171,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
           tileCoords.x,
           tileCoords.y,
           this.defaultTerrain,
-          '',
+          null,
           true
         );
         this.map.addTile(newTile);

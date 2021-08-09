@@ -185,6 +185,7 @@ export class Map implements IObjectWasChanged {
         this.addTileInside(tile, yIndex);
       }
     }
+    this.setIsModified();
   }
 
   private addTileAbove(tile: Tile) {
@@ -390,7 +391,7 @@ export class Map implements IObjectWasChanged {
     this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, 1);
 
     const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
-    if (resource !== undefined && resource !== '') {
+    if (resource != null && resource !== '') {
       this.drawHex(
         center.x,
         center.y,
