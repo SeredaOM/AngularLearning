@@ -16,8 +16,6 @@ export class TileInfoComponent implements OnInit, OnChanges {
   @Input() viewOnly = false;
   @Input() selectedTile = null;
 
-  possibleTerrainTypes = Tile.getTerrainTypes();
-
   constructor() {}
 
   ngOnInit(): void {
