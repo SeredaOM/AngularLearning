@@ -21,10 +21,11 @@ export class Tile {
     private x: number,
     private y: number,
     terrain: string,
-    private resource: string
+    private resource: string,
+    isModified: boolean = false
   ) {
     this._terrain = terrain;
-    this._isModified = false;
+    this._isModified = isModified;
   }
 
   generateModel() {

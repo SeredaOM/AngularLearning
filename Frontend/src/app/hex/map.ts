@@ -168,14 +168,59 @@ export class Map implements IObjectWasChanged {
   }
 
   addTile(tile: Tile) {
-    if (tile.getY() < this.yMin) {
-      this.yMin -= 1;
-      tile.setY(this.yMin);
+    let x = tile.getX();
+    let y = tile.getY();
 
-      this.xMins.unshift(tile.getX());
-      this.xWidths.unshift(1);
-      this.tiles.unshift([tile]);
+    if (y < this.yMin) {
+      this.addTileAbove(tile);
+    } else if (y >= this.yMin + this.xMins.length) {
+      this.addTileBelow(tile);
+    } else {
+      const yIndex = y - this.yMin;
+      if (x < this.xMins[yIndex]) {
+        this.addTileLeft(tile, yIndex);
+      } else if (x >= this.xMins[yIndex] + this.xWidths[yIndex]) {
+        this.addTileRight(tile, yIndex);
+      } else {
+        this.addTileInside(tile, yIndex);
+      }
     }
+  }
+
+  private addTileAbove(tile: Tile) {
+    this.yMin -= 1;
+    this.xMins.unshift(tile.getX());
+    this.xWidths.unshift(1);
+    this.tiles.unshift([tile]);
+    tile.setY(this.yMin);
+  }
+
+  private addTileBelow(tile: Tile) {
+    this.xMins.push(tile.getX());
+    this.xWidths.push(1);
+    this.tiles.push([tile]);
+    tile.setY(this.yMin + this.tiles.length - 1);
+  }
+
+  private addTileLeft(tile: Tile, yIndex: number) {
+    this.xMins[yIndex]--;
+    this.xWidths[yIndex]++;
+    this.tiles[yIndex].unshift(tile);
+    tile.setX(this.xMins[yIndex]);
+  }
+
+  private addTileRight(tile: Tile, yIndex: number) {
+    this.xWidths[yIndex]++;
+    this.tiles[yIndex].push(tile);
+    tile.setX(this.xMins[yIndex] + this.xWidths[yIndex] - 1);
+  }
+
+  private addTileInside(tile: Tile, yIndex: number) {
+    const currentTile = this.getTile(tile.getX(), tile.getY());
+    if (currentTile != null) {
+      throw Error(`Map already has a tile at (${tile.getX()},${tile.getY()})`);
+    }
+    this.tiles[yIndex][tile.getX() - this.xMins[yIndex]] = tile;
   }
 
   getTile(x: number, y: number): Tile {

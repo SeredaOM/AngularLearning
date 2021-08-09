@@ -107,7 +107,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     mapModel.tiles.forEach((rowTilesData) => {
       let rowTiles = new Array<Tile>();
       rowTilesData.forEach((tileData) => {
-        var tile;
+        var tile: Tile;
         if (tileData == null) {
           tile = null;
         } else {
@@ -171,7 +171,8 @@ export class HexComponent implements OnInit, IObjectWasChanged {
           tileCoords.x,
           tileCoords.y,
           this.defaultTerrain,
-          ''
+          '',
+          true
         );
         this.map.addTile(newTile);
         this.selectedTile = newTile;
