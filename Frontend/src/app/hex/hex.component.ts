@@ -90,43 +90,8 @@ export class HexComponent implements OnInit, IObjectWasChanged {
       tileRadius = 30;
       this.cookieService.set('tileRadius', tileRadius.toString());
     }
-    //this.map = <Map>mapData;
 
-    this.map = new Map(
-      this,
-      this.ctx,
-      mapModel.id,
-      mapModel.name,
-      tileRadius,
-      mapModel.yMin,
-      mapModel.xMins,
-      mapModel.xWidths
-    );
-
-    let tiles = new Array<Array<Tile>>();
-    mapModel.tiles.forEach((rowTilesData) => {
-      let rowTiles = new Array<Tile>();
-      rowTilesData.forEach((tileData) => {
-        var tile: Tile;
-        if (tileData == null) {
-          tile = null;
-        } else {
-          tile = new Tile(
-            this.map,
-            tileData.x,
-            tileData.y,
-            tileData.terrain.toLocaleLowerCase(),
-            tileData.resource == undefined || tileData.resource == 'null'
-              ? undefined
-              : tileData.resource.toLocaleLowerCase()
-          );
-        }
-        rowTiles.push(tile);
-      });
-      tiles.push(rowTiles);
-    });
-
-    this.map.assignTiles(tiles);
+    this.map = new Map(this, this.ctx, mapModel, tileRadius);
     this.dataWereChanged();
     this.UpdateGreeting(`Map: ${this.map.name}`);
   }

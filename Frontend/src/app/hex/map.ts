@@ -15,25 +15,59 @@ export class Map implements IObjectWasChanged {
   private tiles: Array<Array<Tile>>;
   /* #region  Construction */
 
+  public id: number;
+  public name: string;
+  private yMin: number;
+  private xMins: Array<number>;
+  private xWidths: Array<number>;
+
   constructor(
     private parent: IObjectWasChanged,
     private ctx: CanvasRenderingContext2D,
-    public id: number,
-    public name: string,
-    tileRadius: number,
-    private yMin: number,
-    private xMins: Array<number>,
-    private xWidths: Array<number>
+    mapModel: MapModel,
+    tileRadius: number
   ) {
+    this.id = mapModel.id;
+    this.name = mapModel.name;
+
     this.tileR = tileRadius;
     this.updateCanvasFont();
     this.tileW = Map.getTileWidth(this.tileR);
 
-    this.yMin = yMin;
-    this.xMins = xMins;
-    this.xWidths = xWidths;
+    this.yMin = mapModel.yMin;
+    this.xMins = mapModel.xMins;
+    this.xWidths = mapModel.xWidths;
+
+    this.tiles = this.parseModelTiles(mapModel.tiles);
 
     this._isModified = false;
+  }
+
+  public parseModelTiles(tilesModels: TileModel[][]): Array<Array<Tile>> {
+    let tiles = new Array<Array<Tile>>();
+    tilesModels.forEach((rowTilesData) => {
+      let rowTiles = new Array<Tile>();
+      rowTilesData.forEach((tileData) => {
+        var tile: Tile;
+        if (tileData == null) {
+          tile = null;
+        } else {
+          tile = new Tile(
+            this,
+            tileData.x,
+            tileData.y,
+            tileData.terrain.toLocaleLowerCase(),
+            tileData.resource == undefined || tileData.resource == 'null'
+              ? undefined
+              : tileData.resource.toLocaleLowerCase()
+          );
+        }
+        rowTiles.push(tile);
+      });
+      tiles.push(rowTiles);
+    });
+
+    return tiles;
   }
 
   generateModelsForModifiedTiles(): TileModel[] {
