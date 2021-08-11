@@ -128,10 +128,10 @@ export class HexComponent implements OnInit, IObjectWasChanged {
         this.mapOffsetX,
         this.mapOffsetY
       );
-      this.selectedTile = this.map.getTile(tileCoords.x, tileCoords.y);
 
-      if (this.selectedTile == null && this.viewOnly == false) {
-        const newTile = new Tile(
+      let title = this.map.getTile(tileCoords.x, tileCoords.y);
+      if (title == null && !this.viewOnly) {
+        title = new Tile(
           this.map,
           tileCoords.x,
           tileCoords.y,
@@ -139,8 +139,10 @@ export class HexComponent implements OnInit, IObjectWasChanged {
           null,
           true
         );
-        this.map.addTile(newTile);
-        this.selectedTile = newTile;
+        this.map.addTile(title);
+      }
+      if (title != null) {
+        this.selectedTile = title;
       }
     }
 
