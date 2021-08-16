@@ -5,14 +5,19 @@ import {
   ViewChild,
   isDevMode,
 } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { HexesService } from './hexes.service';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
+import { Alert } from '../common/Alert';
+import { IObjectWasChanged } from '../common/IObjectWasChanged';
+import { HexesService } from './hexes.service';
 import { Hex } from './hex';
-import { ITile } from './itile';
+import { TileModel } from '../Models/TileModel';
 import { Tile } from './tile';
-import { IMap } from './imap';
+import { MapModel } from '../Models/MapModel';
 import { Map } from './map';
 
 @Component({
@@ -20,9 +25,11 @@ import { Map } from './map';
   templateUrl: './hex.component.html',
   styleUrls: ['./hex.component.css'],
 })
-export class HexComponent implements OnInit {
+export class HexComponent implements OnInit, IObjectWasChanged {
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
+
+  alerts: Alert[] = [];
 
   constructor(
     private cookieService: CookieService,
@@ -38,13 +45,23 @@ export class HexComponent implements OnInit {
   private mapDragModeOn = false;
   private mapDragLastOffsetX = 0;
   private mapDragLastOffsetY = 0;
+  private mapMouseDown = false;
 
   private squares = new Array();
 
   private mapId: number = 0;
+  viewOnly: boolean = true;
+
+  mapIsModified = false;
+  selectedTile = Tile.getEmptyTile();
+  defaultTerrain = Tile.getTerrainTypes()[0].toLowerCase();
 
   canvasAction = '';
   animationTime = 0;
+
+  dataWereChanged() {
+    this.mapIsModified = this.map.isModified();
+  }
 
   private UpdateGreeting(greeting: string) {
     this.ctx = this.canvas.nativeElement.getContext('2d');
@@ -55,7 +72,10 @@ export class HexComponent implements OnInit {
     let ctxOS = this.offscreenCanvas.getContext('2d');
     ctxOS.font = 'italic bold 48px serif';
     ctxOS.textBaseline = 'hanging';
-    const text = greeting + (isDevMode() ? ' (DevMode: ON)' : '');
+    const text =
+      greeting +
+      (isDevMode() ? ' (DevMode: ON)' : '') +
+      (this.viewOnly ? ', view only' : '');
     const measure = ctxOS.measureText(text);
     ctxOS.strokeText(
       text,
@@ -64,52 +84,21 @@ export class HexComponent implements OnInit {
     );
   }
 
-  private handleNewMap(mapData: IMap): void {
-    {
-      console.log('Get: ');
-      console.log(mapData);
+  private handleNewMap(mapModel: MapModel): void {
+    console.log('Get: ');
+    console.log(mapModel);
 
-      let tileRadius = parseInt(this.cookieService.get('tileRadius'));
-      if (isNaN(tileRadius)) {
-        tileRadius = 30;
-        this.cookieService.set('tileRadius', tileRadius.toString());
-      }
-      //this.map = <Map>mapData;
+    this.selectedTile = Tile.getEmptyTile();
 
-      let tiles = new Array<Array<Tile>>();
-      mapData.tiles.forEach((rowTilesData) => {
-        let rowTiles = new Array<Tile>();
-        rowTilesData.forEach((tileData) => {
-          var tile;
-          if (tileData == null) {
-            tile = null;
-          } else {
-            tile = new Tile(
-              tileData.x,
-              tileData.y,
-              tileData.terrain.toLocaleLowerCase(),
-              tileData.resource == undefined || tileData.resource == 'null'
-                ? undefined
-                : tileData.resource.toLocaleLowerCase()
-            );
-          }
-          rowTiles.push(tile);
-        });
-        tiles.push(rowTiles);
-      });
-
-      this.map = new Map(
-        this.ctx,
-        mapData.name,
-        tileRadius,
-        mapData.yMin,
-        mapData.xMins,
-        mapData.xWidths,
-        tiles
-      );
-
-      this.UpdateGreeting(`Map: ${this.map.name}`);
+    let tileRadius = parseInt(this.cookieService.get('tileRadius'));
+    if (isNaN(tileRadius)) {
+      tileRadius = 30;
+      this.cookieService.set('tileRadius', tileRadius.toString());
     }
+
+    this.map = new Map(this, this.ctx, mapModel, tileRadius);
+    this.dataWereChanged();
+    this.UpdateGreeting(`Map: ${this.map.name}`);
   }
 
   ngOnInit(): void {
@@ -127,7 +116,7 @@ export class HexComponent implements OnInit {
       if (_this.mapId != undefined && !isNaN(_this.mapId) && _this.mapId != 0) {
         _this.hexesService
           .getMap(_this.mapId)
-          .subscribe((mapData: IMap) => this.handleNewMap(mapData));
+          .subscribe((mapData: MapModel) => this.handleNewMap(mapData));
       }
     });
   }
@@ -135,6 +124,33 @@ export class HexComponent implements OnInit {
   /* #region CanvasEvents */
 
   onCanvasMouseClick(event: MouseEvent): void {
+    if (this.mapDragModeOn) {
+      this.mapDragModeOn = false;
+    } else {
+      const tileCoords = this.map.getTileCoordinates(
+        event.offsetX,
+        event.offsetY,
+        this.mapOffsetX,
+        this.mapOffsetY
+      );
+
+      let title = this.map.getTile(tileCoords.x, tileCoords.y);
+      if (title == null && !this.viewOnly) {
+        title = new Tile(
+          this.map,
+          tileCoords.x,
+          tileCoords.y,
+          this.defaultTerrain,
+          null,
+          true
+        );
+        this.map.addTile(title);
+      }
+      if (title != null) {
+        this.selectedTile = title;
+      }
+    }
+
     this.canvasAction = 'click, ' + this.canvasAction;
   }
 
@@ -170,6 +186,11 @@ export class HexComponent implements OnInit {
     // console.log(
     //   `MouseMove: mouse:(${event.offsetX},${event.offsetY}), tile: (${tileCoords.x},${tileCoords.y}), offset=(${this.mapOffsetX}, ${this.mapOffsetY}))`
     // );
+    if (this.mapMouseDown) {
+      if (!this.mapDragModeOn) {
+        this.mapDragModeOn = true;
+      }
+    }
 
     if (this.mapDragModeOn) {
       this.mapOffsetX += event.offsetX - this.mapDragLastOffsetX;
@@ -185,15 +206,14 @@ export class HexComponent implements OnInit {
   onCanvasMouseDown(event: MouseEvent): void {
     this.canvasAction = 'down';
 
-    this.mapDragModeOn = true;
+    this.mapMouseDown = true;
     this.mapDragLastOffsetX = event.offsetX;
     this.mapDragLastOffsetY = event.offsetY;
   }
 
   onCanvasMouseUp(): void {
     this.canvasAction = 'up';
-
-    this.mapDragModeOn = false;
+    this.mapMouseDown = false;
   }
 
   onCanvasMouseWheel(event: WheelEvent): void {
@@ -210,17 +230,63 @@ export class HexComponent implements OnInit {
   }
 
   loadTestMap(): void {
-    this.loadMap(1);
+    this.loadMap(1, true);
   }
 
-  public loadMap(mapId): void {
+  public loadMap(mapId: number, viewOnly: boolean): void {
+    this.viewOnly = viewOnly;
     this.hexesService
       .getMap(mapId)
-      .subscribe((mapData: IMap) => this.handleNewMap(mapData));
+      .subscribe((mapData: MapModel) => this.handleNewMap(mapData));
+  }
+
+  saveMap(): void {
+    console.log(`saving map...`);
+    let tiles = this.map.generateModelsForModifiedTiles();
+    this.hexesService
+      .saveMapTiles(this.map.id, tiles)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          const alert = new Alert(
+            Alert.AlertType.danger,
+            `Could not save the map. Try again or contact support.`
+          );
+          this.alerts.push(alert);
+
+          setTimeout(() => {
+            this.close(alert);
+          }, Alert.DangerTimeout);
+
+          console.log(`Error saving map: ${error.error.detail}`);
+          console.log(error);
+          return throwError(
+            `Could not save the map. Try again or contact support.`
+          );
+        })
+      )
+      .subscribe((id: number) => {
+        if (this.map.id == id) {
+          this.map.resetIsModified();
+        }
+
+        const alert = new Alert(
+          Alert.AlertType.success,
+          `Map changes were saved successfully`
+        );
+        this.alerts.push(alert);
+
+        setTimeout(() => {
+          this.close(alert);
+        }, Alert.SuccessTimeout);
+      });
+  }
+
+  close(alert: Alert) {
+    this.alerts.splice(this.alerts.indexOf(alert), 1);
   }
 
   testPostRequest(): void {
-    let tile = new ITile(1, 25, 'snow', 'gold');
+    let tile = new TileModel(1, 25, 'snow', 'gold');
     this.hexesService.postTile(tile).subscribe((id: number) => {
       console.log(`PostTitle id=${id}`);
     });

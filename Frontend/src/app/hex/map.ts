@@ -1,35 +1,117 @@
+import { IObjectWasChanged } from '../common/IObjectWasChanged';
+import { MapModel } from '../Models/MapModel';
+import { TileModel } from '../Models/TileModel';
 import { Tile } from './tile';
 
-export class Map {
+export class Map implements IObjectWasChanged {
   //  Pixel coordinates of the (0,0) tile on the maps
   private static readonly mapCenterX = 250;
   private static readonly mapCenterY = 200;
-  private tileR = 30;
+  private tileR: number;
   private tileW: number;
   private static readonly dist = 1.1; //  distance between tiles is 10% of the tile width
   private static readonly tileHorizontalShift = 1.5;
 
+  private tiles: Array<Array<Tile>>;
   /* #region  Construction */
 
+  public id: number;
+  public name: string;
+  private yMin: number;
+  private xMins: Array<number>;
+  private xWidths: Array<number>;
+
   constructor(
+    private parent: IObjectWasChanged,
     private ctx: CanvasRenderingContext2D,
-    public name: string,
-    tileRadius: number,
-    private yMin: number,
-    private xMins: Array<number>,
-    private xWidths: Array<number>,
-    private tiles: Array<Array<Tile>>
+    mapModel: MapModel,
+    tileRadius: number
   ) {
+    this.id = mapModel.id;
+    this.name = mapModel.name;
+
     this.tileR = tileRadius;
+    this.updateCanvasFont();
     this.tileW = Map.getTileWidth(this.tileR);
 
-    this.tiles = tiles;
-    this.yMin = yMin;
-    this.xMins = xMins;
-    this.xWidths = xWidths;
+    this.yMin = mapModel.yMin;
+    this.xMins = mapModel.xMins;
+    this.xWidths = mapModel.xWidths;
+
+    this.tiles = this.parseModelTiles(mapModel.tiles);
+
+    this._isModified = false;
+  }
+
+  public parseModelTiles(tilesModels: TileModel[][]): Array<Array<Tile>> {
+    let tiles = new Array<Array<Tile>>();
+    tilesModels.forEach((rowTilesData) => {
+      let rowTiles = new Array<Tile>();
+      rowTilesData.forEach((tileData) => {
+        var tile: Tile;
+        if (tileData == null) {
+          tile = null;
+        } else {
+          tile = new Tile(
+            this,
+            tileData.x,
+            tileData.y,
+            tileData.terrain.toLocaleLowerCase(),
+            tileData.resource == undefined || tileData.resource == 'null'
+              ? undefined
+              : tileData.resource.toLocaleLowerCase()
+          );
+        }
+        rowTiles.push(tile);
+      });
+      tiles.push(rowTiles);
+    });
+
+    return tiles;
+  }
+
+  generateModelsForModifiedTiles(): TileModel[] {
+    let tileModels = [];
+    this.tiles.forEach((_tiles) => {
+      _tiles.forEach((tile) => {
+        if (tile != undefined && tile.isModified()) {
+          tileModels.push(tile.generateModel());
+        }
+      });
+    });
+
+    return tileModels;
   }
 
   /* #endregion */
+
+  public assignTiles(tiles: Array<Array<Tile>>) {
+    this.tiles = tiles;
+  }
+
+  private _isModified: boolean;
+  private setIsModified() {
+    this._isModified = true;
+    this.parent.dataWereChanged();
+  }
+  resetIsModified() {
+    this.tiles.forEach((_tiles) => {
+      _tiles.forEach((tile) => {
+        if (tile != undefined && tile.isModified()) {
+          tile.resetIsModified();
+        }
+      });
+    });
+    this._isModified = false;
+    this.parent.dataWereChanged();
+  }
+  isModified(): boolean {
+    return this._isModified;
+  }
+
+  dataWereChanged() {
+    this.setIsModified();
+  }
 
   static GetTerrainColor(terrain: string): { fill: string; stroke: string } {
     let colorFill: string;
@@ -66,7 +148,7 @@ export class Map {
         colorStroke = '#000000';
         break;
 
-      case 'loot':
+      case 'snow':
         colorFill = '#FFFFFF';
         colorStroke = '#000000';
         break;
@@ -130,7 +212,64 @@ export class Map {
     return { x: cx, y: cy };
   }
 
-  private getTile(x: number, y: number): Tile {
+  addTile(tile: Tile) {
+    let x = tile.getX();
+    let y = tile.getY();
+
+    if (y < this.yMin) {
+      this.addTileAbove(tile);
+    } else if (y >= this.yMin + this.xMins.length) {
+      this.addTileBelow(tile);
+    } else {
+      const yIndex = y - this.yMin;
+      if (x < this.xMins[yIndex]) {
+        this.addTileLeft(tile, yIndex);
+      } else if (x >= this.xMins[yIndex] + this.xWidths[yIndex]) {
+        this.addTileRight(tile, yIndex);
+      } else {
+        this.addTileInside(tile, yIndex);
+      }
+    }
+    this.setIsModified();
+  }
+
+  private addTileAbove(tile: Tile) {
+    this.yMin -= 1;
+    this.xMins.unshift(tile.getX());
+    this.xWidths.unshift(1);
+    this.tiles.unshift([tile]);
+    tile.setY(this.yMin);
+  }
+
+  private addTileBelow(tile: Tile) {
+    this.xMins.push(tile.getX());
+    this.xWidths.push(1);
+    this.tiles.push([tile]);
+    tile.setY(this.yMin + this.tiles.length - 1);
+  }
+
+  private addTileLeft(tile: Tile, yIndex: number) {
+    this.xMins[yIndex]--;
+    this.xWidths[yIndex]++;
+    this.tiles[yIndex].unshift(tile);
+    tile.setX(this.xMins[yIndex]);
+  }
+
+  private addTileRight(tile: Tile, yIndex: number) {
+    this.xWidths[yIndex]++;
+    this.tiles[yIndex].push(tile);
+    tile.setX(this.xMins[yIndex] + this.xWidths[yIndex] - 1);
+  }
+
+  private addTileInside(tile: Tile, yIndex: number) {
+    const currentTile = this.getTile(tile.getX(), tile.getY());
+    if (currentTile != null) {
+      throw Error(`Map already has a tile at (${tile.getX()},${tile.getY()})`);
+    }
+    this.tiles[yIndex][tile.getX() - this.xMins[yIndex]] = tile;
+  }
+
+  getTile(x: number, y: number): Tile {
     if (y < this.yMin) {
       // console.warning('y (' + y + ') < -radius (' + -this._radius + ')');
       return null;
@@ -174,13 +313,16 @@ export class Map {
     return tileR * 0.866 * 2;
   }
 
-  setTileRadius(tileRadius: number) {
-    this.tileR = tileRadius;
+  private updateCanvasFont() {
+    let newFontSize: number = this.tileR;
+    this.ctx.font = `${newFontSize}px Arial`;
   }
 
   changeTileRadius(delta: number): number {
     this.tileR += delta;
     this.tileW = Map.getTileWidth(this.tileR);
+
+    this.updateCanvasFont();
 
     return this.tileR;
   }
@@ -278,8 +420,7 @@ export class Map {
       return;
     }
 
-    const terrain = tile.getTerrain(); // !== undefined ? tile.getTerrain() : tile[2];
-    const color = Map.GetTerrainColor(terrain);
+    const color = Map.GetTerrainColor(tile.terrain);
 
     if (tile.isHovered()) {
       this.drawHex(
@@ -295,7 +436,7 @@ export class Map {
     this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, 1);
 
     const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
-    if (resource !== undefined && resource !== '') {
+    if (resource != null && resource !== '') {
       this.drawHex(
         center.x,
         center.y,
@@ -306,6 +447,9 @@ export class Map {
       );
     }
 
+    if (tile.isModified()) {
+      this.ctx.strokeText('*', center.x, center.y);
+    }
     // this.ctx.font = '12px Arial';
     // this.ctx.textBaseline = 'hanging';
     // const text = `(${tile.getX()},${tile.getY()})`;
@@ -335,8 +479,6 @@ export class Map {
   }
 
   /* #endregion */
-
-  public id: number;
 
   private lastHovered: Tile;
 }

@@ -5,20 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebAPI.Models
 {
-    public interface IMapDescription
-    {
-        int MapId { get; }
-
-        string MapName { get; }
-
-        int OwnerId { get; }
-
-        string OwnerNick { get; }
-
-        byte Published { get; }
-    }
-
-    public class MapDescription : IMapDescription
+    public class MapDescription
     {
         public MapDescription(DAL.Map map, string ownerNick)
         {

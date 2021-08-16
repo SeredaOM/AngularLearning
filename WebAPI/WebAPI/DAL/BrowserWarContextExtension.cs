@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -8,6 +9,12 @@ namespace WebAPI.DAL
 {
     public static class BrowserWarContextExtension
     {
+        public static BrowserWarContext GetContext()
+        {
+            string myConnectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
+            return new BrowserWarContext();
+        }
+
         public static void EnsureBasicDataCreated(this BrowserWarContext context)
         {
             var mtts = new[]{

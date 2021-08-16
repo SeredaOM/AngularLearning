@@ -1,0 +1,14 @@
+canvas.map {
+  border: black 1px solid;
+  margin: 5px;
+  padding: 0px;
+  float: left;
+}
+div.tileOperations {
+  border: 1px solid black;
+  margin: 5px;
+  padding: 5px;
+  float: left;
+  width: 400px;
+  height: 600px;
+}

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Controllers
 {
@@ -20,8 +21,9 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet("mapsForPlayer/{playerId:int}")]
-        public ActionResult<IEnumerable<IMapDescription>> GetMapDataAvailableForPlayer(int playerId)
+        [Route("mapsForPlayer/{playerId:int}")]
+        [HttpGet]
+        public ActionResult<IEnumerable<MapDescription>> GetMapDataAvailableForPlayer(int playerId)
         {
             if (playerId <= 0)
             {
@@ -32,16 +34,42 @@ namespace WebAPI.Controllers
             return Ok(mapData);
         }
 
-        [HttpGet("map/{mapId:int}")]
-        public ActionResult<IMap> GetMap(int mapId)
+        [Route("map/{mapId:int}")]
+        [HttpGet]
+        public ActionResult<Map> GetMap(int mapId)
         {
             if (mapId <= 0)
             {
                 return NotFound();
             }
 
-            IMap map = Map.GetMap(mapId);
+            Map map = Map.GetMap(mapId);
+            if (map == null)
+            {
+                return NotFound();
+            }
+
             return Ok(map);
+        }
+
+        [Route("maptiles/{mapId:int}")]
+        [HttpPost]
+        public ActionResult<int> SaveMapTiles(int mapId, List<Tile> tiles)
+        {
+            ActionResult<int> res;
+            try
+            {
+                Map.SaveMapTiles(mapId, tiles);
+                res = Ok(mapId);
+            }
+            catch (Exception e)
+            {
+                string error = string.Format("Error: {0}\nInnerException: {1}", e.Message, e.InnerException == null ? "" : e.InnerException.Message);
+                _logger.LogError(error);
+                string errorForClient = string.Format("Can't handle 'SaveMapTiles' request for mapId={0}, # of tiles={1}", mapId, tiles.Count);
+                return Problem(errorForClient, null, 501);
+            }
+            return res;
         }
 
         [HttpPost]
