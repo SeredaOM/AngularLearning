@@ -5,12 +5,15 @@ import {
   ViewChild,
   isDevMode,
 } from '@angular/core';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
+import { Alert } from '../common/Alert';
 import { IObjectWasChanged } from '../common/IObjectWasChanged';
 import { HexesService } from './hexes.service';
-
 import { Hex } from './hex';
 import { TileModel } from '../Models/TileModel';
 import { Tile } from './tile';
@@ -25,6 +28,8 @@ import { Map } from './map';
 export class HexComponent implements OnInit, IObjectWasChanged {
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
+
+  alerts: Alert[] = [];
 
   constructor(
     private cookieService: CookieService,
@@ -240,9 +245,44 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     let tiles = this.map.generateModelsForModifiedTiles();
     this.hexesService
       .saveMapTiles(this.map.id, tiles)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          const alert = new Alert(
+            Alert.AlertType.danger,
+            `Could not save the map. Try again or contact support.`
+          );
+          this.alerts.push(alert);
+
+          setTimeout(() => {
+            this.close(alert);
+          }, Alert.DangerTimeout);
+
+          console.log(`Error saving map: ${error.error.detail}`);
+          console.log(error);
+          return throwError(
+            `Could not save the map. Try again or contact support.`
+          );
+        })
+      )
       .subscribe((id: number) => {
-        console.log(`PostMap id=${id}`);
+        if (this.map.id == id) {
+          this.map.resetIsModified();
+        }
+
+        const alert = new Alert(
+          Alert.AlertType.success,
+          `Map changes were saved successfully`
+        );
+        this.alerts.push(alert);
+
+        setTimeout(() => {
+          this.close(alert);
+        }, Alert.SuccessTimeout);
       });
+  }
+
+  close(alert: Alert) {
+    this.alerts.splice(this.alerts.indexOf(alert), 1);
   }
 
   testPostRequest(): void {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebAPI.Controllers
 {
@@ -43,14 +44,32 @@ namespace WebAPI.Controllers
             }
 
             Map map = Map.GetMap(mapId);
+            if (map == null)
+            {
+                return NotFound();
+            }
+
             return Ok(map);
         }
 
         [Route("maptiles/{mapId:int}")]
         [HttpPost]
-        public ActionResult<int> SaveMapChanges(int mapId, List<Tile> tiles)
-        {   
-            return Ok(1);
+        public ActionResult<int> SaveMapTiles(int mapId, List<Tile> tiles)
+        {
+            ActionResult<int> res;
+            try
+            {
+                Map.SaveMapTiles(mapId, tiles);
+                res = Ok(mapId);
+            }
+            catch (Exception e)
+            {
+                string error = string.Format("Error: {0}\nInnerException: {1}", e.Message, e.InnerException == null ? "" : e.InnerException.Message);
+                _logger.LogError(error);
+                string errorForClient = string.Format("Can't handle 'SaveMapTiles' request for mapId={0}, # of tiles={1}", mapId, tiles.Count);
+                return Problem(errorForClient, null, 501);
+            }
+            return res;
         }
 
         [HttpPost]

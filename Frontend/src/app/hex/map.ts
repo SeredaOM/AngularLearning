@@ -94,6 +94,17 @@ export class Map implements IObjectWasChanged {
     this._isModified = true;
     this.parent.dataWereChanged();
   }
+  resetIsModified() {
+    this.tiles.forEach((_tiles) => {
+      _tiles.forEach((tile) => {
+        if (tile != undefined && tile.isModified()) {
+          tile.resetIsModified();
+        }
+      });
+    });
+    this._isModified = false;
+    this.parent.dataWereChanged();
+  }
   isModified(): boolean {
     return this._isModified;
   }

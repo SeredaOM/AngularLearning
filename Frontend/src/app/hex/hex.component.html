@@ -1,12 +1,12 @@
 <canvas #canvas width="900" height="600" class="map" (click)="onCanvasMouseClick($event)" (mousemove)="onCanvasMouseMove($event)"
   (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp()" (mousewheel)="onCanvasMouseWheel($event)">
 </canvas>
-<div class="tileOperations" style="height: 400px;">
+<div class="tileOperations">
   <div>
     <app-tile-info [selectedTile]="selectedTile" [viewOnly]="viewOnly"></app-tile-info>
   </div>
   <hr />
-  <button mat-stroked-button (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
+  <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
   | New tile terrain: <app-terrain-selector [viewOnly]="viewOnly" [(selectedTerrain)]="defaultTerrain"></app-terrain-selector>
   <hr />
   <button (click)="addHex()">Add Hex</button>
@@ -17,4 +17,7 @@
 
   <h1>Action {{ canvasAction }}</h1>
   <h2>Animate time: {{animationTime}} ms</h2>
+  <p *ngFor="let alert of alerts">
+    <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+  </p>
 </div>

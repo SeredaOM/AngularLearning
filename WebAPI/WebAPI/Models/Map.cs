@@ -13,8 +13,9 @@ namespace WebAPI.Models
 
         #region Construction
 
-        public Map(string name, Tile[][] tiles, int yMin, int[] xMins, int[] xWidths)
+        public Map(int id, string name, Tile[][] tiles, int yMin, int[] xMins, int[] xWidths)
         {
+            Id = id;
             Name = name;
 
             _yMin = yMin;
@@ -27,8 +28,7 @@ namespace WebAPI.Models
         {
             List<MapDescription> mapData;
 
-            string myConnectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
-            using (BrowserWarContext context = new BrowserWarContext())
+            using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
             {
                 mapData = context.Maps
                     .Include(m => m.Owner)
@@ -40,7 +40,7 @@ namespace WebAPI.Models
             return mapData;
         }
 
-        internal static Map FillMapFromData(string name, ICollection<DAL.MapTile> tilesData)
+        internal static Map FillMapFromData(int mapId, string name, ICollection<DAL.MapTile> tilesData)
         {
             var rowNumbers = tilesData.GroupBy(tile => tile.Y).Select(g => g.Key).ToArray();
             var xMins = new int[rowNumbers.Length];
@@ -67,9 +67,41 @@ namespace WebAPI.Models
                 }
             }
 
-            var map = new Map(name, tiles, minY, xMins, xWidths);
+            var map = new Map(mapId, name, tiles, minY, xMins, xWidths);
 
             return map;
+        }
+
+        public static void SaveMapTiles(int mapId, List<Tile> tiles)
+        {
+            using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
+            {
+                List<MapTile> dbTiles = context.MapTiles.Where(tile => tile.MapId == mapId).ToList();
+                foreach (var tile in tiles)
+                {
+                    var dbTile = dbTiles.Where(t => t.X == tile.X && t.Y == tile.Y).SingleOrDefault();
+                    if (dbTile == null)
+                    {
+                        if (tile.Terrain != TerrainType.Invalid)
+                        {
+                            dbTile = new MapTile() { MapId = mapId, X = (short)tile.X, Y = (short)tile.Y, MapTerrainTypeId = (byte)tile.Terrain };
+                            context.MapTiles.Add(dbTile);
+                        }
+                    }
+                    else
+                    {
+                        if (tile.Terrain == TerrainType.Invalid)
+                        {
+                            context.MapTiles.Remove(dbTile);
+                        }
+                        else
+                        {
+                            dbTile.MapTerrainTypeId = (byte)tile.Terrain;
+                        }
+                    }
+                }
+                context.SaveChanges();
+            }
         }
 
         public static Map GetMap(int mapId)
@@ -90,7 +122,7 @@ namespace WebAPI.Models
                 }
                 else
                 {
-                    map = FillMapFromData(mapData.Name, mapData.MapTiles);
+                    map = FillMapFromData(mapId, mapData.Name, mapData.MapTiles);
                 }
             }
 
@@ -140,7 +172,7 @@ namespace WebAPI.Models
                 xWidths[y + radius] = xWidth;
             }
 
-            return new Map("New round map", tiles, -radius, xMins, xWidths);
+            return new Map(0, "New round map", tiles, -radius, xMins, xWidths);
         }
 
         #endregion

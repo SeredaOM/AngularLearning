@@ -37,6 +37,9 @@ export class Tile {
     this._isModified = true;
     this.parent.dataWereChanged();
   }
+  resetIsModified() {
+    this._isModified = false;
+  }
   isModified(): boolean {
     return this._isModified;
   }
