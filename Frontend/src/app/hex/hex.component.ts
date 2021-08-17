@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ElementRef,
-  ViewChild,
-  isDevMode,
-} from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, isDevMode } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
@@ -74,10 +68,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     let ctxOS = this.offscreenCanvas.getContext('2d');
     ctxOS.font = 'italic bold 48px serif';
     ctxOS.textBaseline = 'hanging';
-    const text =
-      greeting +
-      (isDevMode() ? ' (DevMode: ON)' : '') +
-      (this.viewOnly ? ', view only' : '');
+    const text = greeting + (isDevMode() ? ' (DevMode: ON)' : '') + (this.viewOnly ? ', view only' : '');
     const measure = ctxOS.measureText(text);
     ctxOS.strokeText(
       text,
@@ -126,9 +117,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
       _this.UpdateGreeting(`Hello hex (mapId=${this.mapId})!!!`);
 
       if (_this.mapId != undefined && !isNaN(_this.mapId) && _this.mapId != 0) {
-        _this.hexesService
-          .getMap(_this.mapId)
-          .subscribe((mapData: MapModel) => this.handleNewMap(mapData));
+        _this.hexesService.getMap(_this.mapId).subscribe((mapData: MapModel) => this.handleNewMap(mapData));
       }
     });
   }
@@ -139,23 +128,11 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     if (this.mapDragModeOn) {
       this.mapDragModeOn = false;
     } else {
-      const tileCoords = this.map.getTileCoordinates(
-        event.offsetX,
-        event.offsetY,
-        this.mapOffsetX,
-        this.mapOffsetY
-      );
+      const tileCoords = this.map.getTileCoordinates(event.offsetX, event.offsetY, this.mapOffsetX, this.mapOffsetY);
 
       let title = this.map.getTile(tileCoords.x, tileCoords.y);
       if (title == null && !this.viewOnly) {
-        title = new Tile(
-          this.map,
-          tileCoords.x,
-          tileCoords.y,
-          this.defaultTerrain,
-          null,
-          true
-        );
+        title = new Tile(this.map, tileCoords.x, tileCoords.y, this.defaultTerrain, null, true);
         this.map.addTile(title);
       }
       if (title != null) {
@@ -172,23 +149,11 @@ export class HexComponent implements OnInit, IObjectWasChanged {
       return;
     }
 
-    const tileCoords = this.map.getTileCoordinates(
-      event.offsetX,
-      event.offsetY,
-      this.mapOffsetX,
-      this.mapOffsetY
-    );
+    const tileCoords = this.map.getTileCoordinates(event.offsetX, event.offsetY, this.mapOffsetX, this.mapOffsetY);
     if (isNaN(tileCoords.x) || isNaN(tileCoords.y)) {
-      console.log(
-        `Can't identify tile on mouse move (${event.offsetX},${event.offsetY})`
-      );
+      console.log(`Can't identify tile on mouse move (${event.offsetX},${event.offsetY})`);
 
-      const tileCoords = this.map.getTileCoordinates(
-        event.offsetX,
-        event.offsetY,
-        this.mapOffsetX,
-        this.mapOffsetY
-      );
+      const tileCoords = this.map.getTileCoordinates(event.offsetX, event.offsetY, this.mapOffsetX, this.mapOffsetY);
 
       return;
     }
@@ -228,7 +193,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.mapMouseDown = false;
   }
 
-  onCanvasMouseWheel(event: WheelEvent): void {
+  onCanvasMouseWheel(event: WheelEvent): Boolean {
     const newTileRadius = this.map.changeTileRadius(-Math.sign(event.deltaY));
     this.cookieService.set('tileRadius', newTileRadius.toString());
 
@@ -252,9 +217,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   public loadMap(mapId: number, viewOnly: boolean): void {
     this.viewOnly = viewOnly;
-    this.hexesService
-      .getMap(mapId)
-      .subscribe((mapData: MapModel) => this.handleNewMap(mapData));
+    this.hexesService.getMap(mapId).subscribe((mapData: MapModel) => this.handleNewMap(mapData));
   }
 
   saveMap(): void {
@@ -264,10 +227,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
       .saveMapTiles(this.map.id, tiles)
       .pipe(
         catchError((error: HttpErrorResponse) => {
-          const alert = new Alert(
-            Alert.AlertType.danger,
-            `Could not save the map. Try again or contact support.`
-          );
+          const alert = new Alert(Alert.AlertType.danger, `Could not save the map. Try again or contact support.`);
           this.alerts.push(alert);
 
           setTimeout(() => {
@@ -276,9 +236,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
           console.log(`Error saving map: ${error.error.detail}`);
           console.log(error);
-          return throwError(
-            `Could not save the map. Try again or contact support.`
-          );
+          return throwError(`Could not save the map. Try again or contact support.`);
         })
       )
       .subscribe((id: number) => {
@@ -286,10 +244,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
           this.map.resetIsModified();
         }
 
-        const alert = new Alert(
-          Alert.AlertType.success,
-          `Map changes were saved successfully`
-        );
+        const alert = new Alert(Alert.AlertType.success, `Map changes were saved successfully`);
         this.alerts.push(alert);
 
         setTimeout(() => {

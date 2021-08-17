@@ -162,12 +162,7 @@ export class Map implements IObjectWasChanged {
   }
 
   //  converts pixels of the canvas to the tile coordinates on the map
-  getTileCoordinates(
-    clickX: number,
-    clickY: number,
-    offsetX: number,
-    offsetY: number
-  ): { x: number; y: number } {
+  getTileCoordinates(clickX: number, clickY: number, offsetX: number, offsetY: number): { x: number; y: number } {
     //  relative position around the center
     const x = clickX - offsetX - Map.mapCenterX;
     const y = clickY - offsetY - Map.mapCenterY;
@@ -184,22 +179,10 @@ export class Map implements IObjectWasChanged {
   }
 
   //  calculates the pixels' coordinates for the tile based on its cartesians map coordinates
-  getTileCenterCoordinates(
-    tileX: number,
-    tileY: number,
-    offsetX: number,
-    offsetY: number
-  ): { x: number; y: number } {
+  getTileCenterCoordinates(tileX: number, tileY: number, offsetX: number, offsetY: number): { x: number; y: number } {
     //  https://www.redblobgames.com/grids/hexagons/#hex-to-pixel
-    const cx =
-      offsetX +
-      Map.mapCenterX +
-      (Math.sqrt(3) * tileX + (Math.sqrt(3) * tileY) / 2) *
-        (this.tileR * Map.dist);
-    const cy =
-      offsetY +
-      Map.mapCenterY +
-      tileY * (this.tileR * Map.dist) * Map.tileHorizontalShift;
+    const cx = offsetX + Map.mapCenterX + (Math.sqrt(3) * tileX + (Math.sqrt(3) * tileY) / 2) * (this.tileR * Map.dist);
+    const cy = offsetY + Map.mapCenterY + tileY * (this.tileR * Map.dist) * Map.tileHorizontalShift;
 
     //  empirical
     // const cx =
@@ -329,14 +312,7 @@ export class Map implements IObjectWasChanged {
 
   /* #region Drawing */
 
-  drawHex(
-    cx: number,
-    cy: number,
-    radius: number,
-    fillColor: string,
-    strokeColor: string,
-    strokeWidth: number
-  ): void {
+  drawHex(cx: number, cy: number, radius: number, fillColor: string, strokeColor: string, strokeWidth: number): void {
     const halfWidth = radius * 0.866; // tileR*sin(60)
 
     this.ctx.fillStyle = fillColor;
@@ -404,12 +380,7 @@ export class Map implements IObjectWasChanged {
   }
 
   private drawTile(tile: Tile, offsetX: number, offsetY: number): void {
-    const center = this.getTileCenterCoordinates(
-      tile.getX(),
-      tile.getY(),
-      offsetX,
-      offsetY
-    );
+    const center = this.getTileCenterCoordinates(tile.getX(), tile.getY(), offsetX, offsetY);
 
     if (
       center.x < 0 - this.tileW ||
@@ -423,28 +394,14 @@ export class Map implements IObjectWasChanged {
     const color = Map.GetTerrainColor(tile.terrain);
 
     if (tile.isHovered()) {
-      this.drawHex(
-        center.x,
-        center.y,
-        this.tileR + 2,
-        color.fill,
-        color.stroke,
-        1
-      );
+      this.drawHex(center.x, center.y, this.tileR + 2, color.fill, color.stroke, 1);
     }
 
     this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, 1);
 
     const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
     if (resource != null && resource !== '') {
-      this.drawHex(
-        center.x,
-        center.y,
-        this.tileR / 2,
-        color.fill,
-        color.stroke,
-        2
-      );
+      this.drawHex(center.x, center.y, this.tileR / 2, color.fill, color.stroke, 2);
     }
 
     if (tile.isModified()) {

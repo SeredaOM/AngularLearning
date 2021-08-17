@@ -19,9 +19,7 @@ export class MapsComponent implements OnInit {
   ngOnInit(): void {
     this.hexesService
       .getMapDataAvailableForPlayer(1)
-      .subscribe((mapDescriptions: IMapDescription[]) =>
-        this.handleNewMapData(mapDescriptions)
-      );
+      .subscribe((mapDescriptions: IMapDescription[]) => this.handleNewMapData(mapDescriptions));
   }
 
   loadMap(mapId): void {

@@ -17,9 +17,7 @@ export class HexesService {
   };
 
   public getMapDataAvailableForPlayer(playerId: number) {
-    return this.httpClient.get(
-      ApiService.getHost() + '/hexes/mapsForPlayer/' + playerId
-    );
+    return this.httpClient.get(ApiService.getHost() + '/hexes/mapsForPlayer/' + playerId);
   }
 
   public getMap(mapId: number) {
@@ -35,10 +33,6 @@ export class HexesService {
   }
 
   public postTile(tile: TileModel) {
-    return this.httpClient.post(
-      ApiService.getHost() + '/hexes',
-      JSON.stringify(tile),
-      HexesService.httpOptions
-    );
+    return this.httpClient.post(ApiService.getHost() + '/hexes', JSON.stringify(tile), HexesService.httpOptions);
   }
 }

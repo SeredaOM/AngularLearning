@@ -7,11 +7,6 @@ export class Tile {
     return this._terrain;
   }
   public set terrain(value: string) {
-    console.log(
-      `Tile (${this.getX()},${this.getY()}): Terrain has changed from ${
-        this._terrain
-      } to ${value}`
-    );
     this._terrain = value;
     this.setIsModified();
   }
@@ -73,16 +68,7 @@ export class Tile {
   }
 
   public static getTerrainTypes() {
-    return [
-      'Invalid',
-      'Water',
-      'Desert',
-      'Swamp',
-      'Plain',
-      'Hill',
-      'Mountain',
-      'Snow',
-    ];
+    return ['Invalid', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
   }
 
   public static getEmptyTile() {
