@@ -54,7 +54,9 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   mapIsModified = false;
   selectedTile = Tile.getEmptyTile();
-  defaultTerrain = Tile.getTerrainTypes()[0].toLowerCase();
+
+  tileRadius: number = NaN;
+  defaultTerrain: string = null;
 
   canvasAction = '';
   animationTime = 0;
@@ -90,19 +92,29 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
     this.selectedTile = Tile.getEmptyTile();
 
-    let tileRadius = parseInt(this.cookieService.get('tileRadius'));
-    if (isNaN(tileRadius)) {
-      tileRadius = 30;
-      this.cookieService.set('tileRadius', tileRadius.toString());
-    }
-
-    this.map = new Map(this, this.ctx, mapModel, tileRadius);
+    this.map = new Map(this, this.ctx, mapModel, this.tileRadius);
     this.dataWereChanged();
     this.UpdateGreeting(`Map: ${this.map.name}`);
   }
 
+  private loadSettingsFromCookies() {
+    this.tileRadius = parseInt(this.cookieService.get(HexComponent.cookieNameTileRadius));
+    if (isNaN(this.tileRadius)) {
+      this.tileRadius = 30;
+      this.cookieService.set(HexComponent.cookieNameTileRadius, this.tileRadius.toString());
+    }
+
+    this.defaultTerrain = this.cookieService.get(HexComponent.cookieNameDefaultTerrain);
+    if (this.defaultTerrain == null || this.defaultTerrain == '') {
+      this.defaultTerrain = Tile.getTerrainTypes()[0].toLowerCase();
+      this.cookieService.set(HexComponent.cookieNameDefaultTerrain, this.defaultTerrain);
+    }
+  }
+
   ngOnInit(): void {
     this.UpdateGreeting(`Hello hex (mapId to be identified)!!!`);
+
+    this.loadSettingsFromCookies();
 
     this.map = undefined;
     this.animate();
@@ -223,6 +235,9 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}. NewTileRadius: ${newTileRadius}`;
   }
 
+  onDeffaultTerrainSelectionChange(value) {
+    this.cookieService.set(HexComponent.cookieNameDefaultTerrain, value);
+  }
   /* #endregion */
 
   addHex(): void {
@@ -310,5 +325,12 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     }
     var t1 = performance.now();
     this.animationTime = Math.floor((t1 - t0) * 10) / 10;
+  }
+
+  private static get cookieNameTileRadius() {
+    return 'tileRadius';
+  }
+  private static get cookieNameDefaultTerrain() {
+    return 'defaultTerrain';
   }
 }
