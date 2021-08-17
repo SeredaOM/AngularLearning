@@ -233,6 +233,8 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.cookieService.set('tileRadius', newTileRadius.toString());
 
     this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}. NewTileRadius: ${newTileRadius}`;
+
+    return false;
   }
 
   onDeffaultTerrainSelectionChange(value) {
