@@ -3,6 +3,8 @@ canvas.map {
   margin: 5px;
   padding: 0px;
   float: left;
+  width: 900px;
+  height: 600px;
 }
 div.tileOperations {
   border: 1px solid black;
