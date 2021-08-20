@@ -143,6 +143,10 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.canvasAction = 'click, ' + this.canvasAction;
   }
 
+  onCanvasRightClick(event: MouseEvent): Boolean {
+    return false;
+  }
+
   onCanvasMouseMove(event: MouseEvent): void {
     if (this.map === undefined) {
       console.log(`Map is not defined`);
@@ -188,7 +192,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.mapDragLastOffsetY = event.offsetY;
   }
 
-  onCanvasMouseUp(): void {
+  onCanvasMouseUp(event: MouseEvent): void {
     this.canvasAction = 'up';
     this.mapMouseDown = false;
   }
