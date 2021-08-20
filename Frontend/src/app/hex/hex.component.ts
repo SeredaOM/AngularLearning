@@ -203,6 +203,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     }
 
     const newTileRadius = this.map.changeTileRadius(-Math.sign(event.deltaY));
+    this.tileRadius = newTileRadius;
     this.cookieService.set('tileRadius', newTileRadius.toString());
 
     this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}. NewTileRadius: ${newTileRadius}`;

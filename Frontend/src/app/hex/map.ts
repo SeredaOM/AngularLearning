@@ -302,7 +302,14 @@ export class Map implements IObjectWasChanged {
   }
 
   changeTileRadius(delta: number): number {
-    this.tileR += delta;
+    let newTileRadius = this.tileR + delta;
+    if (newTileRadius <= 1) {
+      newTileRadius = 1;
+    }
+    if (newTileRadius >= 50) {
+      newTileRadius = 50;
+    }
+    this.tileR = newTileRadius;
     this.tileW = Map.getTileWidth(this.tileR);
 
     this.updateCanvasFont();
