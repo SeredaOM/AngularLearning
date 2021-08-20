@@ -198,6 +198,10 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   }
 
   onCanvasMouseWheel(event: WheelEvent): Boolean {
+    if (this.map == null) {
+      return true;
+    }
+
     const newTileRadius = this.map.changeTileRadius(-Math.sign(event.deltaY));
     this.cookieService.set('tileRadius', newTileRadius.toString());
 
