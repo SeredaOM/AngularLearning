@@ -1,4 +1,5 @@
 import { IObjectWasChanged } from '../common/IObjectWasChanged';
+import { ScalableImage } from '../common/ScalableImage';
 import { MapModel } from '../Models/MapModel';
 import { TileModel } from '../Models/TileModel';
 import { Tile } from './tile';
@@ -11,6 +12,7 @@ export class Map implements IObjectWasChanged {
   private tileW: number;
   private static readonly dist = 1.1; //  distance between tiles is 10% of the tile width
   private static readonly tileHorizontalShift = 1.5;
+  private tileStrokeWidth: number;
 
   private tiles: Array<Array<Tile>>;
   /* #region  Construction */
@@ -30,15 +32,13 @@ export class Map implements IObjectWasChanged {
     this.id = mapModel.id;
     this.name = mapModel.name;
 
-    this.tileR = tileRadius;
-    this.updateCanvasFont();
-    this.tileW = Map.getTileWidth(this.tileR);
-
     this.yMin = mapModel.yMin;
     this.xMins = mapModel.xMins;
     this.xWidths = mapModel.xWidths;
 
     this.tiles = this.parseModelTiles(mapModel.tiles);
+
+    this.updateSizes(tileRadius);
 
     this._isModified = false;
   }
@@ -306,12 +306,19 @@ export class Map implements IObjectWasChanged {
     if (newTileRadius >= 50) {
       newTileRadius = 50;
     }
-    this.tileR = newTileRadius;
-    this.tileW = Map.getTileWidth(this.tileR);
 
-    this.updateCanvasFont();
+    this.updateSizes(newTileRadius);
 
     return this.tileR;
+  }
+
+  public updateSizes(newTileRadius: number) {
+    this.tileR = newTileRadius;
+    this.tileW = Map.getTileWidth(this.tileR);
+    this.tileStrokeWidth = (1.5 * this.tileR) / ScalableImage.BaselineSize;
+    this.updateCanvasFont();
+
+    Map.imgGold.updateFactors(this.tileR);
   }
 
   /* #region Drawing */
@@ -396,15 +403,16 @@ export class Map implements IObjectWasChanged {
     }
 
     const color = Map.GetTerrainColor(tile.terrain);
-
     if (tile.isHovered()) {
-      this.drawHex(center.x, center.y, this.tileR + 2, color.fill, color.stroke, 1);
+      this.drawHex(center.x, center.y, this.tileR + 2, color.fill, color.stroke, this.tileStrokeWidth);
     }
 
-    this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, 1);
+    this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, this.tileStrokeWidth);
 
     const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
     if (resource != null && resource !== '') {
+      const img = Map.images[resource];
+      img.draw(this.ctx, center.x, center.y);
       this.drawHex(center.x, center.y, this.tileR / 2, color.fill, color.stroke, 2);
     }
 
@@ -442,4 +450,7 @@ export class Map implements IObjectWasChanged {
   /* #endregion */
 
   private lastHovered: Tile;
+
+  private static imgGold: ScalableImage = new ScalableImage('../../assets/images/gold.svg');
+  private static images = { gold: Map.imgGold };
 }
