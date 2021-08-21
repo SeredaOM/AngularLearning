@@ -1,5 +1,7 @@
-<canvas #canvas width="900" height="600" class="map" (click)="onCanvasMouseClick($event)" (mousemove)="onCanvasMouseMove($event)"
-  (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp()" (mousewheel)="onCanvasMouseWheel($event)">
+<canvas #canvas width="900" height="600" class="map" (click)="onCanvasMouseClick($event)" (contextmenu)="onCanvasRightClick($event)"
+  (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp($event)" (mousemove)="onCanvasMouseMove($event)"
+  (mousewheel)="onCanvasMouseWheel($event)">
+
 </canvas>
 <div class="tileOperations">
   <div>

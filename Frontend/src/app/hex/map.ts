@@ -246,9 +246,6 @@ export class Map implements IObjectWasChanged {
 
   private addTileInside(tile: Tile, yIndex: number) {
     const currentTile = this.getTile(tile.getX(), tile.getY());
-    if (currentTile != null) {
-      throw Error(`Map already has a tile at (${tile.getX()},${tile.getY()})`);
-    }
     this.tiles[yIndex][tile.getX() - this.xMins[yIndex]] = tile;
   }
 
@@ -302,7 +299,14 @@ export class Map implements IObjectWasChanged {
   }
 
   changeTileRadius(delta: number): number {
-    this.tileR += delta;
+    let newTileRadius = this.tileR + delta;
+    if (newTileRadius <= 1) {
+      newTileRadius = 1;
+    }
+    if (newTileRadius >= 50) {
+      newTileRadius = 50;
+    }
+    this.tileR = newTileRadius;
     this.tileW = Map.getTileWidth(this.tileR);
 
     this.updateCanvasFont();
