@@ -124,19 +124,26 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   /* #region CanvasEvents */
 
-  onCanvasMouseClick(event: MouseEvent): void {
+  handleCommonCanvaseMouseClick(event: MouseEvent): { x: number; y: number } {
     if (this.mapDragModeOn) {
       this.mapDragModeOn = false;
+      return null;
     } else {
       const tileCoords = this.map.getTileCoordinates(event.offsetX, event.offsetY, this.mapOffsetX, this.mapOffsetY);
+      return tileCoords;
+    }
+  }
 
-      let title = this.map.getTile(tileCoords.x, tileCoords.y);
-      if (title == null && !this.viewOnly) {
-        title = new Tile(this.map, tileCoords.x, tileCoords.y, this.defaultTerrain, null, true);
-        this.map.addTile(title);
+  onCanvasMouseClick(event: MouseEvent): void {
+    let tileCoords = this.handleCommonCanvaseMouseClick(event);
+    if (tileCoords != null) {
+      let tile = this.map.getTile(tileCoords.x, tileCoords.y);
+      if (tile == null && !this.viewOnly) {
+        tile = new Tile(this.map, tileCoords.x, tileCoords.y, this.defaultTerrain, null, true);
+        this.map.addTile(tile);
       }
-      if (title != null) {
-        this.selectedTile = title;
+      if (tile != null) {
+        this.selectedTile = tile;
       }
     }
 
@@ -144,6 +151,13 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   }
 
   onCanvasRightClick(event: MouseEvent): Boolean {
+    let tileCoords = this.handleCommonCanvaseMouseClick(event);
+    if (tileCoords != null && !this.viewOnly) {
+      let tile = new Tile(this.map, tileCoords.x, tileCoords.y, this.defaultTerrain, null, true);
+      this.map.addTile(tile);
+      this.selectedTile = tile;
+    }
+
     return false;
   }
 

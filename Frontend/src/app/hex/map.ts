@@ -246,9 +246,6 @@ export class Map implements IObjectWasChanged {
 
   private addTileInside(tile: Tile, yIndex: number) {
     const currentTile = this.getTile(tile.getX(), tile.getY());
-    if (currentTile != null) {
-      throw Error(`Map already has a tile at (${tile.getX()},${tile.getY()})`);
-    }
     this.tiles[yIndex][tile.getX() - this.xMins[yIndex]] = tile;
   }
 
