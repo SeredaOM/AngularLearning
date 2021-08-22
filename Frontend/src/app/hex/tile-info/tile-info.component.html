@@ -1,4 +1,3 @@
-Selected Tile:
-<app-terrain-selector [viewOnly]="viewOnly" [(selectedTerrain)]="selectedTile.terrain">
-</app-terrain-selector>
-({{ selectedTile.x }},{{ selectedTile.y }})
+Selected Tile ({{ selectedTile.x }},{{ selectedTile.y }}):
+<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.terrain" valuesType="terrain"></app-value-selector>
+<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.resource" valuesType="resources"></app-value-selector>

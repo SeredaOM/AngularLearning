@@ -62,7 +62,8 @@ namespace WebAPI.Models
 
                 foreach (var tileData in rowTiles)
                 {
-                    Tile tile = new Tile(tileData.X, tileData.Y, (TerrainType)tileData.MapTerrainTypeId, null);
+                    ResourceType? rt = tileData.MapResourceTypeId == null ? null : (ResourceType)tileData.MapResourceTypeId;
+                    Tile tile = new Tile(tileData.X, tileData.Y, (TerrainType)tileData.MapTerrainTypeId, rt);
                     tilesRow[tileData.X - xMin] = tile;
                 }
             }
@@ -84,7 +85,7 @@ namespace WebAPI.Models
                     {
                         if (tile.Terrain != TerrainType.Invalid)
                         {
-                            dbTile = new MapTile() { MapId = mapId, X = (short)tile.X, Y = (short)tile.Y, MapTerrainTypeId = (byte)tile.Terrain };
+                            dbTile = new MapTile() { MapId = mapId, X = (short)tile.X, Y = (short)tile.Y, MapTerrainTypeId = (byte)tile.Terrain, MapResourceTypeId = tile.Resource == null ? null : (short)tile.Resource };
                             context.MapTiles.Add(dbTile);
                         }
                     }
@@ -97,6 +98,7 @@ namespace WebAPI.Models
                         else
                         {
                             dbTile.MapTerrainTypeId = (byte)tile.Terrain;
+                            dbTile.MapResourceTypeId = tile.Resource == null ? null : (short)tile.Resource;
                         }
                     }
                 }
@@ -151,7 +153,7 @@ namespace WebAPI.Models
                     if (x == 0 && y == 0)
                     {
                         terrain = TerrainType.Plain;
-                        resource = ResourceType.Castle;
+                        resource = ResourceType.Settlement;
                     }
                     else if (x == -radius || y == -radius || x + y == -radius || x == radius || y == radius || x + y == radius)
                     {

@@ -9,8 +9,9 @@
   </div>
   <hr />
   <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
-  | New tile terrain: <app-terrain-selector [viewOnly]="viewOnly" [(selectedTerrain)]="defaultTerrain"
-    (selectedTerrainChange)="onDeffaultTerrainSelectionChange($event)"></app-terrain-selector>
+  | New tile terrain:
+  <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="defaultTerrain"
+    (selectedValueChange)="onDeffaultTerrainSelectionChange($event)" valuesType="terrain"></app-value-selector>
   <hr />
   <button (click)="addHex()">Add Hex</button>
 

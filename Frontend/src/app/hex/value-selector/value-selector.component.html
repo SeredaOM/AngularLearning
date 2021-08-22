@@ -1,0 +1,3 @@
+<mat-select class="valueSelector" [(value)]="selectedValue" [disabled]="viewOnly" (selectionChange)="onSelectionChange($event.value)">
+    <mat-option *ngFor="let value of possibleValues" [value]="value.toLowerCase()">{{value}}</mat-option>
+</mat-select>

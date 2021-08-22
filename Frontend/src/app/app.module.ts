@@ -22,7 +22,7 @@ import { ArenaComponent } from './arena/arena.component';
 import { MapsComponent } from './maps/maps.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TileInfoComponent } from './hex/tile-info/tile-info.component';
-import { TerrainSelectorComponent } from './hex/terrain-selector/terrain-selector.component';
+import { ValueSelectorComponent } from './hex/value-selector/value-selector.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
@@ -35,7 +35,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     ArenaComponent,
     MapsComponent,
     TileInfoComponent,
-    TerrainSelectorComponent,
+    ValueSelectorComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),

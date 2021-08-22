@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TerrainSelectorComponent } from './terrain-selector.component';
+import { ValueSelectorComponent } from './value-selector.component';
 
 describe('TerrainSelectorComponent', () => {
-  let component: TerrainSelectorComponent;
-  let fixture: ComponentFixture<TerrainSelectorComponent>;
+  let component: ValueSelectorComponent;
+  let fixture: ComponentFixture<ValueSelectorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TerrainSelectorComponent ]
-    })
-    .compileComponents();
+      declarations: [ValueSelectorComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TerrainSelectorComponent);
+    fixture = TestBed.createComponent(ValueSelectorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
