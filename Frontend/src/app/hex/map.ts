@@ -57,9 +57,7 @@ export class Map implements IObjectWasChanged {
             tileData.x,
             tileData.y,
             tileData.terrain.toLocaleLowerCase(),
-            tileData.resource == undefined || tileData.resource == 'null'
-              ? undefined
-              : tileData.resource.toLocaleLowerCase()
+            tileData.resource == undefined || tileData.resource == 'null' ? null : tileData.resource.toLocaleLowerCase()
           );
         }
         rowTiles.push(tile);
@@ -409,11 +407,11 @@ export class Map implements IObjectWasChanged {
 
     this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, this.tileStrokeWidth);
 
-    const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
+    const resource = tile.resource; // !== undefined ? tile.resource : tile[3];
     if (resource != null && resource !== '') {
       const img = Map.images[resource];
       if (img == null) {
-      this.drawHex(center.x, center.y, this.tileR / 2, color.fill, color.stroke, 2);
+        this.drawHex(center.x, center.y, this.tileR / 2, color.fill, color.stroke, 2);
       } else {
         img.draw(this.ctx, center.x, center.y);
       }

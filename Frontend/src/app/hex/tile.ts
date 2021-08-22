@@ -10,21 +10,31 @@ export class Tile {
     this._terrain = value;
     this.setIsModified();
   }
+  private _resource: string;
+  public get resource(): string {
+    return this._resource;
+  }
+  public set resource(value: string) {
+    this._resource = value;
+    this.setIsModified();
+  }
 
   constructor(
     private parent: IObjectWasChanged,
     private x: number,
     private y: number,
     terrain: string,
-    private resource: string,
+    resource: string,
     isModified: boolean = false
   ) {
     this._terrain = terrain;
+    this._resource = resource;
     this._isModified = isModified;
   }
 
   generateModel() {
-    return new TileModel(this.x, this.y, this.terrain, this.resource);
+    const resource = this.resource == undefined || this.resource == null || this.resource == '' ? null : this.resource;
+    return new TileModel(this.x, this.y, this.terrain, resource);
   }
 
   private _isModified: boolean;
@@ -55,10 +65,6 @@ export class Tile {
     this.setIsModified();
   }
 
-  getResource() {
-    return this.resource;
-  }
-
   setHovered(hovered) {
     this.hovered = hovered;
   }
@@ -72,7 +78,7 @@ export class Tile {
   }
 
   public static getResourceTypes() {
-    return ['Invalid', 'Settlement', 'Gold'];
+    return ['', 'Settlement', 'Gold'];
   }
 
   public static getEmptyTile() {
