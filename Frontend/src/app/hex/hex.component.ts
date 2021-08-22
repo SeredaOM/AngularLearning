@@ -45,6 +45,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   private mapId: number = 0;
   viewOnly: boolean = true;
+  viewOnlyForSelectedTile: boolean = this.viewOnly;
 
   mapIsModified = false;
   selectedTile = Tile.getEmptyTile();
@@ -144,6 +145,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
       }
       if (tile != null) {
         this.selectedTile = tile;
+        this.viewOnlyForSelectedTile = this.viewOnly;
         this.map.selectTile(tile);
       }
     }
