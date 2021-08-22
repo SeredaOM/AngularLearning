@@ -412,8 +412,11 @@ export class Map implements IObjectWasChanged {
     const resource = tile.getResource(); // !== undefined ? tile.resource : tile[3];
     if (resource != null && resource !== '') {
       const img = Map.images[resource];
-      img.draw(this.ctx, center.x, center.y);
+      if (img == null) {
       this.drawHex(center.x, center.y, this.tileR / 2, color.fill, color.stroke, 2);
+      } else {
+        img.draw(this.ctx, center.x, center.y);
+      }
     }
 
     if (tile.isModified()) {

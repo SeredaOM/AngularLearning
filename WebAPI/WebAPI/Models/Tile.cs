@@ -18,7 +18,7 @@ namespace WebAPI.Models
     public enum ResourceType
     {
         Invalid,
-        Castle,
+        Settlement,
         Gold,
         Wheet,
     }

@@ -17,7 +17,19 @@ namespace WebAPI.DAL
 
         public static void EnsureBasicDataCreated(this BrowserWarContext context)
         {
-            var mtts = new[]{
+            {   // resource types
+                var mrts = new[]{
+                new MapResourceType{ Id = 1, Name = "Settlement" },
+                new MapResourceType{ Id = 2, Name = "Gold" },
+                };
+                var dbMrtIds = context.MapResourceTypes.Select(mrt => mrt.Id).ToArray();
+                var mrtsToInsert = mrts.Where(mtt => !dbMrtIds.Contains(mtt.Id)).ToArray();
+                context.AddRange(mrtsToInsert);
+                context.SaveChanges();
+            }
+
+            {   // terraint types
+                var mtts = new[]{
                 new MapTerrainType { Id = 1, Name = "Water" },
                 new MapTerrainType { Id = 2, Name = "Desert" },
                 new MapTerrainType { Id = 3, Name = "Swamp" },
@@ -26,10 +38,11 @@ namespace WebAPI.DAL
                 new MapTerrainType { Id = 6, Name = "Mountain" },
                 new MapTerrainType { Id = 7, Name = "Snow" },
                 };
-            var dbIds = context.MapTerrainTypes.Select(mtt => mtt.Id).ToArray();
-            var mttsToInsert = mtts.Where(mtt => !dbIds.Contains(mtt.Id)).ToArray();
-            context.AddRange(mttsToInsert);
-            context.SaveChanges();
+                var dbMttIds = context.MapTerrainTypes.Select(mtt => mtt.Id).ToArray();
+                var mttsToInsert = mtts.Where(mtt => !dbMttIds.Contains(mtt.Id)).ToArray();
+                context.AddRange(mttsToInsert);
+                context.SaveChanges();
+            }
         }
     }
 }

@@ -62,7 +62,8 @@ namespace WebAPI.Models
 
                 foreach (var tileData in rowTiles)
                 {
-                    Tile tile = new Tile(tileData.X, tileData.Y, (TerrainType)tileData.MapTerrainTypeId, null);
+                    ResourceType? rt = tileData.MapResourceTypeId == null ? null : (ResourceType)tileData.MapResourceTypeId;
+                    Tile tile = new Tile(tileData.X, tileData.Y, (TerrainType)tileData.MapTerrainTypeId, rt);
                     tilesRow[tileData.X - xMin] = tile;
                 }
             }
@@ -151,7 +152,7 @@ namespace WebAPI.Models
                     if (x == 0 && y == 0)
                     {
                         terrain = TerrainType.Plain;
-                        resource = ResourceType.Castle;
+                        resource = ResourceType.Settlement;
                     }
                     else if (x == -radius || y == -radius || x + y == -radius || x == radius || y == radius || x + y == radius)
                     {

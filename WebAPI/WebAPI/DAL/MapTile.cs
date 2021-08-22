@@ -12,8 +12,10 @@ namespace WebAPI.DAL
         public short X { get; set; }
         public short Y { get; set; }
         public byte MapTerrainTypeId { get; set; }
+        public short? MapResourceTypeId { get; set; }
 
         public virtual Map Map { get; set; }
+        public virtual MapResourceType MapResourceType { get; set; }
         public virtual MapTerrainType MapTerrainType { get; set; }
     }
 }

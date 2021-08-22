@@ -18,6 +18,7 @@ namespace WebAPI.DAL
 
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<Map> Maps { get; set; }
+        public virtual DbSet<MapResourceType> MapResourceTypes { get; set; }
         public virtual DbSet<MapTerrainType> MapTerrainTypes { get; set; }
         public virtual DbSet<MapTile> MapTiles { get; set; }
         public virtual DbSet<Player> Players { get; set; }
@@ -94,9 +95,35 @@ namespace WebAPI.DAL
                     .HasConstraintName("owner_id");
             });
 
+            modelBuilder.Entity<MapResourceType>(entity =>
+            {
+                entity.ToTable("map_resource_type");
+
+                entity.HasIndex(e => e.Id, "id_UNIQUE")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Name, "name_UNIQUE")
+                    .IsUnique();
+
+                entity.Property(e => e.Id)
+                    .HasColumnType("smallint unsigned")
+                    .HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(45)
+                    .HasColumnName("name");
+            });
+
             modelBuilder.Entity<MapTerrainType>(entity =>
             {
                 entity.ToTable("map_terrain_type");
+
+                entity.HasIndex(e => e.Id, "id_UNIQUE")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Name, "name_UNIQUE")
+                    .IsUnique();
 
                 entity.Property(e => e.Id)
                     .ValueGeneratedOnAdd()
@@ -114,7 +141,9 @@ namespace WebAPI.DAL
 
                 entity.HasIndex(e => e.MapId, "map_id_idx");
 
-                entity.HasIndex(e => e.MapTerrainTypeId, "terrain_type_id_idx");
+                entity.HasIndex(e => e.MapResourceTypeId, "resource_type_id_idx");
+
+                entity.HasIndex(e => e.MapTerrainTypeId, "terrain_type_id_dx");
 
                 entity.HasIndex(e => new { e.MapId, e.X, e.Y }, "x_y_unique")
                     .IsUnique();
@@ -122,6 +151,10 @@ namespace WebAPI.DAL
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.MapId).HasColumnName("map_id");
+
+                entity.Property(e => e.MapResourceTypeId)
+                    .HasColumnType("smallint unsigned")
+                    .HasColumnName("map_resource_type_id");
 
                 entity.Property(e => e.MapTerrainTypeId).HasColumnName("map_terrain_type_id");
 
@@ -134,6 +167,11 @@ namespace WebAPI.DAL
                     .HasForeignKey(d => d.MapId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("map_id");
+
+                entity.HasOne(d => d.MapResourceType)
+                    .WithMany(p => p.MapTiles)
+                    .HasForeignKey(d => d.MapResourceTypeId)
+                    .HasConstraintName("resource_type_id");
 
                 entity.HasOne(d => d.MapTerrainType)
                     .WithMany(p => p.MapTiles)
