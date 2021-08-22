@@ -1,3 +1,0 @@
-<mat-select class="terrainSelector" [(value)]="selectedTerrain" [disabled]="viewOnly" (selectionChange)="onSelectionChange($event.value)">
-    <mat-option *ngFor="let terrain of possibleTerrainTypes" [value]="terrain.toLowerCase()">{{terrain}}</mat-option>
-</mat-select>

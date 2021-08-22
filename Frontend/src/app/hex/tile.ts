@@ -71,6 +71,10 @@ export class Tile {
     return ['Invalid', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
   }
 
+  public static getResourceTypes() {
+    return ['Invalid', 'Settlement', 'Gold'];
+  }
+
   public static getEmptyTile() {
     return new Tile(null, 1, 1, Tile.getTerrainTypes()[0].toLowerCase(), '');
   }
