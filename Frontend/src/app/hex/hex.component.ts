@@ -144,6 +144,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
       }
       if (tile != null) {
         this.selectedTile = tile;
+        this.map.selectTile(tile);
       }
     }
 

@@ -277,14 +277,22 @@ export class Map implements IObjectWasChanged {
   }
 
   hoverTile(x: number, y: number) {
-    if (this.lastHovered != null) {
-      this.lastHovered.setHovered(false);
+    if (this.hoveredTile != null) {
+      this.hoveredTile.hovered = false;
     }
 
-    this.lastHovered = this.getTile(x, y);
-    if (this.lastHovered != null) {
-      this.lastHovered.setHovered(true);
+    this.hoveredTile = this.getTile(x, y);
+    if (this.hoveredTile != null) {
+      this.hoveredTile.hovered = true;
     }
+  }
+
+  selectTile(tile: Tile) {
+    if (this.selectedTile != null) {
+      this.selectedTile.selected = false;
+    }
+    this.selectedTile = tile;
+    tile.selected = true;
   }
 
   static getTileWidth(tileR: number): number {
@@ -401,8 +409,9 @@ export class Map implements IObjectWasChanged {
     }
 
     const color = Map.GetTerrainColor(tile.terrain);
-    if (tile.isHovered()) {
-      this.drawHex(center.x, center.y, this.tileR + 2, color.fill, color.stroke, this.tileStrokeWidth);
+    if (tile.hovered || tile.selected) {
+      const widthFactor = tile.selected ? 1.5 : 1;
+      this.drawHex(center.x, center.y, this.tileR + 2, color.fill, color.stroke, this.tileStrokeWidth * widthFactor);
     }
 
     this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, this.tileStrokeWidth);
@@ -450,7 +459,8 @@ export class Map implements IObjectWasChanged {
 
   /* #endregion */
 
-  private lastHovered: Tile;
+  private hoveredTile: Tile;
+  private selectedTile: Tile;
 
   private static imgGold: ScalableImage = new ScalableImage('../../assets/images/gold.svg');
   private static images = { gold: Map.imgGold };

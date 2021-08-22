@@ -19,6 +19,9 @@ export class Tile {
     this.setIsModified();
   }
 
+  public hovered = false;
+  public selected = false;
+
   constructor(
     private parent: IObjectWasChanged,
     private x: number,
@@ -65,14 +68,6 @@ export class Tile {
     this.setIsModified();
   }
 
-  setHovered(hovered) {
-    this.hovered = hovered;
-  }
-
-  isHovered() {
-    return this.hovered;
-  }
-
   public static getTerrainTypes() {
     return ['Invalid', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
   }
@@ -84,6 +79,4 @@ export class Tile {
   public static getEmptyTile() {
     return new Tile(null, 1, 1, Tile.getTerrainTypes()[0].toLowerCase(), '');
   }
-
-  private hovered = false;
 }
