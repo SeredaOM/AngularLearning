@@ -1,0 +1,7 @@
+<svg width="28" height="28" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+  <path d="M 10 8 l 14 14 l -2 2 l -14 -14 l 2 -2" stroke="black" fill="silver"/>
+  <path d="M 10 8 l 4 -3 l -3 -4 l -7 3 l -3 7 l 4 3 l 3 -4 L 10 8" stroke="black" fill="silver"/>
+ 
+  <path d="M 4 22 l 2 2 l 19 -19 l -2 -2 l -19 19 l 2 2" stroke="black" fill="silver"/>
+  <path d="M 15 5 l 7 7 l 5 1 l -1 -5 l -7 -7 l -4 4 l 7 7 "  stroke="black" fill="silver"/>
+</svg> 
