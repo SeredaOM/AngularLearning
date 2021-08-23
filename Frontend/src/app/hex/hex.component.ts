@@ -48,7 +48,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   viewOnlyForSelectedTile: boolean = this.viewOnly;
 
   mapIsModified = false;
-  selectedTile = Tile.getEmptyTile();
+  selectedTile: Tile = Tile.getEmptyTile();
 
   tileRadius: number = NaN;
   defaultTerrain: string = null;
@@ -144,9 +144,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
         this.map.addTile(tile);
       }
       if (tile != null) {
-        this.selectedTile = tile;
-        this.viewOnlyForSelectedTile = this.viewOnly;
-        this.map.selectTile(tile);
+        this.selectTile(tile);
       }
     }
 
@@ -158,10 +156,16 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     if (tileCoords != null && !this.viewOnly) {
       let tile = new Tile(this.map, tileCoords.x, tileCoords.y, this.defaultTerrain, null, true);
       this.map.addTile(tile);
-      this.selectedTile = tile;
+      this.selectTile(tile);
     }
 
     return false;
+  }
+
+  private selectTile(tile: Tile) {
+    this.selectedTile = tile;
+    this.viewOnlyForSelectedTile = this.viewOnly;
+    this.map.selectTile(tile);
   }
 
   onCanvasMouseMove(event: MouseEvent): void {
