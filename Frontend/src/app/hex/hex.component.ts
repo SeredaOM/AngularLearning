@@ -236,7 +236,13 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   handleKeydownEvent(event: KeyboardEvent) {
     let key = Number(event.key);
     if (isNaN(key)) {
-      //console.log(event);
+      if (event.ctrlKey) {
+        if (event.code == 'KeyS') {
+          this.saveMap();
+          return false;
+        }
+        //console.log(event);
+      }
     } else {
       if (!this.viewOnly) {
         const terrains = Tile.getTerrainTypes();
