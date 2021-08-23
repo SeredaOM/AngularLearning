@@ -230,16 +230,27 @@ export class Map implements IObjectWasChanged {
   }
 
   private addTileLeft(tile: Tile, yIndex: number) {
+    while (tile.getX() < this.xMins[yIndex] - 1) {
+      this.xMins[yIndex]--;
+      this.xWidths[yIndex]++;
+      let emptyTile = new Tile(this, this.xMins[yIndex], tile.getY(), Tile._terrains[0].toLowerCase(), null, true);
+      this.tiles[yIndex].unshift(emptyTile);
+    }
+
     this.xMins[yIndex]--;
     this.xWidths[yIndex]++;
     this.tiles[yIndex].unshift(tile);
-    tile.setX(this.xMins[yIndex]);
   }
 
   private addTileRight(tile: Tile, yIndex: number) {
+    let currentMaxX = this.xMins[yIndex] + this.xWidths[yIndex];
+    while (tile.getX() > currentMaxX) {
+      this.xWidths[yIndex]++;
+      let emptyTile = new Tile(this, currentMaxX++, tile.getY(), Tile._terrains[0].toLowerCase(), null, true);
+      this.tiles[yIndex].push(emptyTile);
+    }
     this.xWidths[yIndex]++;
     this.tiles[yIndex].push(tile);
-    tile.setX(this.xMins[yIndex] + this.xWidths[yIndex] - 1);
   }
 
   private addTileInside(tile: Tile, yIndex: number) {
