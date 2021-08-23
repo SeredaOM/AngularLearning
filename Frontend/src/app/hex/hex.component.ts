@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, isDevMode } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, isDevMode, HostListener } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
@@ -230,6 +230,32 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.canvasAction = `wheel: x=${event.deltaX}, y=${event.deltaY}, z=${event.deltaZ}. NewTileRadius: ${newTileRadius}`;
 
     return false;
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeydownEvent(event: KeyboardEvent) {
+    let key = Number(event.key);
+    if (isNaN(key)) {
+      //console.log(event);
+    } else {
+      if (!this.viewOnly) {
+        const terrains = Tile.getTerrainTypes();
+        if (key < terrains.length) {
+          const newTerrain = terrains[key].toLowerCase();
+          if (event.ctrlKey) {
+            this.defaultTerrain = newTerrain;
+            return false;
+          } else {
+            if (this.selectedTile.isOnMap()) {
+              this.selectedTile.terrain = newTerrain;
+              return false;
+            }
+          }
+        }
+      }
+    }
+
+    return true;
   }
 
   onDeffaultTerrainSelectionChange(value) {

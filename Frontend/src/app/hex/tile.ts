@@ -68,6 +68,10 @@ export class Tile {
     this.setIsModified();
   }
 
+  isOnMap(): Boolean {
+    return this.parent != null;
+  }
+
   public static getTerrainTypes() {
     return ['Invalid', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
   }
