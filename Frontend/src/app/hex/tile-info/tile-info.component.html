@@ -1,3 +1,22 @@
-Selected Tile ({{ selectedTile.x }},{{ selectedTile.y }}):
-<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.terrain" valuesType="terrain"></app-value-selector>
-<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.resource" valuesType="resources"></app-value-selector>
+<table>
+    <tbody>
+        <tr>
+            <th>Tile coords:</th>
+            <td>{{ selectedTile.x }},{{ selectedTile.y }}</td>
+        </tr>
+        <tr>
+            <th>Terrain:</th>
+            <td>
+                <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.terrain" valuesType="terrain">
+                </app-value-selector> &middot; <a style="cursor: pointer;" title="Use key with corresponding # as a hot-key">?</a>
+            </td>
+        </tr>
+        <tr>
+            <th>Resource:</th>
+            <td>
+                <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.resource" valuesType="resources">
+                </app-value-selector>
+            </td>
+        </tr>
+    </tbody>
+</table>
