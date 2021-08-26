@@ -1,16 +1,23 @@
-canvas.map {
-  border: black 1px solid;
+#container {
+  width: 100%;
+  position: relative;
+}
+#container canvas,
+#tileOperations {
+  position: absolute;
+}
+
+canvas {
+  border: 1px solid black;
   margin: 5px;
   padding: 0px;
-  float: left;
-  width: 900px;
-  height: 600px;
 }
-div.tileOperations {
+#tileOperations {
   border: 1px solid black;
   margin: 5px;
   padding: 5px;
-  float: left;
+  right: 0px;
   width: 400px;
   height: 600px;
+  background-color: white;
 }

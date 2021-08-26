@@ -20,7 +20,7 @@ import { Map } from './map';
   styleUrls: ['./hex.component.css'],
 })
 export class HexComponent implements OnInit, IObjectWasChanged {
-  @ViewChild('canvas', { static: true })
+  @ViewChild('map', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
 
   alerts: Alert[] = [];
@@ -124,6 +124,19 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   }
 
   /* #region CanvasEvents */
+
+  changeCanvasSize() {
+    this.canvas.nativeElement.width = window.innerWidth - 12;
+    this.canvas.nativeElement.height = window.innerHeight - 300;
+  }
+  @HostListener('window:resize', ['$event'])
+  onResize = function () {
+    this.changeCanvasSize();
+  };
+  @HostListener('window:load', ['$event'])
+  onLoad = function () {
+    this.changeCanvasSize();
+  };
 
   handleCommonCanvaseMouseClick(event: MouseEvent): { x: number; y: number } {
     if (this.mapDragModeOn) {

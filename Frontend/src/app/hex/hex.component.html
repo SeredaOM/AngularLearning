@@ -1,27 +1,40 @@
-<canvas #canvas width="900" height="600" class="map" (click)="onCanvasMouseClick($event)" (contextmenu)="onCanvasRightClick($event)"
-  (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp($event)" (mousemove)="onCanvasMouseMove($event)"
-  (mousewheel)="onCanvasMouseWheel($event)">
+<div id="container">
 
-</canvas>
-<div class="tileOperations">
-  <div>
+  <canvas #map (click)="onCanvasMouseClick($event)" (contextmenu)="onCanvasRightClick($event)" (mousedown)="onCanvasMouseDown($event)"
+    (mouseup)="onCanvasMouseUp($event)" (mousemove)="onCanvasMouseMove($event)" (mousewheel)="onCanvasMouseWheel($event)">
+  </canvas>
+  <div id="tileOperations">
     <app-tile-info [selectedTile]="selectedTile" [viewOnly]="viewOnlyForSelectedTile"></app-tile-info>
+    <hr />
+    <table>
+      <tbody>
+        <tr>
+          <th>New tile terrain:</th>
+          <td>
+            <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="defaultTerrain"
+              (selectedValueChange)="onDeffaultTerrainSelectionChange($event)" valuesType="terrain"></app-value-selector>
+            &middot; <a style="cursor: pointer;" title="Use Ctrl+key with corresponding # as a hot-key">?</a>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <hr />
+    <button (click)="addHex()">Add Hex</button>
+
+    <button (click)="loadTestMap()">Load Test Map (Id=1)</button>
+
+    <button (click)="testPostRequest()">Test Post Request</button>
+
+    <h1>Action {{ canvasAction }}</h1>
+    <h2>Animate time: {{animationTime}} ms</h2>
+    <p *ngFor="let alert of alerts">
+      <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+    </p>
   </div>
-  <hr />
-  <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
-  | New tile terrain:
-  <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="defaultTerrain"
-    (selectedValueChange)="onDeffaultTerrainSelectionChange($event)" valuesType="terrain"></app-value-selector>
-  <hr />
-  <button (click)="addHex()">Add Hex</button>
-
-  <button (click)="loadTestMap()">Load Test Map (Id=1)</button>
-
-  <button (click)="testPostRequest()">Test Post Request</button>
-
-  <h1>Action {{ canvasAction }}</h1>
-  <h2>Animate time: {{animationTime}} ms</h2>
-  <p *ngFor="let alert of alerts">
-    <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
-  </p>
 </div>
