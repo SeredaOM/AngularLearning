@@ -6,28 +6,17 @@
   <div id="tileOperations">
     <app-tile-info [selectedTile]="selectedTile" [viewOnly]="viewOnlyForSelectedTile"></app-tile-info>
     <hr />
-    <table>
-      <tbody>
-        <tr>
-          <th>New tile terrain:</th>
-          <td>
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Map name</mat-label>
       <input matInput type="inputType" maxlength="45" [disabled]="viewOnly" name="mapName" [value]="mapName" [(ngModel)]="mapName"
         (keyup)="onMapNameChange($event)">
     </mat-form-field>
-            <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="defaultTerrain"
-              (selectedValueChange)="onDeffaultTerrainSelectionChange($event)" valuesType="terrain"></app-value-selector>
-            &middot; <a style="cursor: pointer;" title="Use Ctrl+key with corresponding # as a hot-key">?</a>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+
+    <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="defaultTerrain"
+      (selectedValueChange)="onDeffaultTerrainSelectionChange($event)" valuesType="terrain" label="New Tile Terrain" hint="Use Ctrl+# key">
+    </app-value-selector>
+
+    <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
 
     <hr />
     <button (click)="addHex()">Add Hex</button>

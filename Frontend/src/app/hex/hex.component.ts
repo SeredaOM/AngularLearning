@@ -109,6 +109,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   }
 
   ngOnInit(): void {
+    this.changeCanvasSize();
     this.UpdateGreeting(`Hello hex (mapId to be identified)!!!`);
 
     this.loadSettingsFromCookies();

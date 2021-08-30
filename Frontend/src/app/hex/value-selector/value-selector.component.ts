@@ -7,6 +7,8 @@ import { Tile } from '../tile';
   styleUrls: ['./value-selector.component.css'],
 })
 export class ValueSelectorComponent implements OnInit {
+  @Input() label: string;
+  @Input() hint: string;
   @Input() valuesType: string;
   @Input() viewOnly = false;
   @Input() selectedValue;
@@ -20,11 +22,11 @@ export class ValueSelectorComponent implements OnInit {
   ngOnInit(): void {
     switch (this.valuesType) {
       case 'terrain':
-        this.possibleValues = Tile.getTerrainTypes();
+        this.possibleValues = Tile._terrains;
         break;
 
       case 'resources':
-        this.possibleValues = Tile.getResourceTypes();
+        this.possibleValues = Tile._resources;
         break;
 
       default:
