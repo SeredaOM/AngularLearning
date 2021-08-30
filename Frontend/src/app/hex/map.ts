@@ -18,7 +18,14 @@ export class Map implements IObjectWasChanged {
   /* #region  Construction */
 
   public id: number;
-  public name: string;
+  public get name(): string {
+    return this._name;
+  }
+  public set name(value: string) {
+    this._name = value;
+    this.setIsModified();
+  }
+  private _name: string;
   private yMin: number;
   private xMins: Array<number>;
   private xWidths: Array<number>;
@@ -30,7 +37,7 @@ export class Map implements IObjectWasChanged {
     tileRadius: number
   ) {
     this.id = mapModel.id;
-    this.name = mapModel.name;
+    this._name = mapModel.name;
 
     this.yMin = mapModel.yMin;
     this.xMins = mapModel.xMins;
@@ -68,7 +75,14 @@ export class Map implements IObjectWasChanged {
     return tiles;
   }
 
-  generateModelsForModifiedTiles(): TileModel[] {
+  generateModel(): MapModel {
+    let tiles = [];
+    tiles.push(this.generateModelsForModifiedTiles());
+    let mapModel = new MapModel(this.id, this.name, 0, null, null, tiles);
+    return mapModel;
+  }
+
+  private generateModelsForModifiedTiles(): TileModel[] {
     let tileModels = [];
     this.tiles.forEach((_tiles) => {
       _tiles.forEach((tile) => {

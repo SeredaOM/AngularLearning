@@ -24,6 +24,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TileInfoComponent } from './hex/tile-info/tile-info.component';
 import { ValueSelectorComponent } from './hex/value-selector/value-selector.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -43,15 +45,17 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
-    MatCardModule,
-    MatToolbarModule,
-    MatIconModule,
     MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
     MatRadioModule,
     MatSelectModule,
-    MatProgressSpinnerModule,
-    ReactiveFormsModule,
+    MatToolbarModule,
     NgbModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

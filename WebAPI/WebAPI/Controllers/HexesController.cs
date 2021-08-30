@@ -54,19 +54,19 @@ namespace WebAPI.Controllers
 
         [Route("maptiles/{mapId:int}")]
         [HttpPost]
-        public ActionResult<int> SaveMapTiles(int mapId, List<Tile> tiles)
+        public ActionResult<int> SaveMapTiles(int mapId, Map map)
         {
             ActionResult<int> res;
             try
             {
-                Map.SaveMapTiles(mapId, tiles);
+                Map.SaveMap(mapId, map.Name, map.Tiles[0]);
                 res = Ok(mapId);
             }
             catch (Exception e)
             {
                 string error = string.Format("Error: {0}\nInnerException: {1}", e.Message, e.InnerException == null ? "" : e.InnerException.Message);
                 _logger.LogError(error);
-                string errorForClient = string.Format("Can't handle 'SaveMapTiles' request for mapId={0}, # of tiles={1}", mapId, tiles.Count);
+                string errorForClient = string.Format("Can't handle 'SaveMapTiles' request for mapId={0}, name={1}, # of tiles={2}", mapId, map.Name, map.Tiles[0].Length);
                 return Problem(errorForClient, null, 501);
             }
             return res;

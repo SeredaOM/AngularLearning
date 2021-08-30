@@ -16,10 +16,14 @@ export class MapsComponent implements OnInit {
 
   constructor(public ngZone: NgZone, private hexesService: HexesService) {}
 
-  ngOnInit(): void {
+  private loadMapsList() {
     this.hexesService
       .getMapDataAvailableForPlayer(1)
       .subscribe((mapDescriptions: IMapDescription[]) => this.handleNewMapData(mapDescriptions));
+  }
+
+  ngOnInit(): void {
+    this.loadMapsList();
   }
 
   loadMap(mapId): void {
@@ -41,5 +45,9 @@ export class MapsComponent implements OnInit {
     mapDescriptions.forEach((mapDescription) => {
       console.log(mapDescription);
     });
+  }
+
+  onMapNameChange(event) {
+    this.loadMapsList();
   }
 }

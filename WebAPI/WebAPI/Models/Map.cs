@@ -73,7 +73,7 @@ namespace WebAPI.Models
             return map;
         }
 
-        public static void SaveMapTiles(int mapId, List<Tile> tiles)
+        public static void SaveMap(int mapId, string mapName, Tile[] tiles)
         {
             using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
             {
@@ -102,6 +102,7 @@ namespace WebAPI.Models
                         }
                     }
                 }
+                context.Maps.Where(map => map.Id == mapId).Single().Name = mapName;
                 context.SaveChanges();
             }
         }
