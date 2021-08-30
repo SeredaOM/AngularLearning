@@ -87,5 +87,5 @@ export class Tile {
 
   public static _resourceNone = Tile._resources[0].toLocaleLowerCase();
 
-  public static _terrains = ['Invalid', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
+  public static _terrains = ['Empty', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
 }

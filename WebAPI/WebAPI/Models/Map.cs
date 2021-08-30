@@ -83,7 +83,7 @@ namespace WebAPI.Models
                     var dbTile = dbTiles.Where(t => t.X == tile.X && t.Y == tile.Y).SingleOrDefault();
                     if (dbTile == null)
                     {
-                        if (tile.Terrain != TerrainType.Invalid)
+                        if (tile.Terrain != TerrainType.Empty)
                         {
                             dbTile = new MapTile() { MapId = mapId, X = (short)tile.X, Y = (short)tile.Y, MapTerrainTypeId = (byte)tile.Terrain, MapResourceTypeId = tile.Resource == null ? null : (short)tile.Resource };
                             context.MapTiles.Add(dbTile);
@@ -91,7 +91,7 @@ namespace WebAPI.Models
                     }
                     else
                     {
-                        if (tile.Terrain == TerrainType.Invalid)
+                        if (tile.Terrain == TerrainType.Empty)
                         {
                             context.MapTiles.Remove(dbTile);
                         }

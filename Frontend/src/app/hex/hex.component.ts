@@ -131,10 +131,8 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   onMapNameChange(event) {
     if (this.map != null) {
-      console.log(`Map name has been changed, new name: ${this.mapName}`);
       this.map.name = this.mapName;
       this.dataWereChanged();
-      console.log(`map edit: ${this.map.isModified()}`);
     }
   }
 
