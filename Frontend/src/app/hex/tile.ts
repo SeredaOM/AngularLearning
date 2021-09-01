@@ -19,6 +19,9 @@ export class Tile {
     this.setIsModified();
   }
 
+  public hovered = false;
+  public selected = false;
+
   constructor(
     private parent: IObjectWasChanged,
     private x: number,
@@ -33,7 +36,10 @@ export class Tile {
   }
 
   generateModel() {
-    const resource = this.resource == undefined || this.resource == null || this.resource == '' ? null : this.resource;
+    const resource =
+      this.resource == undefined || this.resource == null || this.resource == '' || this.resource == Tile._resourceNone
+        ? null
+        : this.resource;
     return new TileModel(this.x, this.y, this.terrain, resource);
   }
 
@@ -65,25 +71,21 @@ export class Tile {
     this.setIsModified();
   }
 
-  setHovered(hovered) {
-    this.hovered = hovered;
-  }
-
-  isHovered() {
-    return this.hovered;
+  isOnMap(): Boolean {
+    return this.parent != null;
   }
 
   public static getTerrainTypes() {
-    return ['Invalid', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
-  }
-
-  public static getResourceTypes() {
-    return ['', 'Settlement', 'Gold'];
+    return this._terrains;
   }
 
   public static getEmptyTile() {
     return new Tile(null, 1, 1, Tile.getTerrainTypes()[0].toLowerCase(), '');
   }
 
-  private hovered = false;
+  public static _resources = ['None', 'Settlement', 'Gold'];
+
+  public static _resourceNone = Tile._resources[0].toLocaleLowerCase();
+
+  public static _terrains = ['Empty', 'Water', 'Desert', 'Swamp', 'Plain', 'Hill', 'Mountain', 'Snow'];
 }

@@ -1,27 +1,34 @@
-<canvas #canvas width="900" height="600" class="map" (click)="onCanvasMouseClick($event)" (contextmenu)="onCanvasRightClick($event)"
-  (mousedown)="onCanvasMouseDown($event)" (mouseup)="onCanvasMouseUp($event)" (mousemove)="onCanvasMouseMove($event)"
-  (mousewheel)="onCanvasMouseWheel($event)">
+<div id="container">
 
-</canvas>
-<div class="tileOperations">
-  <div>
-    <app-tile-info [selectedTile]="selectedTile" [viewOnly]="viewOnly"></app-tile-info>
+  <canvas #map (click)="onCanvasMouseClick($event)" (contextmenu)="onCanvasRightClick($event)" (mousedown)="onCanvasMouseDown($event)"
+    (mouseup)="onCanvasMouseUp($event)" (mousemove)="onCanvasMouseMove($event)" (mousewheel)="onCanvasMouseWheel($event)">
+  </canvas>
+  <div id="tileOperations">
+    <app-tile-info [selectedTile]="selectedTile" [viewOnly]="viewOnlyForSelectedTile"></app-tile-info>
+    <hr />
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Map name</mat-label>
+      <input matInput type="inputType" maxlength="45" [disabled]="viewOnly" name="mapName" [value]="mapName" [(ngModel)]="mapName"
+        (keyup)="onMapNameChange($event)">
+    </mat-form-field>
+
+    <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="defaultTerrain"
+      (selectedValueChange)="onDeffaultTerrainSelectionChange($event)" valuesType="terrain" label="New Tile Terrain" hint="Use Ctrl+# key">
+    </app-value-selector>
+
+    <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
+
+    <hr />
+    <button (click)="addHex()">Add Hex</button>
+
+    <button (click)="loadTestMap()">Load Test Map (Id=1)</button>
+
+    <button (click)="testPostRequest()">Test Post Request</button>
+
+    <h1>Action {{ canvasAction }}</h1>
+    <h2>Animate time: {{animationTime}} ms</h2>
+    <p *ngFor="let alert of alerts">
+      <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
+    </p>
   </div>
-  <hr />
-  <button class="btn btn-primary" (click)="saveMap()" [disabled]="!mapIsModified">Save map</button>
-  | New tile terrain:
-  <app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="defaultTerrain"
-    (selectedValueChange)="onDeffaultTerrainSelectionChange($event)" valuesType="terrain"></app-value-selector>
-  <hr />
-  <button (click)="addHex()">Add Hex</button>
-
-  <button (click)="loadTestMap()">Load Test Map (Id=1)</button>
-
-  <button (click)="testPostRequest()">Test Post Request</button>
-
-  <h1>Action {{ canvasAction }}</h1>
-  <h2>Animate time: {{animationTime}} ms</h2>
-  <p *ngFor="let alert of alerts">
-    <ngb-alert [type]="alert.type" (closed)="close(alert)">{{ alert.message }}</ngb-alert>
-  </p>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, isDevMode } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, isDevMode, OnInit, Output, ViewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
@@ -20,7 +20,9 @@ import { Map } from './map';
   styleUrls: ['./hex.component.css'],
 })
 export class HexComponent implements OnInit, IObjectWasChanged {
-  @ViewChild('canvas', { static: true })
+  @Output() mapNameChanged = new EventEmitter();
+
+  @ViewChild('map', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
 
   alerts: Alert[] = [];
@@ -33,6 +35,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   private ctx: CanvasRenderingContext2D;
   private offscreenCanvas: OffscreenCanvas;
+  public mapName: string = '';
   private map: Map;
   private mapOffsetX = 0;
   private mapOffsetY = 0;
@@ -45,9 +48,10 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   private mapId: number = 0;
   viewOnly: boolean = true;
+  viewOnlyForSelectedTile: boolean = this.viewOnly;
 
   mapIsModified = false;
-  selectedTile = Tile.getEmptyTile();
+  selectedTile: Tile = Tile.getEmptyTile();
 
   tileRadius: number = NaN;
   defaultTerrain: string = null;
@@ -84,8 +88,10 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     this.selectedTile = Tile.getEmptyTile();
 
     this.map = new Map(this, this.ctx, mapModel, this.tileRadius);
+
+    this.mapName = mapModel.name;
     this.dataWereChanged();
-    this.UpdateGreeting(`Map: ${this.map.name}`);
+    this.UpdateGreeting(`Map: ${this.mapName}`);
   }
 
   private loadSettingsFromCookies() {
@@ -103,6 +109,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
   }
 
   ngOnInit(): void {
+    this.changeCanvasSize();
     this.UpdateGreeting(`Hello hex (mapId to be identified)!!!`);
 
     this.loadSettingsFromCookies();
@@ -122,7 +129,27 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     });
   }
 
+  onMapNameChange(event) {
+    if (this.map != null) {
+      this.map.name = this.mapName;
+      this.dataWereChanged();
+    }
+  }
+
   /* #region CanvasEvents */
+
+  changeCanvasSize() {
+    this.canvas.nativeElement.width = window.innerWidth - 12;
+    this.canvas.nativeElement.height = window.innerHeight - 300;
+  }
+  @HostListener('window:resize', ['$event'])
+  onResize = function () {
+    this.changeCanvasSize();
+  };
+  @HostListener('window:load', ['$event'])
+  onLoad = function () {
+    this.changeCanvasSize();
+  };
 
   handleCommonCanvaseMouseClick(event: MouseEvent): { x: number; y: number } {
     if (this.mapDragModeOn) {
@@ -143,7 +170,7 @@ export class HexComponent implements OnInit, IObjectWasChanged {
         this.map.addTile(tile);
       }
       if (tile != null) {
-        this.selectedTile = tile;
+        this.selectTile(tile);
       }
     }
 
@@ -155,10 +182,16 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     if (tileCoords != null && !this.viewOnly) {
       let tile = new Tile(this.map, tileCoords.x, tileCoords.y, this.defaultTerrain, null, true);
       this.map.addTile(tile);
-      this.selectedTile = tile;
+      this.selectTile(tile);
     }
 
     return false;
+  }
+
+  private selectTile(tile: Tile) {
+    this.selectedTile = tile;
+    this.viewOnlyForSelectedTile = this.viewOnly;
+    this.map.selectTile(tile);
   }
 
   onCanvasMouseMove(event: MouseEvent): void {
@@ -225,6 +258,38 @@ export class HexComponent implements OnInit, IObjectWasChanged {
     return false;
   }
 
+  @HostListener('document:keydown', ['$event'])
+  handleKeydownEvent(event: KeyboardEvent) {
+    let key = Number(event.key);
+    if (isNaN(key)) {
+      if (event.ctrlKey) {
+        if (event.code == 'KeyS') {
+          this.saveMap();
+          return false;
+        }
+        //console.log(event);
+      }
+    } else {
+      if (!this.viewOnly) {
+        const terrains = Tile.getTerrainTypes();
+        if (key < terrains.length) {
+          const newTerrain = terrains[key].toLowerCase();
+          if (event.ctrlKey) {
+            this.defaultTerrain = newTerrain;
+            return false;
+          } else {
+            if (this.selectedTile.isOnMap()) {
+              this.selectedTile.terrain = newTerrain;
+              return false;
+            }
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
   onDeffaultTerrainSelectionChange(value) {
     this.cookieService.set(HexComponent.cookieNameDefaultTerrain, value);
   }
@@ -245,9 +310,9 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   saveMap(): void {
     console.log(`saving map...`);
-    let tiles = this.map.generateModelsForModifiedTiles();
+    let mapModel = this.map.generateModel();
     this.hexesService
-      .saveMapTiles(this.map.id, tiles)
+      .saveMapTiles(this.map.id, mapModel)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           const alert = new Alert(Alert.AlertType.danger, `Could not save the map. Try again or contact support.`);
@@ -273,6 +338,8 @@ export class HexComponent implements OnInit, IObjectWasChanged {
         setTimeout(() => {
           this.close(alert);
         }, Alert.SuccessTimeout);
+
+        this.mapNameChanged.emit();
       });
   }
 

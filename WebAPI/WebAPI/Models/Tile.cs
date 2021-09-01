@@ -5,7 +5,7 @@ namespace WebAPI.Models
 {
     public enum TerrainType
     {
-        Invalid = 0,
+        Empty = 0,
         Water = 1,
         Desert = 2,
         Swamp = 3,

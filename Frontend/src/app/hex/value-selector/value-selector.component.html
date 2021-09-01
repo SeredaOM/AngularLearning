@@ -1,3 +1,8 @@
-<mat-select class="valueSelector" [(value)]="selectedValue" [disabled]="viewOnly" (selectionChange)="onSelectionChange($event.value)">
-    <mat-option *ngFor="let value of possibleValues" [value]="value.toLowerCase()">{{value}}</mat-option>
-</mat-select>
+<mat-form-field appearance="outline">
+    <mat-label>{{ label }}</mat-label>
+    <mat-select class="valueSelector" [(value)]="selectedValue" [disabled]="viewOnly" (selectionChange)="onSelectionChange($event.value)">
+        <mat-option *ngFor="let value of possibleValues; let i=index" [value]="value.toLowerCase()">{{value}}
+            ({{i}})</mat-option>
+    </mat-select>
+    <mat-hint>{{hint}}</mat-hint>
+</mat-form-field>

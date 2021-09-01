@@ -18,7 +18,14 @@ export class Map implements IObjectWasChanged {
   /* #region  Construction */
 
   public id: number;
-  public name: string;
+  public get name(): string {
+    return this._name;
+  }
+  public set name(value: string) {
+    this._name = value;
+    this.setIsModified();
+  }
+  private _name: string;
   private yMin: number;
   private xMins: Array<number>;
   private xWidths: Array<number>;
@@ -30,7 +37,7 @@ export class Map implements IObjectWasChanged {
     tileRadius: number
   ) {
     this.id = mapModel.id;
-    this.name = mapModel.name;
+    this._name = mapModel.name;
 
     this.yMin = mapModel.yMin;
     this.xMins = mapModel.xMins;
@@ -57,7 +64,9 @@ export class Map implements IObjectWasChanged {
             tileData.x,
             tileData.y,
             tileData.terrain.toLocaleLowerCase(),
-            tileData.resource == undefined || tileData.resource == 'null' ? null : tileData.resource.toLocaleLowerCase()
+            tileData.resource == undefined || tileData.resource == 'null'
+              ? Tile._resourceNone
+              : tileData.resource.toLocaleLowerCase()
           );
         }
         rowTiles.push(tile);
@@ -68,7 +77,14 @@ export class Map implements IObjectWasChanged {
     return tiles;
   }
 
-  generateModelsForModifiedTiles(): TileModel[] {
+  generateModel(): MapModel {
+    let tiles = [];
+    tiles.push(this.generateModelsForModifiedTiles());
+    let mapModel = new MapModel(this.id, this.name, 0, null, null, tiles);
+    return mapModel;
+  }
+
+  private generateModelsForModifiedTiles(): TileModel[] {
     let tileModels = [];
     this.tiles.forEach((_tiles) => {
       _tiles.forEach((tile) => {
@@ -230,16 +246,27 @@ export class Map implements IObjectWasChanged {
   }
 
   private addTileLeft(tile: Tile, yIndex: number) {
+    while (tile.getX() < this.xMins[yIndex] - 1) {
+      this.xMins[yIndex]--;
+      this.xWidths[yIndex]++;
+      let emptyTile = new Tile(this, this.xMins[yIndex], tile.getY(), Tile._terrains[0].toLowerCase(), null, true);
+      this.tiles[yIndex].unshift(emptyTile);
+    }
+
     this.xMins[yIndex]--;
     this.xWidths[yIndex]++;
     this.tiles[yIndex].unshift(tile);
-    tile.setX(this.xMins[yIndex]);
   }
 
   private addTileRight(tile: Tile, yIndex: number) {
+    let currentMaxX = this.xMins[yIndex] + this.xWidths[yIndex];
+    while (tile.getX() > currentMaxX) {
+      this.xWidths[yIndex]++;
+      let emptyTile = new Tile(this, currentMaxX++, tile.getY(), Tile._terrains[0].toLowerCase(), null, true);
+      this.tiles[yIndex].push(emptyTile);
+    }
     this.xWidths[yIndex]++;
     this.tiles[yIndex].push(tile);
-    tile.setX(this.xMins[yIndex] + this.xWidths[yIndex] - 1);
   }
 
   private addTileInside(tile: Tile, yIndex: number) {
@@ -277,14 +304,22 @@ export class Map implements IObjectWasChanged {
   }
 
   hoverTile(x: number, y: number) {
-    if (this.lastHovered != null) {
-      this.lastHovered.setHovered(false);
+    if (this.hoveredTile != null) {
+      this.hoveredTile.hovered = false;
     }
 
-    this.lastHovered = this.getTile(x, y);
-    if (this.lastHovered != null) {
-      this.lastHovered.setHovered(true);
+    this.hoveredTile = this.getTile(x, y);
+    if (this.hoveredTile != null) {
+      this.hoveredTile.hovered = true;
     }
+  }
+
+  selectTile(tile: Tile) {
+    if (this.selectedTile != null) {
+      this.selectedTile.selected = false;
+    }
+    this.selectedTile = tile;
+    tile.selected = true;
   }
 
   static getTileWidth(tileR: number): number {
@@ -401,14 +436,15 @@ export class Map implements IObjectWasChanged {
     }
 
     const color = Map.GetTerrainColor(tile.terrain);
-    if (tile.isHovered()) {
-      this.drawHex(center.x, center.y, this.tileR + 2, color.fill, color.stroke, this.tileStrokeWidth);
+    if (tile.hovered || tile.selected) {
+      const widthFactor = tile.selected ? 1.5 : 1;
+      this.drawHex(center.x, center.y, this.tileR + 2, color.fill, color.stroke, this.tileStrokeWidth * widthFactor);
     }
 
     this.drawHex(center.x, center.y, this.tileR, color.fill, color.stroke, this.tileStrokeWidth);
 
     const resource = tile.resource; // !== undefined ? tile.resource : tile[3];
-    if (resource != null && resource !== '') {
+    if (resource != null && resource !== '' && resource != Tile._resourceNone) {
       const img = Map.images[resource];
       if (img == null) {
         this.drawHex(center.x, center.y, this.tileR / 2, color.fill, color.stroke, 2);
@@ -450,7 +486,8 @@ export class Map implements IObjectWasChanged {
 
   /* #endregion */
 
-  private lastHovered: Tile;
+  private hoveredTile: Tile;
+  private selectedTile: Tile;
 
   private static imgGold: ScalableImage = new ScalableImage('../../assets/images/gold.svg');
   private static images = { gold: Map.imgGold };

@@ -1,3 +1,11 @@
-Selected Tile ({{ selectedTile.x }},{{ selectedTile.y }}):
-<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.terrain" valuesType="terrain"></app-value-selector>
-<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.resource" valuesType="resources"></app-value-selector>
+<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.terrain" valuesType="terrain" label="Terrain"
+    hint="Use # key for fast selection">
+</app-value-selector>
+
+<app-value-selector [viewOnly]="viewOnly" [(selectedValue)]="selectedTile.resource" valuesType="resources" label="Resource">
+</app-value-selector>
+
+<mat-form-field class="example-full-width" appearance="outline">
+    <mat-label>Tile coords:</mat-label>
+    <input matInput type="inputType" (disabled)="true" [value]="coords">
+</mat-form-field>
