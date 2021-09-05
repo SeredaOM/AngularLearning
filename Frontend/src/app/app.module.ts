@@ -26,6 +26,8 @@ import { ValueSelectorComponent } from './hex/value-selector/value-selector.comp
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { LoginComponent } from './login/login.component';
+
 
 @NgModule({
   declarations: [
@@ -38,6 +40,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MapsComponent,
     TileInfoComponent,
     ValueSelectorComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
