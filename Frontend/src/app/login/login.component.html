@@ -1,0 +1,24 @@
+<mat-card>
+    <mat-card-title>Login</mat-card-title>
+    <mat-card-content fxLayout="column" fxLayoutAlign="space-around center">
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput type="email" disabled="true">
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Password</mat-label>
+            <input matInput type="password" disabled="true">
+        </mat-form-field>
+
+    </mat-card-content>
+    <mat-card-actions>
+        <div>
+            <button mat-raised-button disabled="true">Login</button>
+            <button (click)="loginWithGoogle()" mat-raised-button class="google-login-btn">Google</button>
+            <button mat-raised-button (click)="signOut()">Logout</button>
+        </div>
+    </mat-card-actions>
+</mat-card>
+
+<!-- https://medium.com/@danilrabizo/google-authentication-in-the-angular-application-e86df69be58a -->

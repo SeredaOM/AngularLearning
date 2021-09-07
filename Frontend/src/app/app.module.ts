@@ -1,15 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
-import { PingballComponent } from './pingball/pingball.component';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -17,17 +10,27 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { HexComponent } from './hex/hex.component';
-import { ArenaComponent } from './arena/arena.component';
-import { MapsComponent } from './maps/maps.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TileInfoComponent } from './hex/tile-info/tile-info.component';
-import { ValueSelectorComponent } from './hex/value-selector/value-selector.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { LoginComponent } from './login/login.component';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { SocialLoginModule, GoogleLoginProvider } from 'angularx-social-login';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AuthGuardService } from './auth-guard.service';
+
+import { AdminComponent } from './admin/admin.component';
+import { AboutComponent } from './about/about.component';
+import { AppComponent } from './app.component';
+import { ArenaComponent } from './arena/arena.component';
+import { HexComponent } from './hex/hex.component';
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './login/login.component';
+import { PingballComponent } from './pingball/pingball.component';
+import { MapsComponent } from './maps/maps.component';
+import { TileInfoComponent } from './hex/tile-info/tile-info.component';
+import { ValueSelectorComponent } from './hex/value-selector/value-selector.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +44,7 @@ import { LoginComponent } from './login/login.component';
     TileInfoComponent,
     ValueSelectorComponent,
     LoginComponent,
+    AdminComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
@@ -59,8 +63,25 @@ import { LoginComponent } from './login/login.component';
     MatToolbarModule,
     NgbModule,
     ReactiveFormsModule,
+    SocialLoginModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: true, //keeps the user signed in
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '706588217519-d997qa9l0iolpgqn22khotv3vtl2v8so.apps.googleusercontent.com'
+            ),
+          },
+        ],
+      },
+    },
+    AuthGuardService,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
