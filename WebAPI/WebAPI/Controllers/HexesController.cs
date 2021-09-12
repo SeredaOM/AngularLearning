@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
@@ -21,6 +23,7 @@ namespace WebAPI.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [Route("mapsForPlayer/{playerId:int}")]
         [HttpGet]
         public ActionResult<IEnumerable<MapDescription>> GetMapDataAvailableForPlayer(int playerId)
@@ -34,6 +37,7 @@ namespace WebAPI.Controllers
             return Ok(mapData);
         }
 
+        [Authorize]
         [Route("map/{mapId:int}")]
         [HttpGet]
         public ActionResult<Map> GetMap(int mapId)
@@ -52,10 +56,13 @@ namespace WebAPI.Controllers
             return Ok(map);
         }
 
-        [Route("maptiles/{mapId:int}")]
+        [Authorize]
         [HttpPost]
+        [Route("maptiles/{mapId:int}")]
         public ActionResult<int> SaveMapTiles(int mapId, Map map)
         {
+
+
             ActionResult<int> res;
             try
             {

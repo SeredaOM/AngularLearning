@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { Role } from './Models/role';
+import { Role } from './auth/role';
 
 import { HexComponent } from './hex/hex.component';
 import { HomeComponent } from './home/home.component';
@@ -10,8 +10,8 @@ import { AdminComponent } from './admin/admin.component';
 import { ArenaComponent } from './arena/arena.component';
 import { MapsComponent } from './maps/maps.component';
 import { PingballComponent } from './pingball/pingball.component';
-import { LoginComponent } from './login/login.component';
-import { AuthGuardService } from './auth-guard.service';
+import { LoginComponent } from './auth/login.component';
+import { AuthGuardService } from './auth/AuthGuard.service';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },

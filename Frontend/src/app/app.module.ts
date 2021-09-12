@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -18,7 +18,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SocialLoginModule, GoogleLoginProvider } from 'angularx-social-login';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AuthGuardService } from './auth-guard.service';
+import { AuthGuardService } from './auth/AuthGuard.service';
+import { AuthInterceptor } from './auth/AuthInterceptor';
 
 import { AdminComponent } from './admin/admin.component';
 import { AboutComponent } from './about/about.component';
@@ -26,7 +27,7 @@ import { AppComponent } from './app.component';
 import { ArenaComponent } from './arena/arena.component';
 import { HexComponent } from './hex/hex.component';
 import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './auth/login.component';
 import { PingballComponent } from './pingball/pingball.component';
 import { MapsComponent } from './maps/maps.component';
 import { TileInfoComponent } from './hex/tile-info/tile-info.component';
@@ -81,6 +82,7 @@ import { ValueSelectorComponent } from './hex/value-selector/value-selector.comp
       },
     },
     AuthGuardService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

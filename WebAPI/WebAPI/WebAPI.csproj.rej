@@ -1,0 +1,6 @@
+diff a/WebAPI/WebAPI/WebAPI.csproj b/WebAPI/WebAPI/WebAPI.csproj	(rejected hunks)
+@@ -10,3 +10,4 @@
+         <PackageReference Include="EntityFramework" Version="6.4.4" />
+         <PackageReference Include="Google.Apis.Auth" Version="1.54.0" />
++        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
+         <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />

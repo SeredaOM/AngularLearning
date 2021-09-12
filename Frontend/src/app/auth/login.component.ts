@@ -11,7 +11,7 @@ import { AuthService } from './AuthService';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  constructor(private router: Router, private socialAuthService: SocialAuthService, private authService: AuthService) {}
+  constructor(private router: Router, private socialAuthService: SocialAuthService) {}
 
   ngOnInit() {}
 
@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
 
     this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then(() => {
       console.log(`LoginComponent: received feedback from Google`);
-      //return this.router.navigate(['home']);
+      return this.router.navigate(['home']);
     });
   }
 

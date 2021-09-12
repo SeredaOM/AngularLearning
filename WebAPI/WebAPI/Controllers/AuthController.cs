@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.JsonWebTokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebAPI.Models;
 
@@ -46,7 +48,16 @@ namespace WebAPI.Controllers
 
             GoogleJsonWebSignature.Payload payload = GoogleJsonWebSignature.ValidateAsync(data.IdToken, settings).Result;
 
-            return Ok(new { AuthToken = _jwtGenerator.CreateUserAuthToken(payload.Email) });
+            var tokenString = _jwtGenerator.CreateUserAuthToken(null, payload.Email);
+            return Ok(new { AuthToken = tokenString, ExpiresInMinutes = JwtGenerator.ExpiresInMinutes });
+        }
+
+        [Route("logout")]
+        [HttpPost]
+        public ActionResult Logout([FromBody] AuthenticateRequest data)
+        {
+            throw new NotImplementedException("Does this method need to do something?");
+            //return Ok();
         }
     }
 }
