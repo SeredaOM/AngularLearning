@@ -3,13 +3,15 @@ import { Router } from '@angular/router';
 
 import { FacebookLoginProvider, GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
 
+import { AuthService } from './AuthService';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  constructor(private router: Router, private socialAuthService: SocialAuthService) {}
+  constructor(private router: Router, private socialAuthService: SocialAuthService, private authService: AuthService) {}
 
   ngOnInit() {}
 
@@ -17,7 +19,8 @@ export class LoginComponent implements OnInit {
     //  TODO: save the token that you got from your REST API in your preferred location i.e. as a Cookie or LocalStorage as you do with normal login
 
     this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID).then(() => {
-      return this.router.navigate(['home']);
+      console.log(`LoginComponent: received feedback from Google`);
+      //return this.router.navigate(['home']);
     });
   }
 
