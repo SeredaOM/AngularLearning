@@ -13,9 +13,10 @@ namespace WebAPI.Models
 
         #region Construction
 
-        public Map(int id, string name, Tile[][] tiles, int yMin, int[] xMins, int[] xWidths)
+        public Map(int id, int ownerId, string name, Tile[][] tiles, int yMin, int[] xMins, int[] xWidths)
         {
             Id = id;
+            OwnerId = ownerId;
             Name = name;
 
             _yMin = yMin;
@@ -40,8 +41,9 @@ namespace WebAPI.Models
             return mapData;
         }
 
-        internal static Map FillMapFromData(int mapId, string name, ICollection<DAL.MapTile> tilesData)
+        internal static Map FillMapFromData(int mapId, DAL.Map dbMap)
         {
+            ICollection<DAL.MapTile> tilesData = dbMap.MapTiles;
             var rowNumbers = tilesData.GroupBy(tile => tile.Y).Select(g => g.Key).ToArray();
             var xMins = new int[rowNumbers.Length];
             var xWidths = new int[rowNumbers.Length];
@@ -68,12 +70,12 @@ namespace WebAPI.Models
                 }
             }
 
-            var map = new Map(mapId, name, tiles, minY, xMins, xWidths);
+            var map = new Map(mapId, dbMap.OwnerId, dbMap.Name, tiles, minY, xMins, xWidths);
 
             return map;
         }
 
-        public static void SaveMap(int mapId, string mapName, Tile[] tiles)
+        public static void SaveMapChanges(int mapId, string mapName, Tile[] tiles)
         {
             using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
             {
@@ -107,32 +109,39 @@ namespace WebAPI.Models
             }
         }
 
+        public static int GetMapOwnerId(int mapId)
+        {
+            using (BrowserWarContext context = new BrowserWarContext())
+            {
+                DAL.Map mapData = context.Maps.Where(map=>map.Id==mapId).SingleOrDefault();
+                return mapData == null ? 0 : mapData.OwnerId;
+            }
+        }
+
         public static Map GetMap(int mapId)
         {
-            Map map;
-
             string myConnectionString = ConfigurationManager.ConnectionStrings[0].ConnectionString;
             using (BrowserWarContext context = new BrowserWarContext())
             {
-                var mapData = context.Maps
+                DAL.Map mapData = context.Maps
                     .Include(m => m.MapTiles)
                     .Where(map0 => map0.Id == mapId)
-                    .FirstOrDefault();
+                    .SingleOrDefault();
 
+                Map map;
                 if (mapData == null)
                 {
                     map = null;
                 }
                 else
                 {
-                    map = FillMapFromData(mapId, mapData.Name, mapData.MapTiles);
+                    map = FillMapFromData(mapId, mapData);
                 }
+                return map;
             }
-
-            return map;
         }
 
-        public static Map CreateRoundMap(int radius)
+        public static Map CreateRoundMap(int ownerId, int radius)
         {
             int diameter = 1 + 2 * radius;
 
@@ -175,7 +184,7 @@ namespace WebAPI.Models
                 xWidths[y + radius] = xWidth;
             }
 
-            return new Map(0, "New round map", tiles, -radius, xMins, xWidths);
+            return new Map(0, ownerId, "New round map", tiles, -radius, xMins, xWidths);
         }
 
         #endregion
@@ -203,6 +212,8 @@ namespace WebAPI.Models
         #region Public Properties
 
         public int Id { get; set; }
+
+        public int OwnerId { get; set; }
 
         public string Name { get; set; }
 

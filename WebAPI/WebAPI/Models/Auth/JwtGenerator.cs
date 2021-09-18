@@ -11,7 +11,7 @@ namespace WebAPI.Models
 {
     public class JwtGenerator
     {
-        public const int ExpiresInMinutes= 60;
+        public const int ExpiresInMinutes = 7 * 24 * 60;    //  1 week
 
         readonly RsaSecurityKey _key;
         public JwtGenerator(string signingKey)
@@ -23,28 +23,12 @@ namespace WebAPI.Models
 
         public string CreateUserAuthToken(IConfiguration configuration, string userId)
         {
-
-            //var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]));
-
-            //var token = new JwtSecurityToken(
-            //    issuer: configuration["JWT:ValidIssuer"],
-            //    audience: configuration["JWT:ValidAudience"],
-            //    expires: DateTime.Now.AddHours(3),
-            //    claims: authClaims,
-            //    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            //    );
-            //var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
             var authClaims = new Dictionary<string, object>();
             authClaims.Add(JwtRegisteredClaimNames.Sub, userId);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Audience = "myApi",
                 Issuer = "AuthService",
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                            new Claim(ClaimTypes.Sid, userId.ToString())
-                }),
                 Claims = authClaims,
                 Expires = DateTime.UtcNow.AddMinutes(ExpiresInMinutes),
                 SigningCredentials = new SigningCredentials(_key, SecurityAlgorithms.RsaSha256)

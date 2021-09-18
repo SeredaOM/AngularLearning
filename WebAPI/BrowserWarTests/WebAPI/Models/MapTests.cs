@@ -24,8 +24,8 @@ namespace BrowserWarTests
                 new WebAPI.DAL.MapTile{ X = 1, Y = 1, MapTerrainTypeId = (byte)TerrainType.Plain },
                 new WebAPI.DAL.MapTile{ X = 2, Y = 0, MapTerrainTypeId = (byte)TerrainType.Desert },
             };
-
-            var map = Map.FillMapFromData(1, name, tilesData);
+            var dbMap = new WebAPI.DAL.Map() { OwnerId = 1, Name = name, MapTiles = tilesData };
+            var map = Map.FillMapFromData(1, dbMap);
 
             Assert.AreEqual(name, map.Name);
 
@@ -66,7 +66,8 @@ namespace BrowserWarTests
                 new WebAPI.DAL.MapTile{ X = 1, Y = 2, MapTerrainTypeId = (byte)TerrainType.Plain },
             };
 
-            var map = Map.FillMapFromData(123, "Map1", tilesData);
+            var dbMap = new WebAPI.DAL.Map() { OwnerId = 1, Name = "Map1", MapTiles = tilesData };
+            var map = Map.FillMapFromData(123, dbMap);
 
             Assert.AreEqual(123, map.Id);
             Assert.AreEqual(1, map.YMin);
@@ -90,7 +91,8 @@ namespace BrowserWarTests
         {
             WebAPI.DAL.MapTile[] tilesData = System.Array.Empty<WebAPI.DAL.MapTile>();
 
-            var map = Map.FillMapFromData(123, "Map1", tilesData);
+            var dbMap = new WebAPI.DAL.Map() { OwnerId = 1, Name = "Map1", MapTiles = tilesData };
+            var map = Map.FillMapFromData(123, dbMap);
             Assert.AreEqual(123, map.Id);
             Assert.AreEqual(0, map.YMin);
             Assert.AreEqual(0, map.XMins.Length);

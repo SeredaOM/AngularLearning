@@ -14,8 +14,8 @@ namespace WebAPI.DAL
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
         public int OwnerId { get; set; }
+        public string Name { get; set; }
         public byte Published { get; set; }
 
         public virtual Player Owner { get; set; }

@@ -77,14 +77,7 @@ export class Map implements IObjectWasChanged {
     return tiles;
   }
 
-  generateModel(): MapModel {
-    let tiles = [];
-    tiles.push(this.generateModelsForModifiedTiles());
-    let mapModel = new MapModel(this.id, this.name, 0, null, null, tiles);
-    return mapModel;
-  }
-
-  private generateModelsForModifiedTiles(): TileModel[] {
+  public generateModelsForModifiedTiles(): TileModel[] {
     let tileModels = [];
     this.tiles.forEach((_tiles) => {
       _tiles.forEach((tile) => {

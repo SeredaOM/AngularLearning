@@ -7,10 +7,16 @@
 }
 
 mat-card {
+  background: #999;
   margin: 10% auto;
+  text-shadow: 0 1px 0 #ccc;
   width: 50%;
 }
 
 mat-form-field {
   width: 100%;
+}
+
+mat-label {
+  color: black;
 }

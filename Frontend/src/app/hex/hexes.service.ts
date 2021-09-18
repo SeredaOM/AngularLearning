@@ -17,18 +17,18 @@ export class HexesService {
     }),
   };
 
-  public getMapDataAvailableForPlayer(playerId: number) {
-    return this.httpClient.get(ApiService.getHost() + '/hexes/mapsForPlayer/' + playerId);
+  public getMapDataAvailableForPlayer() {
+    return this.httpClient.get(ApiService.getHost() + '/hexes/mapsForPlayer');
   }
 
   public getMap(mapId: number) {
     return this.httpClient.get(ApiService.getHost() + '/hexes/map/' + mapId);
   }
 
-  public saveMapTiles(mapId: number, mapModel: MapModel) {
+  public saveMapTiles(mapId: number, mapName: string, mapTiles: TileModel[]) {
     return this.httpClient.post(
-      ApiService.getHost() + '/hexes/maptiles/' + mapId,
-      JSON.stringify(mapModel),
+      `${ApiService.getHost()}/hexes/SaveMapChanges/${mapId}/${mapName}`,
+      JSON.stringify(mapTiles),
       HexesService.httpOptions
     );
   }

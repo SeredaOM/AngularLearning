@@ -310,9 +310,8 @@ export class HexComponent implements OnInit, IObjectWasChanged {
 
   saveMap(): void {
     console.log(`saving map...`);
-    let mapModel = this.map.generateModel();
     this.hexesService
-      .saveMapTiles(this.map.id, mapModel)
+      .saveMapTiles(this.map.id, this.mapName, this.map.generateModelsForModifiedTiles())
       .pipe(
         catchError((error: HttpErrorResponse) => {
           const alert = new Alert(Alert.AlertType.danger, `Could not save the map. Try again or contact support.`);

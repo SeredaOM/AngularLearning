@@ -3,15 +3,8 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
-import {
-  MatRadioGroupHarness,
-  MatRadioButtonHarness,
-} from '@angular/material/radio/testing';
-import {
-  MatRadioButton,
-  MatRadioGroup,
-  MatRadioModule,
-} from '@angular/material/radio';
+import { MatRadioGroupHarness, MatRadioButtonHarness } from '@angular/material/radio/testing';
+import { MatRadioButton, MatRadioGroup, MatRadioModule } from '@angular/material/radio';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { HexComponent } from '../hex/hex.component';
@@ -24,7 +17,7 @@ import { DebugElement } from '@angular/core';
 let loader: HarnessLoader;
 
 class MockHexesService extends HexesService {
-  public getMapDataAvailableForPlayer(playerId: number) {
+  public getMapDataAvailableForPlayer() {
     let md1: IMapDescription = {
       mapId: 1,
       mapName: 'Map 1',
@@ -81,8 +74,7 @@ describe('MapsComponent', () => {
   it(
     'Loaded map descriptions should load names and set state for "Edit" buttons',
     waitForAsync(async () => {
-      const tblRows =
-        fixture.debugElement.nativeElement.querySelectorAll('table tr');
+      const tblRows = fixture.debugElement.nativeElement.querySelectorAll('table tr');
 
       const cells0 = tblRows[0].querySelectorAll('td');
       expect(cells0[0].innerHTML).toBe('Map 1');
@@ -129,8 +121,7 @@ describe('MapsComponent', () => {
       expect(hexComponent).toBeDefined();
       expect(hexComponent.loadMap).not.toHaveBeenCalled();
 
-      const btns =
-        fixture.debugElement.nativeElement.querySelectorAll('button');
+      const btns = fixture.debugElement.nativeElement.querySelectorAll('button');
       expect(btns.length).toBe(4);
       const btnView = btns[0];
       expect(btnView.innerHTML).toBe('View Map');

@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
-import { SocialAuthService, SocialUser } from 'angularx-social-login';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
+import { SocialAuthService, SocialUser } from 'angularx-social-login';
+
 import { Role } from './role';
+import { AuthService } from './AuthService';
 
 @Injectable({
   providedIn: 'root',
@@ -17,10 +19,12 @@ export class AuthGuardService implements CanActivate {
       map((user: SocialUser) => {
         if (user == null) return false;
 
-        const usersRole = Role.Player;
+        const usersRole = localStorage.getItem(AuthService.Role);
 
-        if (route.data.roles && route.data.roles.indexOf(usersRole) === -1) {
-          return false;
+        if (route.data.role) {
+          if (route.data.role > Role[usersRole]) {
+            return false;
+          }
         }
         return true;
       }),

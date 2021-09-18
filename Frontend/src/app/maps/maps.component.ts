@@ -18,7 +18,7 @@ export class MapsComponent implements OnInit {
 
   private loadMapsList() {
     this.hexesService
-      .getMapDataAvailableForPlayer(1)
+      .getMapDataAvailableForPlayer()
       .subscribe((mapDescriptions: IMapDescription[]) => this.handleNewMapData(mapDescriptions));
   }
 

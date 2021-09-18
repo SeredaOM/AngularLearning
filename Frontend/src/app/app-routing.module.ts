@@ -16,13 +16,13 @@ import { AuthGuardService } from './auth/AuthGuard.service';
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'about', component: AboutComponent },
-  { path: 'admin', component: AdminComponent, canActivate: [AuthGuardService], data: { roles: [Role.Admin] } },
+  { path: 'admin', component: AdminComponent, canActivate: [AuthGuardService], data: { role: Role.admin } },
   { path: 'arena', component: ArenaComponent },
   { path: 'home', component: HomeComponent },
   { path: 'pingball', component: PingballComponent },
   { path: 'hex', component: HexComponent, canActivate: [AuthGuardService] },
   { path: 'login', component: LoginComponent },
-  { path: 'maps', component: MapsComponent, canActivate: [AuthGuardService], data: { roles: [Role.Player] } },
+  { path: 'maps', component: MapsComponent, canActivate: [AuthGuardService] },
 ];
 
 @NgModule({
