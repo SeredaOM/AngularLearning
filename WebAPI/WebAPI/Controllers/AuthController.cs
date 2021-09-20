@@ -26,9 +26,11 @@ namespace WebAPI.Controllers
 
         [Route("register")]
         [HttpPost]
-        public ActionResult<string> Register([FromBody] AuthenticateRequest data)
+        public ActionResult<string> Register([FromBody] RegistrationRequest data)
         {
-            throw new NotImplementedException();
+            AuthenticateResponse response = BL.Auth.Register(_jwtGenerator, data);
+
+            return Ok(response);
         }
 
         [Route("login")]

@@ -1,24 +1,48 @@
 <mat-card>
-    <mat-card-title>Login</mat-card-title>
-    <mat-card-content fxLayout="column" fxLayoutAlign="space-around center">
-        <mat-form-field>
-            <mat-label>Email</mat-label>
-            <input matInput type="email" disabled="true">
-        </mat-form-field>
-
-        <mat-form-field>
-            <mat-label>Password</mat-label>
-            <input matInput type="password" disabled="true">
-        </mat-form-field>
-
-    </mat-card-content>
+    <mat-card-title>Login using external providers</mat-card-title>
     <mat-card-actions>
         <div>
             <button mat-raised-button disabled="true">Login</button>
-            <button (click)="loginWithGoogle()" mat-raised-button class="google-login-btn">Google</button>
-            <button mat-raised-button (click)="signOut()">Logout</button>
+            <button mat-raised-button class="google-login-btn" (click)="loginWithGoogle()" [disabled]="isLoggedIn">Google</button>
+            <button mat-raised-button (click)="signOut()" [disabled]="!isLoggedIn">Logout</button>
         </div>
     </mat-card-actions>
+</mat-card>
+
+<form [formGroup]="registrationForm" autocomplete="off" *ngIf="displayRegistrationDiv">
+    <mat-card>
+        <mat-card-title>Create new account for your email address</mat-card-title>
+        <mat-form-field>
+            <mat-label>Nick name</mat-label>
+            <input matInput type="text" id="playerNick" formControlName="playerNick" [value]="playerNick" required>
+            <mat-hint align="end">4-15 alphanumeric characters long</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput type="email" [value]="playerEmail" readonly="true">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>First and Last Name</mat-label>
+            <input matInput type="text" [value]="playerFirstName+' '+playerLastName" readonly="true">
+        </mat-form-field>
+        <mat-card-actions>
+            <button mat-raised-button (click)="register()" [disabled]="!registrationForm.valid">Register</button>
+        </mat-card-actions>
+    </mat-card>
+</form>
+
+<mat-card *ngIf="error">
+    <mat-card-title style="color: red;">Error</mat-card-title>
+    <mat-card-content>
+        <mat-label style="font-weight: bold;">{{error}}</mat-label>
+    </mat-card-content>
+    <mat-card-content>
+        <mat-label>{{errorDetails}}</mat-label>
+    </mat-card-content>
+</mat-card>
+<mat-card *ngIf="progressProcessName">
+    <mat-card-title>{{processName}} is in progress...</mat-card-title>
+    <mat-spinner></mat-spinner>
 </mat-card>
 
 <!-- https://medium.com/@danilrabizo/google-authentication-in-the-angular-application-e86df69be58a -->

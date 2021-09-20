@@ -12,32 +12,75 @@ namespace WebAPI.BL
     {
         public static AuthenticateResponse Login(JwtGenerator jwtGenerator, AuthenticateRequest authRequest)
         {
-
-            GoogleJsonWebSignature.ValidationSettings settings = new GoogleJsonWebSignature.ValidationSettings();
-
-            // Google client ID
-            settings.Audience = new List<string>() { "706588217519-d997qa9l0iolpgqn22khotv3vtl2v8so.apps.googleusercontent.com" };
-
-            GoogleJsonWebSignature.Payload payload = GoogleJsonWebSignature.ValidateAsync(authRequest.IdToken, settings).Result;
+            GoogleJsonWebSignature.Payload payload;
+            try
+            {
+                payload = GetPayload(jwtGenerator, authRequest.IdToken);
+            }
+            catch (InvalidJwtException exc)
+            {
+                return AuthenticateResponse.CreateNotValidTokenResponse(exc.Message);
+            }
 
             using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
             {
                 var playerData = context.Players.Where(player => player.Email == payload.Email)
                     .Include(player => player.PlayerRoles)
-                    .Select(player => new { Player = player, Role = player.PlayerRoles.SingleOrDefault() })
+                    .Select(player => new { Player = player, RoleObject = player.PlayerRoles.SingleOrDefault() })
+                    //.Select(player => new { Player = player })
                     .SingleOrDefault();
 
                 if (playerData == null)
                 {
-                    throw new System.NotImplementedException("Need to handle 'unknown' user");
+                    return AuthenticateResponse.CreateNoPlayerResponse();
                 }
                 else
                 {
                     var tokenString = jwtGenerator.CreateUserAuthToken(null, payload.Email);
-
-                    return new AuthenticateResponse(tokenString, JwtGenerator.ExpiresInMinutes, playerData.Role);
+                    return AuthenticateResponse.CreateSuccessfulLoginResponse(tokenString, JwtGenerator.ExpiresInMinutes, playerData.RoleObject.Role);
+                    //return AuthenticateResponse.CreateSuccessfulLoginResponse(tokenString, JwtGenerator.ExpiresInMinutes, null);
                 }
             }
         }
+
+        public static AuthenticateResponse Register(JwtGenerator jwtGenerator, RegistrationRequest registrationRequest)
+        {
+            GoogleJsonWebSignature.Payload payload;
+            try
+            {
+                payload = GetPayload(jwtGenerator, registrationRequest.IdToken);
+            }
+            catch (InvalidJwtException exc)
+            {
+                return AuthenticateResponse.CreateNotValidTokenResponse(exc.Message);
+            }
+
+            using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
+            {
+                var player = context.Players.Where(player => player.Nick == registrationRequest.Nick || player.Email == registrationRequest.Email).SingleOrDefault();
+                if (player == null)
+                {
+                    context.Players.Add(new DAL.Player() { Email = registrationRequest.Email, Nick = registrationRequest.Nick, FirstName = registrationRequest.FirstName, LastName = registrationRequest.LastName });
+                    context.SaveChanges();
+                }
+                else
+                {
+                    return AuthenticateResponse.CreateNickOrEmailAreTakenResponse();
+                }
+            }
+
+            var tokenString = jwtGenerator.CreateUserAuthToken(null, payload.Email);
+            return AuthenticateResponse.CreateSuccessfulLoginResponse(tokenString, JwtGenerator.ExpiresInMinutes, null);
+        }
+
+        private static GoogleJsonWebSignature.Payload GetPayload(JwtGenerator jwtGenerator, string token)
+        {
+            GoogleJsonWebSignature.ValidationSettings settings = new GoogleJsonWebSignature.ValidationSettings();
+            settings.Audience = new List<string>() { GoogleClientId };
+            return GoogleJsonWebSignature.ValidateAsync(token, settings).Result;
+
+        }
+
+        private static string GoogleClientId = "706588217519-d997qa9l0iolpgqn22khotv3vtl2v8so.apps.googleusercontent.com";
     }
 }

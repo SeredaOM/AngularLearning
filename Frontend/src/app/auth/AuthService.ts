@@ -1,11 +1,10 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { ReplaySubject } from 'rxjs';
 import * as moment from 'moment';
-import { SocialAuthService } from 'angularx-social-login';
 
 import { ApiService } from '../api.service';
+import { AuthenticateResponse } from './AuthenticateResponse';
 
 // https://tecknoworks.com/how-to-integrate-social-login-in-a-web-api-solution/
 // https://levelup.gitconnected.com/how-to-sign-in-with-google-in-angular-and-use-jwt-based-net-core-api-authentication-rsa-6635719fb86c
@@ -15,21 +14,7 @@ import { ApiService } from '../api.service';
   providedIn: 'root',
 })
 export class AuthService {
-  public loggedIn: BehaviorSubject<Boolean> = new BehaviorSubject<Boolean>(false);
-
-  constructor(private httpClient: HttpClient, private socialAuthService: SocialAuthService) {
-    this.socialAuthService.authState.subscribe((user) => {
-      if (user == null) {
-        if (this.isLoggedIn()) {
-          this.logout();
-        }
-      } else {
-        if (this.isLoggedOut()) {
-          this.login(user.idToken);
-        }
-      }
-    });
-  }
+  constructor(private httpClient: HttpClient) {}
 
   private static httpOptions = {
     headers: new HttpHeaders({
@@ -37,36 +22,17 @@ export class AuthService {
     }),
   };
 
+  public register(token: string, nick: string, email: string, firstName: string, lastName: string) {
+    console.error(`Not implemented yet`);
+  }
+
   public login(token: string) {
-    return this.httpClient
-      .post(ApiService.getHost() + '/auth/login', { idToken: token }, AuthService.httpOptions)
-      .pipe(
-        catchError((error: HttpErrorResponse) => {
-          console.log(`Error trying to auth: ${error.error.detail}`);
-          console.log(error);
-          this.loggedIn.next(false);
-
-          this.removeAuthInfo();
-
-          return throwError(`Could not Auth. Try again or contact support.`);
-        })
-      )
-      .subscribe((res: string) => {
-        const expiresAt = moment().add(res[AuthService.ExpiresInMinutes], 'minutes');
-
-        localStorage.setItem(AuthService.AuthToken, res[AuthService.AuthToken]);
-        localStorage.setItem(AuthService.ExpiresAt, JSON.stringify(expiresAt.valueOf()));
-        localStorage.setItem(AuthService.Role, res[AuthService.Role]);
-
-        this.loggedIn.next(true);
-        console.log(`Completed login`);
-      });
+    return this.httpClient.post(ApiService.getHost() + '/auth/login', { idToken: token }, AuthService.httpOptions);
   }
 
   logout() {
     // remove user from local storage to log user out
     this.removeAuthInfo();
-    this.loggedIn.next(false);
 
     const token = localStorage.getItem(AuthService.AuthToken);
     this.httpClient
@@ -90,17 +56,39 @@ export class AuthService {
     return moment(expiresAt);
   }
 
-  private removeAuthInfo() {
+  public saveAuthInfo(res: AuthenticateResponse) {
+    const expiresAt = moment().add(res.expiresInMinutes, 'minutes');
+    localStorage.setItem(AuthService.AuthToken, res.authToken);
+    localStorage.setItem(AuthService.ExpiresAt, JSON.stringify(expiresAt.valueOf()));
+    localStorage.setItem(AuthService.Role, res.role);
+  }
+  public removeAuthInfo() {
     localStorage.removeItem(AuthService.AuthToken);
     localStorage.removeItem(AuthService.ExpiresAt);
     localStorage.removeItem(AuthService.Role);
   }
 
+  public static get CommunicationErrorCode() {
+    return -1;
+  }
+  public static get NotValidTokenErrorCode() {
+    return 1;
+  }
+  public static get NoPlayerErrorCode() {
+    return 2;
+  }
+  public static get NickOrEmailAreTakenErrorCode() {
+    return 3;
+  }
+
+  public static get ResultCode() {
+    return 'resultCode';
+  }
+  public static get ResultMessage() {
+    return 'resultMessage';
+  }
   public static get AuthToken() {
     return 'authToken';
-  }
-  private static get ExpiresInMinutes() {
-    return 'expiresInMinutes';
   }
   private static get ExpiresAt() {
     return 'expiresAt';

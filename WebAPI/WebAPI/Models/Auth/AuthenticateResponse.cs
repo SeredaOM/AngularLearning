@@ -1,21 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using WebAPI.DAL;
-
-namespace WebAPI.Models.Auth
+﻿namespace WebAPI.Models.Auth
 {
     public class AuthenticateResponse
     {
-        public AuthenticateResponse(string authToken, int expiresInMinutes, PlayerRole playerRole)
+        public static AuthenticateResponse CreateSuccessfulLoginResponse(string authToken, int expiresInMinutes, string role)
         {
-            AuthToken = authToken;
-            ExpiresInMinutes = expiresInMinutes;
-            Role = playerRole.Role;
+            return new AuthenticateResponse(0, null, authToken, expiresInMinutes, role);
         }
 
-        public string AuthToken{get;private set; }
+        internal static AuthenticateResponse CreateNotValidTokenResponse(string errorMessage)
+        {
+            return new AuthenticateResponse(1, errorMessage, null, 0, null);
+        }
+
+        internal static AuthenticateResponse CreateNoPlayerResponse()
+        {
+            return new AuthenticateResponse(2, null, null, 0, null);
+        }
+
+        internal static AuthenticateResponse CreateNickOrEmailAreTakenResponse()
+        {
+            return new AuthenticateResponse(3, null, null, 0, null);
+        }
+        
+        private AuthenticateResponse(int resultCode, string resultMessage, string authToken, int expiresInMinutes, string role)
+        {
+            ResultCode = resultCode;
+            ResultMessage = resultMessage;
+            AuthToken = authToken;
+            ExpiresInMinutes = expiresInMinutes;
+            Role = role;
+        }
+
+        public int ResultCode { get; private set; }
+
+        public string ResultMessage { get; private set; }
+
+        public string AuthToken { get; private set; }
 
         public int ExpiresInMinutes { get; private set; }
 

@@ -1,17 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BehaviorSubject } from 'rxjs';
 import { AppComponent } from './app.component';
-import { AuthService } from './auth/AuthService';
-
-let authServiceStub: Partial<AuthService>;
-authServiceStub = {
-  loggedIn: new BehaviorSubject<Boolean>(false),
-  isLoggedIn() {
-    return false;
-  },
-};
 
 describe('AppComponent', () => {
   beforeEach(
@@ -19,7 +9,7 @@ describe('AppComponent', () => {
       TestBed.configureTestingModule({
         imports: [HttpClientModule, RouterTestingModule],
         declarations: [AppComponent],
-        providers: [{ provide: AuthService, useValue: authServiceStub }],
+        providers: [],
       }).compileComponents();
     })
   );
