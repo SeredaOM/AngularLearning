@@ -1,21 +1,25 @@
+import { HttpClientModule } from '@angular/common/http';
+import { DebugElement, Injectable } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatRadioGroupHarness, MatRadioButtonHarness } from '@angular/material/radio/testing';
 import { MatRadioButton, MatRadioGroup, MatRadioModule } from '@angular/material/radio';
+
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
+import { MockComponent, MockInstance, ngMocks } from 'ng-mocks';
+
 import { HexComponent } from '../hex/hex.component';
 import { HexesService } from '../hex/hexes.service';
 import { IMapDescription } from '../Models/MapDescription';
-import { MockComponent, MockInstance, ngMocks } from 'ng-mocks';
 import { MapsComponent } from './maps.component';
-import { DebugElement } from '@angular/core';
 
 let loader: HarnessLoader;
 
+@Injectable()
 class MockHexesService extends HexesService {
   public getMapDataAvailableForPlayer() {
     let md1: IMapDescription = {
@@ -46,8 +50,8 @@ describe('MapsComponent', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [MatRadioModule, HttpClientModule],
         declarations: [MapsComponent, MockComponent(HexComponent)],
+        imports: [MatRadioModule, HttpClientModule],
         providers: [HexesService],
       }).compileComponents();
 

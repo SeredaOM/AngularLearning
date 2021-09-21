@@ -40,11 +40,6 @@ export class MapsComponent implements OnInit {
     this.ngZone.run(() => {
       this.mapDescriptions = mapDescriptions;
     });
-
-    console.log(mapDescriptions);
-    mapDescriptions.forEach((mapDescription) => {
-      console.log(mapDescription);
-    });
   }
 
   onMapNameChange(event) {

@@ -1,6 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Tile } from '../tile';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+
+import { ValueSelectorComponent } from '../value-selector/value-selector.component';
+import { Tile } from '../tile';
 import { TileInfoComponent } from './tile-info.component';
 
 describe('TileInfoComponent', () => {
@@ -9,7 +15,8 @@ describe('TileInfoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TileInfoComponent],
+      imports: [BrowserAnimationsModule, MatFormFieldModule, MatInputModule, MatSelectModule],
+      declarations: [TileInfoComponent, ValueSelectorComponent],
     }).compileComponents();
   });
 

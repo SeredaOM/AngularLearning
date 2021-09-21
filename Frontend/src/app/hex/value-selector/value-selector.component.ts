@@ -30,7 +30,7 @@ export class ValueSelectorComponent implements OnInit {
         break;
 
       default:
-        console.error(`Unsupported valuesType in' values-selector' component`);
+        console.error(`Unsupported valuesType (${this.valuesType}) in 'values-selector' component`);
     }
   }
 

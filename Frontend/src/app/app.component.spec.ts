@@ -1,14 +1,17 @@
 import { HttpClientModule } from '@angular/common/http';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+
+import { MatToolbar } from '@angular/material/toolbar';
+
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
+        declarations: [AppComponent, MatToolbar],
         imports: [HttpClientModule, RouterTestingModule],
-        declarations: [AppComponent],
         providers: [],
       }).compileComponents();
     })
