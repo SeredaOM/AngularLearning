@@ -10,20 +10,20 @@
 </mat-card>
 
 <form [formGroup]="registrationForm" autocomplete="off" *ngIf="displayRegistrationDiv">
-    <mat-card>
+    <mat-card id="registrationCard">
         <mat-card-title>Create new account for your email address</mat-card-title>
         <mat-form-field>
             <mat-label>Nick name</mat-label>
-            <input matInput type="text" id="playerNick" formControlName="playerNick" [value]="playerNick" required>
+            <input matInput type="text" id="playerNick" formControlName="playerNick" [value]="playerNick" [(ngModel)]="playerNick">
             <mat-hint align="end">4-15 alphanumeric characters long</mat-hint>
         </mat-form-field>
         <mat-form-field>
             <mat-label>Email</mat-label>
-            <input matInput type="email" [value]="playerEmail" readonly="true">
+            <input matInput type="email" [value]="user.email" readonly="true">
         </mat-form-field>
         <mat-form-field>
             <mat-label>First and Last Name</mat-label>
-            <input matInput type="text" [value]="playerFirstName+' '+playerLastName" readonly="true">
+            <input matInput type="text" [value]="user.firstName+' '+user.lastName" readonly="true">
         </mat-form-field>
         <mat-card-actions>
             <button mat-raised-button (click)="register()" [disabled]="!registrationForm.valid">Register</button>

@@ -18,4 +18,8 @@
     <ProjectReference Include="..\WebAPI\WebAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="WebApiTests\DAL\" />
+  </ItemGroup>
+
 </Project>

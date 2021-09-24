@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using WebAPI.Models;
 
-namespace BrowserWarTests
+namespace BrowserWarTests.WebApiTests.Models
 {
     public class MapTests
     {

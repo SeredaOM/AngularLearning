@@ -14,6 +14,8 @@ import { AuthenticateResponse } from './AuthenticateResponse';
   providedIn: 'root',
 })
 export class AuthService {
+  public loggedIn: ReplaySubject<Boolean> = new ReplaySubject<Boolean>();
+
   constructor(private httpClient: HttpClient) {}
 
   private static httpOptions = {
@@ -23,7 +25,11 @@ export class AuthService {
   };
 
   public register(token: string, nick: string, email: string, firstName: string, lastName: string) {
-    console.error(`Not implemented yet`);
+    return this.httpClient.post(
+      ApiService.getHost() + '/auth/register',
+      { idToken: token, nick: nick, email: email, firstName: firstName, lastName: lastName },
+      AuthService.httpOptions
+    );
   }
 
   public login(token: string) {
@@ -61,11 +67,15 @@ export class AuthService {
     localStorage.setItem(AuthService.AuthToken, res.authToken);
     localStorage.setItem(AuthService.ExpiresAt, JSON.stringify(expiresAt.valueOf()));
     localStorage.setItem(AuthService.Role, res.role);
+
+    this.loggedIn.next(true);
   }
   public removeAuthInfo() {
     localStorage.removeItem(AuthService.AuthToken);
     localStorage.removeItem(AuthService.ExpiresAt);
     localStorage.removeItem(AuthService.Role);
+
+    this.loggedIn.next(false);
   }
 
   public static get CommunicationErrorCode() {
@@ -79,6 +89,9 @@ export class AuthService {
   }
   public static get NickOrEmailAreTakenErrorCode() {
     return 3;
+  }
+  public static get InvalidRegistrationDataErrorCode() {
+    return 4;
   }
 
   public static get ResultCode() {

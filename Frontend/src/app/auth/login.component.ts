@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { FacebookLoginProvider, GoogleLoginProvider, SocialAuthService } from 'angularx-social-login';
+import { FacebookLoginProvider, GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
+import { Subscription } from 'rxjs';
 import { AuthenticateResponse } from './AuthenticateResponse';
 
 import { AuthService } from './AuthService';
@@ -17,16 +18,15 @@ export class LoginComponent implements OnInit {
 
   isLoggedIn: Boolean = false;
 
-  playerIdToken: string = null;
+  user: SocialUser = null;
   playerNick: string = null;
-  playerEmail: string = null;
-  playerFirstName: string = null;
-  playerLastName: string = null;
   displayRegistrationDiv = false;
 
   progressProcessName: string = null;
   error: string = null;
   errorDetails: string = null;
+
+  subscription: Subscription;
 
   constructor(private router: Router, private socialAuthService: SocialAuthService, public authService: AuthService) {}
 
@@ -77,36 +77,29 @@ export class LoginComponent implements OnInit {
   public subscribeToSocialAuthService() {
     console.log(`LoginComponent.subscribeToSocialAuthService`);
 
-    this.socialAuthService.authState.subscribe((user) => {
-      console.log(
-        `LoginComponent.subscribe - user state changed: user=${
-          user == null ? 'null' : user.email + ', token="' + user.idToken + '"'
-        }`
-      );
+    this.subscription = this.socialAuthService.authState.subscribe((user) => {
+      console.log(`LoginComponent.subscribe - user state changed:`);
+      console.log(user);
 
       if (user == null) {
         if (this.authService.isLoggedIn()) {
           this.authService.logout();
         }
       } else {
+        this.user = user;
         if (this.authService.isLoggedOut()) {
           console.log(`Try to login`);
           this.progressProcessName = 'Login';
-          this.playerIdToken = user.idToken;
-          this.playerEmail = user.email;
-          this.playerFirstName = user.firstName;
-          this.playerLastName = user.lastName;
-
           this.authService.login(user.idToken).subscribe(
             (res: AuthenticateResponse) => {
-              console.log(`handling success`);
+              console.log(`handling login success`);
               console.log(res);
-              this.handleLoginResponse(res);
+              this.handleResponse(res);
             },
             (error: any) => {
-              console.log(`handling error`);
+              console.log(`handling login error`);
               console.log(error);
-              this.handleLoginResponse(
+              this.handleResponse(
                 new AuthenticateResponse(AuthService.CommunicationErrorCode, error.message, null, 0, null)
               );
             }
@@ -116,12 +109,33 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  private handleLoginResponse(res: AuthenticateResponse) {
+  register() {
+    console.log(`Registration started, nick: ${this.playerNick}`);
+    this.progressProcessName = 'Registration';
+    this.authService
+      .register(this.user.idToken, this.playerNick, this.user.email, this.user.firstName, this.user.lastName)
+      .subscribe(
+        (res: AuthenticateResponse) => {
+          console.log(`handling registration success`);
+          console.log(res);
+          this.handleResponse(res);
+        },
+        (error: any) => {
+          console.log(`handling registration error`);
+          console.log(error);
+          this.handleResponse(
+            new AuthenticateResponse(AuthService.CommunicationErrorCode, error.message, null, 0, null)
+          );
+        }
+      );
+  }
+
+  private handleResponse(res: AuthenticateResponse) {
     let _this = this;
     this.progressProcessName = null;
 
     const errorCode = res.resultCode;
-    console.log(`handleLoginResponse: code=${errorCode}`);
+    console.log(`handle response code = ${errorCode}`);
     this.authService.removeAuthInfo();
     switch (errorCode) {
       case AuthService.CommunicationErrorCode:
@@ -137,11 +151,11 @@ export class LoginComponent implements OnInit {
       case AuthService.NotValidTokenErrorCode: // any time
         this.error = `Invalid authentication token`;
         this.errorDetails = `Token provided by 3rd-party is not valid. Try to use another login provider or contact the support`;
-        _this.displayRegistrationDiv = false;
+        this.displayRegistrationDiv = false;
         break;
 
       case AuthService.NoPlayerErrorCode: // after login
-        this.error = `Player with email "${this.playerEmail}" is not registered`;
+        this.error = `Player with email "${this.user.email}" is not registered`;
         this.errorDetails = `Please create account for your email address if you wish to proceed`;
         _this.displayRegistrationDiv = true;
         break;
@@ -149,7 +163,11 @@ export class LoginComponent implements OnInit {
       case AuthService.NickOrEmailAreTakenErrorCode: //  after registration
         this.error = `Player requested nick name (or email?) already registered`;
         this.errorDetails = `Please chose another nick name or login with specified email`;
-        _this.displayRegistrationDiv = true;
+        break;
+
+      case AuthService.InvalidRegistrationDataErrorCode: //  after registration
+        this.error = `Invalid registration data`;
+        this.errorDetails = res.resultMessage;
         break;
 
       default:
@@ -157,17 +175,5 @@ export class LoginComponent implements OnInit {
         this.errorDetails = `Error code: ${errorCode}`;
         break;
     }
-  }
-
-  register() {
-    console.log(`Registration started`);
-    this.progressProcessName = 'Registration';
-    this.authService.register(
-      this.playerIdToken,
-      this.playerNick,
-      this.playerEmail,
-      this.playerFirstName,
-      this.playerLastName
-    );
   }
 }

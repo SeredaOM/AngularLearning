@@ -21,7 +21,12 @@
         {
             return new AuthenticateResponse(3, null, null, 0, null);
         }
-        
+
+        internal static AuthenticateResponse CreateInvalidRegistrationDataResponse(string error)
+        {
+            return new AuthenticateResponse(4, error, null, 0, null);
+        }
+
         private AuthenticateResponse(int resultCode, string resultMessage, string authToken, int expiresInMinutes, string role)
         {
             ResultCode = resultCode;
