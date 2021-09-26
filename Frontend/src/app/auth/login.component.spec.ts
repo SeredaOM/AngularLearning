@@ -155,7 +155,7 @@ describe('LoginComponent', () => {
   it(
     'when user registers and "register" responses with Token error: should display token error',
     waitForAsync(async () => {
-  // implement and reuse validation logic from 'login with Token error' test
+      //  implement and reuse validation logic from 'login with Token error' test
       authClientSpy.isLoggedOut.and.returnValue(true);
       authClientSpy.register.and.returnValue(
         of(new AuthenticateResponse(AuthService.NotValidTokenErrorCode, 'Error message', 'Token', 321, 'role'))
@@ -166,7 +166,7 @@ describe('LoginComponent', () => {
       component.displayRegistrationDiv = true;
       fixture.detectChanges();
 
-      await enterNickAndClickRegister(true);
+      await enterNickAndClickRegister();
       fixture.detectChanges();
 
       expect(component.progressProcessName).toBeNull();
@@ -227,8 +227,8 @@ describe('LoginComponent', () => {
       component.displayRegistrationDiv = true;
       fixture.detectChanges();
 
-      await enterNickAndClickRegister(true);
-    fixture.detectChanges();
+      await enterNickAndClickRegister();
+      fixture.detectChanges();
 
       expect(component.progressProcessName).toBeNull();
       expect(component.error).toBeNull();
@@ -239,9 +239,40 @@ describe('LoginComponent', () => {
     })
   );
 
+  it(
+    'Register button should become remain disabled until entered valid Nick',
+    waitForAsync(async () => {
+      createComponentAndDetectChanges();
+      component.displayRegistrationDiv = true;
+      component.user = socialUserFake;
+
+      const btn: MatButtonHarness = await getRegisterButtonHarness();
+      expect(await btn.isDisabled()).toBeTrue();
+      let btnNative = fixture.debugElement.nativeElement.querySelectorAll('#btn');
+      expect(btnNative[0].disabled).toBeTrue();
+
+      component.playerNick = playerNickForTest_Invalid;
+      fixture.detectChanges();
+
+      expect(component.playerNick).toBe(playerNickForTest_Invalid);
+      expect(btnNative[0].disabled).toBeTrue();
+      expect(await btn.isDisabled()).toBeTrue();
+
+      const playerNickInput: MatInputHarness = await getPlayerNickInputHarness();
+      expect(playerNickInput).toBeTruthy();
+      await playerNickInput.setValue(playerNickForTest);
+      fixture.detectChanges();
+
+      expect(component.playerNick).toBe(playerNickForTest);
+      expect(btnNative[0].disabled).toBeFalse();
+      expect(await btn.isDisabled()).toBeFalse();
+    })
+  );
+
+  let playerNickForTest_Invalid = 'C123';
   let playerNickForTest = 'C1234';
 
-  async function enterNickAndClickRegister(click: boolean) {
+  async function enterNickAndClickRegister() {
     const registerButton = await getRegisterButtonHarness();
     expect(registerButton).toBeTruthy();
     expect(await registerButton.isDisabled()).toBeTrue();
@@ -249,11 +280,15 @@ describe('LoginComponent', () => {
     const playerNickInput: MatInputHarness = await getPlayerNickInputHarness();
     expect(playerNickInput).toBeTruthy();
     await playerNickInput.setValue(playerNickForTest);
+    // setting nick via reactive form (component.playerNick) works too, but better to test via actual UI controls
+    //component.playerNick = playerNickForTest;
     fixture.detectChanges();
 
+    expect(component.playerNick).toBe(playerNickForTest);
     expect(await registerButton.isDisabled()).toBeFalse();
 
-    if (click) await registerButton.click();
+    await registerButton.click();
+    fixture.detectChanges();
   }
 
   async function getRegisterButtonHarness(): Promise<MatButtonHarness> {

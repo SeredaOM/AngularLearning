@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { FacebookLoginProvider, GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
@@ -19,8 +19,15 @@ export class LoginComponent implements OnInit {
   isLoggedIn: Boolean = false;
 
   user: SocialUser = null;
-  playerNick: string = null;
   displayRegistrationDiv = false;
+
+  get playerNick(): string {
+    return this.registrationForm.value.playerNick;
+  }
+  set playerNick(value) {
+    //this.registrationForm.value.playerNick = value; - this does not work, see commit comment for details
+    this.registrationForm.controls['playerNick'].setValue(value);
+  }
 
   progressProcessName: string = null;
   error: string = null;
@@ -28,18 +35,18 @@ export class LoginComponent implements OnInit {
 
   subscription: Subscription;
 
-  constructor(private router: Router, private socialAuthService: SocialAuthService, public authService: AuthService) {}
-
-  ngOnInit() {
+  constructor(private router: Router, private socialAuthService: SocialAuthService, public authService: AuthService) {
     this.registrationForm = new FormGroup({
-      playerNick: new FormControl(this.playerNick, [
+      playerNick: new FormControl('', [
         Validators.required,
-        Validators.minLength(4),
+        Validators.minLength(5),
         Validators.maxLength(15),
         Validators.pattern('^[a-zA-Z0-9]+$'),
       ]),
     });
+  }
 
+  ngOnInit() {
     this.isLoggedIn = this.authService.isLoggedIn();
     console.log(`LoginComponent, authServiceIsLoggedIn: ${this.authService.isLoggedIn()}`);
 
@@ -78,7 +85,7 @@ export class LoginComponent implements OnInit {
     console.log(`LoginComponent.subscribeToSocialAuthService`);
 
     this.subscription = this.socialAuthService.authState.subscribe((user) => {
-      console.log(`LoginComponent.subscribe - user state changed:`);
+      console.log(`LoginComponent.subscribe - social user state changed:`);
       console.log(user);
 
       if (user == null) {
