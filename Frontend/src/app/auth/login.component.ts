@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { FacebookLoginProvider, GoogleLoginProvider, SocialAuthService, SocialUser } from 'angularx-social-login';
 import { Subscription } from 'rxjs';
+import { PlayerModel } from '../Models/PlayerModel';
 import { AuthenticateResponse } from './AuthenticateResponse';
 
 import { AuthService } from './AuthService';
@@ -18,7 +19,8 @@ export class LoginComponent implements OnInit {
 
   isLoggedIn: Boolean = false;
 
-  user: SocialUser = null;
+  socialUser: SocialUser = null;
+  player: PlayerModel = null;
   displayRegistrationDiv = false;
 
   get playerNick(): string {
@@ -50,7 +52,15 @@ export class LoginComponent implements OnInit {
     this.isLoggedIn = this.authService.isLoggedIn();
     console.log(`LoginComponent, authServiceIsLoggedIn: ${this.authService.isLoggedIn()}`);
 
-    this.subscribeToSocialAuthService();
+    if (this.authService.isLoggedIn()) {
+      this.player = PlayerModel.getPlayerFromStore();
+    } else {
+      this.subscribeToSocialAuthService();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) this.subscription.unsubscribe();
   }
 
   loginWithGoogle(): void {
@@ -78,7 +88,38 @@ export class LoginComponent implements OnInit {
   }
 
   signOut(): void {
+    this.progressProcessName = 'Logging out...';
     this.socialAuthService.signOut(true);
+    this.authService.logout().subscribe(
+      () => {
+        console.log(`Completed logout`);
+
+        this.progressProcessName = null;
+        this.player = null;
+        this.isLoggedIn = false;
+
+        if (this.subscription != null) {
+          console.error(`subscription supposed to be null when signout`);
+        }
+
+        this.subscribeToSocialAuthService();
+      },
+      (error: any) => {
+        console.log(`handling logout error`);
+        console.log(error);
+
+        this.progressProcessName = null;
+
+        this.error = 'Error during logout';
+        this.errorDetails = error.message;
+
+        if (this.subscription != null) {
+          console.error(`subscription supposed to be null when signout`);
+        }
+
+        this.subscribeToSocialAuthService();
+      }
+    );
   }
 
   public subscribeToSocialAuthService() {
@@ -89,11 +130,8 @@ export class LoginComponent implements OnInit {
       console.log(user);
 
       if (user == null) {
-        if (this.authService.isLoggedIn()) {
-          this.authService.logout();
-        }
       } else {
-        this.user = user;
+        this.socialUser = user;
         if (this.authService.isLoggedOut()) {
           console.log(`Try to login`);
           this.progressProcessName = 'Login';
@@ -106,11 +144,11 @@ export class LoginComponent implements OnInit {
             (error: any) => {
               console.log(`handling login error`);
               console.log(error);
-              this.handleResponse(
-                new AuthenticateResponse(AuthService.CommunicationErrorCode, error.message, null, 0, null)
-              );
+              this.handleResponse(new AuthenticateResponse(AuthService.CommunicationErrorCode, error.message));
             }
           );
+        } else {
+          console.warn(`Social user state changed while player is already logged in`);
         }
       }
     });
@@ -120,7 +158,13 @@ export class LoginComponent implements OnInit {
     console.log(`Registration started, nick: ${this.playerNick}`);
     this.progressProcessName = 'Registration';
     this.authService
-      .register(this.user.idToken, this.playerNick, this.user.email, this.user.firstName, this.user.lastName)
+      .register(
+        this.socialUser.idToken,
+        this.playerNick,
+        this.socialUser.email,
+        this.socialUser.firstName,
+        this.socialUser.lastName
+      )
       .subscribe(
         (res: AuthenticateResponse) => {
           console.log(`handling registration success`);
@@ -138,7 +182,6 @@ export class LoginComponent implements OnInit {
   }
 
   private handleResponse(res: AuthenticateResponse) {
-    let _this = this;
     this.progressProcessName = null;
 
     const errorCode = res.resultCode;
@@ -152,6 +195,8 @@ export class LoginComponent implements OnInit {
 
       case 0:
         this.authService.saveAuthInfo(res);
+        this.player = PlayerModel.getPlayerFromStore();
+        this.isLoggedIn = true;
         this.router.navigate(['/']);
         break;
 
@@ -162,9 +207,9 @@ export class LoginComponent implements OnInit {
         break;
 
       case AuthService.NoPlayerErrorCode: // after login
-        this.error = `Player with email "${this.user.email}" is not registered`;
+        this.error = `Player with email "${this.socialUser.email}" is not registered`;
         this.errorDetails = `Please create account for your email address if you wish to proceed`;
-        _this.displayRegistrationDiv = true;
+        this.displayRegistrationDiv = true;
         break;
 
       case AuthService.NickOrEmailAreTakenErrorCode: //  after registration

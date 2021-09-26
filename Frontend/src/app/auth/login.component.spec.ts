@@ -17,6 +17,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { LoginComponent } from './login.component';
 import { AuthenticateResponse } from './AuthenticateResponse';
+import { PlayerModel } from '../Models/PlayerModel';
 
 let loader: HarnessLoader;
 
@@ -44,6 +45,7 @@ describe('LoginComponent', () => {
   socialUserFake.firstName = 'FN';
   socialUserFake.lastName = 'LN';
   socialUserFake.name = 'FN LN';
+  const player: PlayerModel = new PlayerModel(1, 'nick', 'email', 'first', 'last', 'role');
 
   let socialUserSubject = new Subject();
 
@@ -83,9 +85,7 @@ describe('LoginComponent', () => {
   });
 
   afterEach(() => {
-    if (component.subscription != null) {
-      component.subscription.unsubscribe();
-    }
+    component.ngOnDestroy();
   });
 
   function createComponentAndDetectChanges() {
@@ -105,7 +105,7 @@ describe('LoginComponent', () => {
     authClientSpy.isLoggedIn.and.returnValue(true);
 
     createComponentAndDetectChanges();
-    component.user = socialUserFake;
+    component.socialUser = socialUserFake;
     socialUserSubject.next(socialUserFake);
 
     expect(authClientSpy.login).toHaveBeenCalledTimes(0);
@@ -137,7 +137,7 @@ describe('LoginComponent', () => {
   it('when user is logged in to SocialAuthService but not AuthService and "login" responses with Token error: should display token error', () => {
     authClientSpy.isLoggedOut.and.returnValue(true);
     authClientSpy.login.and.returnValue(
-      of(new AuthenticateResponse(AuthService.NotValidTokenErrorCode, 'Error message', 'Token', 321, 'role'))
+      of(new AuthenticateResponse(AuthService.NotValidTokenErrorCode, 'Error message', 'Token', 321, player))
     );
 
     createComponentAndDetectChanges();
@@ -158,11 +158,11 @@ describe('LoginComponent', () => {
       //  implement and reuse validation logic from 'login with Token error' test
       authClientSpy.isLoggedOut.and.returnValue(true);
       authClientSpy.register.and.returnValue(
-        of(new AuthenticateResponse(AuthService.NotValidTokenErrorCode, 'Error message', 'Token', 321, 'role'))
+        of(new AuthenticateResponse(AuthService.NotValidTokenErrorCode, 'Error message', 'Token', 321, player))
       );
 
       createComponentAndDetectChanges();
-      component.user = socialUserFake;
+      component.socialUser = socialUserFake;
       component.displayRegistrationDiv = true;
       fixture.detectChanges();
 
@@ -199,7 +199,7 @@ describe('LoginComponent', () => {
 
   it('when user is logged in to SocialAuthService but not AuthService and "login" responses OK: login should succeed', () => {
     authClientSpy.isLoggedOut.and.returnValue(true);
-    const res = new AuthenticateResponse(0, '', 'Token', 123, 'role');
+    const res = new AuthenticateResponse(0, '', 'Token', 123, player);
     authClientSpy.login.and.returnValue(of(res));
 
     createComponentAndDetectChanges();
@@ -209,7 +209,7 @@ describe('LoginComponent', () => {
     expect(component.error).toBeNull();
     expect(component.errorDetails).toBeNull();
     expect(component.displayRegistrationDiv).toBeFalse();
-    expect(component.user).toBe(socialUserFake);
+    expect(component.socialUser).toBe(socialUserFake);
 
     expect(authClientSpy.removeAuthInfo).toHaveBeenCalledTimes(1);
     expect(authClientSpy.saveAuthInfo).toHaveBeenCalledOnceWith(res);
@@ -223,7 +223,7 @@ describe('LoginComponent', () => {
       authClientSpy.register.and.returnValue(of(res));
 
       createComponentAndDetectChanges();
-      component.user = socialUserFake;
+      component.socialUser = socialUserFake;
       component.displayRegistrationDiv = true;
       fixture.detectChanges();
 
@@ -244,7 +244,7 @@ describe('LoginComponent', () => {
     waitForAsync(async () => {
       createComponentAndDetectChanges();
       component.displayRegistrationDiv = true;
-      component.user = socialUserFake;
+      component.socialUser = socialUserFake;
 
       const btn: MatButtonHarness = await getRegisterButtonHarness();
       expect(await btn.isDisabled()).toBeTrue();

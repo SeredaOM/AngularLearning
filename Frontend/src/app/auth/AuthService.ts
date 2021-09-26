@@ -5,6 +5,7 @@ import * as moment from 'moment';
 
 import { ApiService } from '../api.service';
 import { AuthenticateResponse } from './AuthenticateResponse';
+import { PlayerModel } from '../Models/PlayerModel';
 
 // https://tecknoworks.com/how-to-integrate-social-login-in-a-web-api-solution/
 // https://levelup.gitconnected.com/how-to-sign-in-with-google-in-angular-and-use-jwt-based-net-core-api-authentication-rsa-6635719fb86c
@@ -37,15 +38,10 @@ export class AuthService {
   }
 
   logout() {
-    // remove user from local storage to log user out
-    this.removeAuthInfo();
-
     const token = localStorage.getItem(AuthService.AuthToken);
-    this.httpClient
-      .post(ApiService.getHost() + '/auth/logout', { idToken: token }, AuthService.httpOptions)
-      .subscribe(() => {
-        console.log(`Completed logout`);
-      });
+    let res = this.httpClient.post(ApiService.getHost() + '/auth/logout', { idToken: token }, AuthService.httpOptions);
+    this.removeAuthInfo();
+    return res;
   }
 
   public isLoggedIn() {
@@ -62,18 +58,18 @@ export class AuthService {
     return moment(expiresAt);
   }
 
-  public saveAuthInfo(res: AuthenticateResponse) {
-    const expiresAt = moment().add(res.expiresInMinutes, 'minutes');
-    localStorage.setItem(AuthService.AuthToken, res.authToken);
+  public saveAuthInfo(response: AuthenticateResponse) {
+    const expiresAt = moment().add(response.expiresInMinutes, 'minutes');
+    localStorage.setItem(AuthService.AuthToken, response.authToken);
     localStorage.setItem(AuthService.ExpiresAt, JSON.stringify(expiresAt.valueOf()));
-    localStorage.setItem(AuthService.Role, res.role);
+    PlayerModel.storeItems(response.player);
 
     this.loggedIn.next(true);
   }
   public removeAuthInfo() {
     localStorage.removeItem(AuthService.AuthToken);
     localStorage.removeItem(AuthService.ExpiresAt);
-    localStorage.removeItem(AuthService.Role);
+    PlayerModel.removeItems();
 
     this.loggedIn.next(false);
   }
@@ -105,8 +101,5 @@ export class AuthService {
   }
   private static get ExpiresAt() {
     return 'expiresAt';
-  }
-  public static get Role() {
-    return 'role';
   }
 }

@@ -26,7 +26,7 @@ namespace WebAPI.Controllers
 
         [Route("register")]
         [HttpPost]
-        public ActionResult<string> Register([FromBody] RegistrationRequest data)
+        public ActionResult<AuthenticateResponse> Register([FromBody] RegistrationRequest data)
         {
             AuthenticateResponse response = BL.Auth.Register(_jwtGenerator, data);
 
@@ -35,7 +35,7 @@ namespace WebAPI.Controllers
 
         [Route("login")]
         [HttpPost]
-        public ActionResult<string> Login([FromBody] AuthenticateRequest data)
+        public ActionResult<AuthenticateResponse> Login([FromBody] AuthenticateRequest data)
         {
             AuthenticateResponse response = BL.Auth.Login(_jwtGenerator, data);
 
@@ -44,10 +44,9 @@ namespace WebAPI.Controllers
 
         [Route("logout")]
         [HttpPost]
-        public ActionResult Logout([FromBody] AuthenticateRequest data)
+        public ActionResult<AuthenticateResponse> Logout([FromBody] AuthenticateRequest data)
         {
-            throw new NotImplementedException("Does this method need to do something?");
-            //return Ok();
+            return Ok(AuthenticateResponse.CreateSuccessfulLogoutResponse());
         }
     }
 }

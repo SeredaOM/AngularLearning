@@ -6,6 +6,7 @@ import { map, tap } from 'rxjs/operators';
 
 import { Role } from './role';
 import { AuthService } from './AuthService';
+import { PlayerModel } from '../Models/PlayerModel';
 
 @Injectable({
   providedIn: 'root',
@@ -21,10 +22,10 @@ export class AuthGuardService implements CanActivate {
       return false;
     }
 
-    const usersRole = localStorage.getItem(AuthService.Role);
+    const player = PlayerModel.getPlayerFromStore();
 
     if (route.data.role) {
-      if (route.data.role > Role[usersRole]) {
+      if (route.data.role > Role[player.role]) {
         return false;
       }
     }

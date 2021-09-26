@@ -10,6 +10,23 @@ namespace WebAPI.Models
 {
     public class Player
     {
+
+        #region Construction
+
+        public Player(DAL.Player player, string role) : this(player.Id, player.Nick, player.Email, player.FirstName, player.LastName, role) { }
+
+        public Player(int id, string nick, string email, string firstName, string lastName, string role)
+        {
+            Id = id;
+            Nick = nick;
+            Email = email;
+            FirstName = firstName;
+            LastName = lastName;
+            Role = role;
+        }
+
+        #endregion
+
         public static int GetPlayerIdByEmail(string email)
         {
             using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
@@ -33,5 +50,17 @@ namespace WebAPI.Models
 
             return true;
         }
+
+        public int Id { get; private set; }
+
+        public string Nick { get; private set; }
+
+        public string Email { get; private set; }
+
+        public string FirstName { get; private set; }
+
+        public string LastName { get; private set; }
+
+        public string Role { get; private set; }
     }
 }

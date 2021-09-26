@@ -38,8 +38,9 @@ namespace WebAPI.BL
                 else
                 {
                     var tokenString = jwtGenerator.CreateUserAuthToken(null, payload.Email);
-                    string role= playerData.RoleObject == null ? null: playerData.RoleObject.Role;
-                    return AuthenticateResponse.CreateSuccessfulLoginResponse(tokenString, JwtGenerator.ExpiresInMinutes, role);
+                    string role = playerData.RoleObject == null ? null : playerData.RoleObject.Role;
+                    Models.Player player = new Models.Player(playerData.Player, role);
+                    return AuthenticateResponse.CreateSuccessfulLoginResponse(tokenString, JwtGenerator.ExpiresInMinutes, player);
                 }
             }
         }
@@ -63,27 +64,27 @@ namespace WebAPI.BL
 
             using (BrowserWarContext context = BrowserWarContextExtension.GetContext())
             {
-                var player = context.Players.Where(player => player.Nick == registrationRequest.Nick || player.Email == registrationRequest.Email).SingleOrDefault();
-                if (player == null)
-                {
-                    context.Players.Add(new DAL.Player()
-                    {
-                        Nick = registrationRequest.Nick,
-                        Email = payload.Email,
-                        RegistrationDate = DateTime.Now,
-                        FirstName = payload.GivenName,
-                        LastName = payload.FamilyName
-                    });
-                    context.SaveChanges();
-                }
-                else
+                DAL.Player playerData = context.Players.Where(player => player.Nick == registrationRequest.Nick || player.Email == registrationRequest.Email).SingleOrDefault();
+                if (playerData != null)
                 {
                     return AuthenticateResponse.CreateNickOrEmailAreTakenResponse();
                 }
-            }
 
-            var tokenString = jwtGenerator.CreateUserAuthToken(null, payload.Email);
-            return AuthenticateResponse.CreateSuccessfulLoginResponse(tokenString, JwtGenerator.ExpiresInMinutes, null);
+                playerData = new DAL.Player()
+                {
+                    Nick = registrationRequest.Nick,
+                    Email = payload.Email,
+                    RegistrationDate = DateTime.Now,
+                    FirstName = payload.GivenName,
+                    LastName = payload.FamilyName
+                };
+                context.Players.Add(playerData);
+                context.SaveChanges();
+
+                var tokenString = jwtGenerator.CreateUserAuthToken(null, payload.Email);
+                Models.Player player = new Models.Player(playerData, null);
+                return AuthenticateResponse.CreateSuccessfulLoginResponse(tokenString, JwtGenerator.ExpiresInMinutes, player);
+            }
         }
 
         private static GoogleJsonWebSignature.Payload GetPayload(JwtGenerator jwtGenerator, string token)
