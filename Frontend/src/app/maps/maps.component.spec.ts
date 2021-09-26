@@ -16,6 +16,7 @@ import { HexComponent } from '../hex/hex.component';
 import { HexesService } from '../hex/hexes.service';
 import { IMapDescription } from '../Models/MapDescription';
 import { MapsComponent } from './maps.component';
+import { FormsModule } from '@angular/forms';
 
 let loader: HarnessLoader;
 
@@ -51,7 +52,7 @@ describe('MapsComponent', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [MapsComponent, MockComponent(HexComponent)],
-        imports: [MatRadioModule, HttpClientModule],
+        imports: [FormsModule, MatRadioModule, HttpClientModule],
         providers: [HexesService],
       }).compileComponents();
 

@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { TileInfoComponent } from './tile-info/tile-info.component';
 import { ValueSelectorComponent } from './value-selector/value-selector.component';
 import { HexComponent } from './hex.component';
+import { FormsModule } from '@angular/forms';
 
 describe('HexComponent', () => {
   let component: HexComponent;
@@ -21,6 +22,7 @@ describe('HexComponent', () => {
       imports: [
         BrowserAnimationsModule,
         HttpClientModule,
+        FormsModule,
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
