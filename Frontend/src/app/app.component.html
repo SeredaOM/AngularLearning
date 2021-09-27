@@ -9,7 +9,7 @@
 
   <button mat-button routerLink="/about">About</button>
 
-  <button mat-button routerLink="/admin" *ngIf="loggedIn">Admin</button>
+  <button mat-button routerLink="/admin" *ngIf="loggedIn&&isAdmin">Admin</button>
 
   <button mat-button routerLink="/login">Log{{loggedIn?"out":"in"}}</button>
 </mat-toolbar>
