@@ -22,6 +22,7 @@ namespace WebAPI.DAL
         public virtual DbSet<MapTerrainType> MapTerrainTypes { get; set; }
         public virtual DbSet<MapTile> MapTiles { get; set; }
         public virtual DbSet<Player> Players { get; set; }
+        public virtual DbSet<PlayerRole> PlayerRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -73,6 +74,9 @@ namespace WebAPI.DAL
                 entity.HasIndex(e => e.Id, "map_id_UNIQUE")
                     .IsUnique();
 
+                entity.HasIndex(e => e.Name, "name_UNIQUE")
+                    .IsUnique();
+
                 entity.HasIndex(e => e.OwnerId, "owner_id_idx");
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -92,7 +96,7 @@ namespace WebAPI.DAL
                     .WithMany(p => p.Maps)
                     .HasForeignKey(d => d.OwnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("owner_id");
+                    .HasConstraintName("map+owner_id");
             });
 
             modelBuilder.Entity<MapResourceType>(entity =>
@@ -197,6 +201,16 @@ namespace WebAPI.DAL
                     .HasMaxLength(45)
                     .HasColumnName("email");
 
+                entity.Property(e => e.FirstName)
+                    .IsRequired()
+                    .HasMaxLength(45)
+                    .HasColumnName("first_name");
+
+                entity.Property(e => e.LastName)
+                    .IsRequired()
+                    .HasMaxLength(45)
+                    .HasColumnName("last_name");
+
                 entity.Property(e => e.Nick)
                     .IsRequired()
                     .HasMaxLength(45)
@@ -205,6 +219,31 @@ namespace WebAPI.DAL
                 entity.Property(e => e.RegistrationDate)
                     .HasColumnType("date")
                     .HasColumnName("registration_date");
+            });
+
+            modelBuilder.Entity<PlayerRole>(entity =>
+            {
+                entity.ToTable("player_role");
+
+                entity.HasIndex(e => e.Id, "id_UNIQUE")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.PlayerId, "player_id_idx");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.PlayerId).HasColumnName("player_id");
+
+                entity.Property(e => e.Role)
+                    .IsRequired()
+                    .HasMaxLength(45)
+                    .HasColumnName("role");
+
+                entity.HasOne(d => d.Player)
+                    .WithMany(p => p.PlayerRoles)
+                    .HasForeignKey(d => d.PlayerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("player_id");
             });
 
             OnModelCreatingPartial(modelBuilder);

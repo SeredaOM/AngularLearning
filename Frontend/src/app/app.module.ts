@@ -1,47 +1,52 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
-import { HomeComponent } from './home/home.component';
-import { AboutComponent } from './about/about.component';
-import { PingballComponent } from './pingball/pingball.component';
-
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { HexComponent } from './hex/hex.component';
-import { ArenaComponent } from './arena/arena.component';
-import { MapsComponent } from './maps/maps.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TileInfoComponent } from './hex/tile-info/tile-info.component';
-import { ValueSelectorComponent } from './hex/value-selector/value-selector.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { SocialLoginModule, GoogleLoginProvider } from 'angularx-social-login';
+
+import { AppRoutingModule } from './app-routing.module';
+import { AuthGuardService } from './auth/AuthGuard.service';
+import { AuthInterceptor } from './auth/AuthInterceptor';
+
+import { AboutComponent } from './about/about.component';
+import { AdminComponent } from './admin/admin.component';
+import { AppComponent } from './app.component';
+import { HexComponent } from './hex/hex.component';
+import { HomeComponent } from './home/home.component';
+import { LoginComponent } from './auth/login.component';
+import { MapsComponent } from './maps/maps.component';
+import { TileInfoComponent } from './hex/tile-info/tile-info.component';
+import { ValueSelectorComponent } from './hex/value-selector/value-selector.component';
+
 @NgModule({
   declarations: [
-    AppComponent,
-    HomeComponent,
     AboutComponent,
-    PingballComponent,
+    AdminComponent,
+    AppComponent,
     HexComponent,
-    ArenaComponent,
+    HomeComponent,
+    LoginComponent,
     MapsComponent,
     TileInfoComponent,
     ValueSelectorComponent,
   ],
   imports: [
-    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
@@ -56,8 +61,26 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatToolbarModule,
     NgbModule,
     ReactiveFormsModule,
+    SocialLoginModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: true, //keeps the user signed in
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(
+              '706588217519-d997qa9l0iolpgqn22khotv3vtl2v8so.apps.googleusercontent.com'
+            ),
+          },
+        ],
+      },
+    },
+    AuthGuardService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,0 +1,56 @@
+<mat-card *ngIf="player">
+    <mat-card-title>Welcome {{player.nick}}! </mat-card-title>
+    <mat-card-content>aka {{player.firstName}} {{player.lastName}}</mat-card-content>
+    <mat-card-content *ngIf="player.role" style="font-weight:bold">Available roles: {{player.role}}
+    </mat-card-content>
+</mat-card>
+
+<mat-card>
+    <mat-card-title>Login using external providers</mat-card-title>
+    <mat-card-actions>
+        <div>
+            <button mat-raised-button disabled="true">Login</button>
+            <button mat-raised-button class="google-login-btn" (click)="loginWithGoogle()" [disabled]="isLoggedIn">Google</button>
+            <button mat-raised-button (click)="signOut()" [disabled]="!isLoggedIn">Logout</button>
+        </div>
+    </mat-card-actions>
+</mat-card>
+
+<form [formGroup]="registrationForm" autocomplete="off" *ngIf="displayRegistrationDiv">
+    <mat-card id="registrationCard">
+        <mat-card-title>Create new account for your email address</mat-card-title>
+        <mat-form-field>
+            <mat-label>Nick name</mat-label>
+            <input matInput type="text" id="playerNick" formControlName="playerNick">
+            <mat-hint align="end">5-15 alphanumeric characters long</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput type="email" [value]="socialUser.email" readonly="true">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>First and Last Name</mat-label>
+            <input matInput type="text" [value]="socialUser.firstName+' '+socialUser.lastName" readonly="true">
+        </mat-form-field>
+        <mat-card-actions>
+            <button id="btn" class="btn btn-primary" mat-raised-button (click)="register()"
+                [disabled]="!registrationForm.valid">Register</button>
+        </mat-card-actions>
+    </mat-card>
+</form>
+
+<mat-card *ngIf="error">
+    <mat-card-title style="color: red;">Error</mat-card-title>
+    <mat-card-content>
+        <mat-label style="font-weight: bold;">{{error}}</mat-label>
+    </mat-card-content>
+    <mat-card-content>
+        <mat-label>{{errorDetails}}</mat-label>
+    </mat-card-content>
+</mat-card>
+<mat-card *ngIf="progressProcessName">
+    <mat-card-title>{{processName}} is in progress...</mat-card-title>
+    <mat-spinner></mat-spinner>
+</mat-card>
+
+<!-- https://medium.com/@danilrabizo/google-authentication-in-the-angular-application-e86df69be58a -->

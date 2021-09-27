@@ -1,0 +1,22 @@
+.google-login-btn {
+  background-image: url("src/assets/images/google-logo.png");
+  background-repeat: no-repeat;
+  background-size: 20%;
+  background-position: 10%;
+  padding-left: 10%;
+}
+
+mat-card {
+  background: #999;
+  margin: 10% auto;
+  text-shadow: 0 1px 0 #ccc;
+  width: 50%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-label {
+  color: black;
+}

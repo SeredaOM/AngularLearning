@@ -1,18 +1,16 @@
 <mat-toolbar color="primary">
   <h1>
-    My Angular Store
+    Browser Strategy Game "Elita"
   </h1>
 
   <button mat-button routerLink="/">Home</button>
 
-  <button mat-button routerLink="/maps">Maps</button>
+  <button mat-button routerLink="/maps" *ngIf="loggedIn">Maps</button>
 
   <button mat-button routerLink="/about">About</button>
 
-  <button mat-button routerLink="/pingball">JS - Pingball</button>
+  <button mat-button routerLink="/admin" *ngIf="loggedIn&&isAdmin">Admin</button>
 
-  <button mat-button routerLink="/hex">TS - Hex</button>
-
-  <button mat-button routerLink="/arena">Arena</button>
+  <button mat-button routerLink="/login">Log{{loggedIn?"out":"in"}}</button>
 </mat-toolbar>
 <router-outlet></router-outlet>

@@ -18,7 +18,7 @@ export class MapsComponent implements OnInit {
 
   private loadMapsList() {
     this.hexesService
-      .getMapDataAvailableForPlayer(1)
+      .getMapDataAvailableForPlayer()
       .subscribe((mapDescriptions: IMapDescription[]) => this.handleNewMapData(mapDescriptions));
   }
 
@@ -39,11 +39,6 @@ export class MapsComponent implements OnInit {
   handleNewMapData(mapDescriptions: IMapDescription[]): void {
     this.ngZone.run(() => {
       this.mapDescriptions = mapDescriptions;
-    });
-
-    console.log(mapDescriptions);
-    mapDescriptions.forEach((mapDescription) => {
-      console.log(mapDescription);
     });
   }
 
