@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { Role } from './auth/role';
+import { Role } from './Models/Auth/role';
 
 import { HexComponent } from './hex/hex.component';
 import { HomeComponent } from './home/home.component';

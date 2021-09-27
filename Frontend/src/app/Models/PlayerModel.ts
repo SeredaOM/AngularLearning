@@ -1,3 +1,5 @@
+import { Role } from './Auth/role';
+
 export class PlayerModel {
   constructor(
     public id: number = 0,
@@ -7,6 +9,11 @@ export class PlayerModel {
     public lastName: string = null,
     public role: string = null
   ) {}
+
+  public get roleLevel(): number {
+    if (this.role == null) return 0;
+    return Role[this.role];
+  }
 
   public static getPlayerFromStore() {
     const player = new PlayerModel(
