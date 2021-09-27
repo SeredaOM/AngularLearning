@@ -27,13 +27,13 @@ export class PlayerModel {
     return player;
   }
 
-  public static storeItems(player) {
-    localStorage.setItem(PlayerModel.Id, player.id.toString());
-    localStorage.setItem(PlayerModel.Nick, player.nick);
-    localStorage.setItem(PlayerModel.Email, player.email);
-    localStorage.setItem(PlayerModel.FirstName, player.firstName);
-    localStorage.setItem(PlayerModel.LastName, player.lastName);
-    if (player.role) localStorage.setItem(PlayerModel.Role, player.role);
+  public storeItems() {
+    localStorage.setItem(PlayerModel.Id, this.id.toString());
+    localStorage.setItem(PlayerModel.Nick, this.nick);
+    localStorage.setItem(PlayerModel.Email, this.email);
+    localStorage.setItem(PlayerModel.FirstName, this.firstName);
+    localStorage.setItem(PlayerModel.LastName, this.lastName);
+    if (this.role) localStorage.setItem(PlayerModel.Role, this.role);
   }
 
   public static removeItems() {

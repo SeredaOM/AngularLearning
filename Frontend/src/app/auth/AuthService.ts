@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import * as moment from 'moment';
+import { plainToClass } from 'class-transformer';
 
 import { ApiService } from '../api.service';
 import { AuthenticateResponse } from './AuthenticateResponse';
@@ -62,7 +63,9 @@ export class AuthService {
     const expiresAt = moment().add(response.expiresInMinutes, 'minutes');
     localStorage.setItem(AuthService.AuthToken, response.authToken);
     localStorage.setItem(AuthService.ExpiresAt, JSON.stringify(expiresAt.valueOf()));
-    PlayerModel.storeItems(response.player);
+
+    const player = plainToClass(PlayerModel, response.player);
+    player.storeItems();
 
     this.loggedIn.next(true);
   }
