@@ -18,5 +18,7 @@ export class AppComponent {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loggedIn = this.authService.isLoggedIn();
+  }
 }

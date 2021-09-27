@@ -29,9 +29,7 @@ describe('HexComponent', () => {
         RouterTestingModule,
       ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(HexComponent);
     component = fixture.componentInstance;
     component.defaultTerrain = 'Invalid';
