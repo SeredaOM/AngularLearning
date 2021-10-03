@@ -33,7 +33,7 @@ pipeline {
               echo 'no changeSets'
             }
 
-            echo 'build.previousBuild: ' + build.previousBuild
+            build = build.previousBuild
           }
 
           String remotes = powershell script:'git remote', returnStdout:true
