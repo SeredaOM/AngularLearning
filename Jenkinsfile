@@ -15,7 +15,7 @@ pipeline {
         script {
           build = currentBuild
 
-          for(int i = 0; i<; i++) {
+          for(int i = 0; i<5 ; i++) {
             println(i);
             echo 'build: '+build
             echo 'changes: '+build.id
