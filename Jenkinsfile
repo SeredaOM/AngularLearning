@@ -39,9 +39,10 @@ pipeline {
               changeLogSets = build.rawBuild.changeSets
               for (int i = 0; i < changeLogSets.size(); i++) {
                 entries = changeLogSets[i].items
-                echo 'entries: ' + entries
+                echo 'entries length: ' + entries.length
                 for (int j = 0; j < entries.length; j++) {
                     entry = entries[j]
+                    echo 'entry: ' + entry
                     log += "* ${entry.msg} by ${entry.author} \n"
                 }
               }
