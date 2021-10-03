@@ -17,6 +17,18 @@ pipeline {
 
           while ( build.previousBuild ) {
             echo 'build.id: ' + build.id + ', result: ' + build.result
+            if ( build.rawBuild.changeSets ) {
+              echo 'rawBuild.changeSets: ' + build.rawBuild.changeSets
+              changeLogSets = build.rawBuild.changeSets
+              for (int i = 0; i < changeLogSets.size(); i++) {
+                entries = changeLogSets[i].items
+                for (int j = 0; j < entries.length; j++) {
+                    entry = entries[j]
+                    log += "* ${entry.msg} by ${entry.author} \n"
+                }
+              }
+            }
+
             if ( build.changeSets ) {
               echo 'changeSets: ' + build.changeSets
               /* groovylint-disable-next-line NestedForLoop */
