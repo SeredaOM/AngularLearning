@@ -34,20 +34,28 @@ pipeline {
               echo 'no changeSets'
             }
 
-            if ( build.rawBuild && build.rawBuild.changeSets ) {
-              echo 'rawBuild: ' + build.rawBuild
-              echo 'rawBuild.changeSets: ' + build.rawBuild.changeSets
-              changeLogSets = build.rawBuild.changeSets
-              for (int i = 0; i < changeLogSets.size(); i++) {
-                entries = changeLogSets[i].items
-                for (int j = 0; j < entries.length; j++) {
-                    entry = entries[j]
-                    echo 'entry: ' + entry
-                    echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
-                    echo "* ${entry.msg} by ${entry.author} \n"
+            if ( build.rawBuild  ) {
+              echo 'build.rawBuild: ' + build.rawBuild
+              if ( build.rawBuild.changeSets ) {
+                echo 'build.rawBuild.changeSets: ' + build.rawBuild.changeSets
+                changeLogSets = build.rawBuild.changeSets
+                for (int i = 0; i < changeLogSets.size(); i++) {
+                  entries = changeLogSets[i].items
+                  for (int j = 0; j < entries.length; j++) {
+                      entry = entries[j]
+                      echo 'entry: ' + entry
+                      echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
+                      echo "* ${entry.msg} by ${entry.author} \n"
+                  }
                 }
+              } else {
+                echo 'build.rawBuild.changeSets is empty'
               }
+            } else {
+              echo 'build.rawBuild is empty'
             }
+
+            echo 'over'
 
             build = build.previousBuild
           }
