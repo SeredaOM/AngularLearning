@@ -17,7 +17,6 @@ pipeline {
 
           for (int i = 0; i < 15 ; i++) {
             println(i)
-            echo 'build: ' + build
             echo 'build.id: ' + build.id
             if ( build.changeSets ) {
               echo 'changeSets: ' + build.changeSets
@@ -31,14 +30,14 @@ pipeline {
                   }
                 }
               }
-              if ( build.previousBuild ) {
-                echo 'build.previousBuild: ' + build.previousBuild
-                build = build.previousBuild
-              } else {
-                echo 'build.previousBuild does not exist'
-              }
             } else {
               echo 'no changeSets'
+            }
+            if ( build.previousBuild ) {
+              echo 'build.previousBuild: ' + build.previousBuild
+              build = build.previousBuild
+            } else {
+              echo 'build.previousBuild does not exist'
             }
           }
 
