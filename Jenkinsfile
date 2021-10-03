@@ -29,16 +29,16 @@ def firstCommitSinceSuccessfulBuild() {
       echo 'build.rawBuild: ' + build.rawBuild
       if ( build.rawBuild.changeSets ) {
         echo 'build.rawBuild.changeSets: ' + build.rawBuild.changeSets
-    //     changeLogSets = build.rawBuild.changeSets
-    //     // for (int i = 0; i < changeLogSets.size(); i++) {
-    //     //   entries = changeLogSets[i].items
-    //     //   for (int j = 0; j < entries.length; j++) {
-    //     //       entry = entries[j]
-    //     //       echo 'entry: ' + entry
-    //     //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
-    //     //       echo "* ${entry.msg} by ${entry.author} \n"
-    //     //   }
-    //     // }
+        changeLogSets = build.rawBuild.changeSets
+        // for (int i = 0; i < changeLogSets.size(); i++) {
+        //   entries = changeLogSets[i].items
+        //   for (int j = 0; j < entries.length; j++) {
+        //       entry = entries[j]
+        //       echo 'entry: ' + entry
+        //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
+        //       echo "* ${entry.msg} by ${entry.author} \n"
+        //   }
+        // }
       } else {
         echo 'build.rawBuild.changeSets is empty'
       }
