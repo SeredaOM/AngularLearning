@@ -1,4 +1,4 @@
-/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth */
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NestedForLoop */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 String gitLatestCommonAncestor
@@ -15,21 +15,26 @@ pipeline {
         script {
           build = currentBuild
 
-          for(int i = 0; i<5 ; i++) {
-            println(i);
-            echo 'build: '+build
-            echo 'changes: '+build.id
-            echo 'changeset: '+build.changeset
-            for (changeLog in build.changeSets) {
-              echo "  changeLog: "+changeLog
-              for(entry in changeLog.items) {
-                echo "    entry: "+entry
-                for(file in entry.affectedFiles) {
-                  echo "      file: * ${file.path}\n"
+          for (int i = 0; i < 5 ; i++) {
+            println(i)
+            echo 'build: ' + build
+            echo 'changes: ' + build.id
+            if ( build.changeset ) {
+              echo 'changeset: ' + build.changeset
+              /* groovylint-disable-next-line NestedForLoop */
+              for (changeLog in build.changeSets) {
+                echo '  changeLog: ' + changeLog
+                for (entry in changeLog.items) {
+                  echo '    entry: ' + entry
+                  for (file in entry.affectedFiles) {
+                    echo "      file: * ${file.path}\n"
+                  }
                 }
               }
+              build = buid.previousBuild
+            } else {
+              echo 'no changeesets'
             }
-            build = buid.previousBuild
           }
 
           String remotes = powershell script:'git remote', returnStdout:true
