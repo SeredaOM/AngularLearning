@@ -18,9 +18,9 @@ pipeline {
           for (int i = 0; i < 5 ; i++) {
             println(i)
             echo 'build: ' + build
-            echo 'changes: ' + build.id
+            echo 'build.id: ' + build.id
             if ( build.changeSets ) {
-              echo 'changeset: ' + build.changeSets
+              echo 'changeSets: ' + build.changeSets
               /* groovylint-disable-next-line NestedForLoop */
               for (changeLog in build.changeSets) {
                 echo '  changeLog: ' + changeLog
@@ -31,6 +31,8 @@ pipeline {
                   }
                 }
               }
+              echo 'buid.previousBuild: ' + buid.getPreviousBuild()
+              echo 'buid.previousBuild: ' + buid.previousBuild
               build = buid.previousBuild
             } else {
               echo 'no changeSets'
