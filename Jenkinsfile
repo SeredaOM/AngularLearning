@@ -67,7 +67,7 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
         script {
-          echo testSF
+          echo testSF()
 
           commit = firstCommitSinceSuccessfulBuild
           echo "commit: ${commit}"
