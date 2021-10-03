@@ -13,24 +13,24 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
         script {
-          // //  example of MyInvocation.MyCommand.Path values:
-          // //  ...\AngularLearning_PR-14, ...\AngularLearning_PR-14@2, ...\AngularLearning_master@tmp, ...\AngularLearning_master
-          // branchFolder = powershell (returnStdout:true, script: '''
-          //   $p = $MyInvocation.MyCommand.Path
-          //   $start = $p.LastIndexOf('_');
-          //   $end = $p.IndexOf('@',$start+1);
-          //   $folder = $p.substring($start+1, $end-$start-1)
-          //   echo $folder
-          //   ''')
-          // branchFolder = branchFolder.substring(0,branchFolder.length()-2)
-          // if( branchFolder == 'master' )
-          // {
-          //   buildNumberString = currentBuild.number
-          // }else{
-          //   buildNumberString = '9999';
-          // }
+          build = currentBuild
 
-          // echo 'buildNumberString: '+buildNumberString
+          for(int i = 0; i<; i++) {
+            println(i);
+            echo 'build: '+build
+            echo 'changes: '+build.id
+            echo 'changeset: '+build.changeset
+            for (changeLog in build.changeSets) {
+              echo "  changeLog: "+changeLog
+              for(entry in changeLog.items) {
+                echo "    entry: "+entry
+                for(file in entry.affectedFiles) {
+                  echo "      file: * ${file.path}\n"
+                }
+              }
+            }
+            build = buid.previousBuild
+          }
 
           String remotes = powershell script:'git remote', returnStdout:true
           echo 'Remotes: ' + remotes
