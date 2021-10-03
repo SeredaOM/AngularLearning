@@ -43,8 +43,7 @@ pipeline {
                 for (int j = 0; j < entries.length; j++) {
                     entry = entries[j]
                     echo 'entry: ' + entry
-                    echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author
-                    log += "* ${entry.msg} by ${entry.author} \n"
+                    echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
                 }
               }
             }
