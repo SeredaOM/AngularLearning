@@ -15,9 +15,9 @@ pipeline {
         script {
           build = currentBuild
 
-          for (int i = 0; i < 15 ; i++) {
+          while ( build.previousBuild ) {
             println(i)
-            echo 'build.id: ' + build.id
+            echo 'build.id: ' + build.id + ', result: ' + build.result
             if ( build.changeSets ) {
               echo 'changeSets: ' + build.changeSets
               /* groovylint-disable-next-line NestedForLoop */
@@ -33,12 +33,8 @@ pipeline {
             } else {
               echo 'no changeSets'
             }
-            if ( build.previousBuild ) {
-              echo 'build.previousBuild: ' + build.previousBuild
-              build = build.previousBuild
-            } else {
-              echo 'build.previousBuild does not exist'
-            }
+
+            echo 'build.previousBuild: ' + build.previousBuild
           }
 
           String remotes = powershell script:'git remote', returnStdout:true
