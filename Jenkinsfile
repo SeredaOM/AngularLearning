@@ -30,8 +30,8 @@ def firstCommitSinceSuccessfulBuild() {
       changesets = build.rawBuild.changeSets
       if ( changesets ) {
         echo 'build.rawBuild.changeSets: ' + changesets
-        for (int i = 0; i < changesets.size(); i++) {
-          echo i
+        //for (int i = 0; i < changesets.size(); i++) {
+        //  echo i
         //   entries = changeLogSets[i].items
         //   for (int j = 0; j < entries.length; j++) {
         //       entry = entries[j]
@@ -39,7 +39,7 @@ def firstCommitSinceSuccessfulBuild() {
         //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
         //       echo "* ${entry.msg} by ${entry.author} \n"
         //   }
-        }
+        //}
       } else {
         echo 'build.rawBuild.changeSets is empty'
       }
