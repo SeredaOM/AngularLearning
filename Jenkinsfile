@@ -6,52 +6,52 @@ def firstCommitSinceSuccessfulBuild() {
   String commit
 
   build = currentBuild
-  // while ( build.previousBuild && build.result != 'SUCCESS' ) {
-  //   echo 'build.id: ' + build.id + ', result: ' + build.result
+  while ( build.previousBuild && build.result != 'SUCCESS' ) {
+    echo 'build.id: ' + build.id + ', result: ' + build.result
 
-  //   // if ( build.changeSets ) {
-  //   //   echo 'changeSets: ' + build.changeSets
-  //   //   /* groovylint-disable-next-line NestedForLoop */
-  //   //   for (changeLog in build.changeSets) {
-  //   //     echo '  changeLog: ' + changeLog
-  //   //     for (entry in changeLog.items) {
-  //   //       echo '    entry: ' + entry
-  //   //       for (file in entry.affectedFiles) {
-  //   //         echo "      file: * ${file.path}\n"
-  //   //       }
-  //   //     }
-  //   //   }
-  //   // } else {
-  //   //   echo 'no changeSets'
-  //   // }
+    // if ( build.changeSets ) {
+    //   echo 'changeSets: ' + build.changeSets
+    //   /* groovylint-disable-next-line NestedForLoop */
+    //   for (changeLog in build.changeSets) {
+    //     echo '  changeLog: ' + changeLog
+    //     for (entry in changeLog.items) {
+    //       echo '    entry: ' + entry
+    //       for (file in entry.affectedFiles) {
+    //         echo "      file: * ${file.path}\n"
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   echo 'no changeSets'
+    // }
 
-  //   if ( build.rawBuild  ) {
-  //     echo 'build.rawBuild: ' + build.rawBuild
-  //     if ( build.rawBuild.changeSets ) {
-  //       echo 'build.rawBuild.changeSets: ' + build.rawBuild.changeSets
-  //       changeLogSets = build.rawBuild.changeSets
-  //       // for (int i = 0; i < changeLogSets.size(); i++) {
-  //       //   entries = changeLogSets[i].items
-  //       //   for (int j = 0; j < entries.length; j++) {
-  //       //       entry = entries[j]
-  //       //       echo 'entry: ' + entry
-  //       //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
-  //       //       echo "* ${entry.msg} by ${entry.author} \n"
-  //       //   }
-  //       // }
-  //     } else {
-  //       echo 'build.rawBuild.changeSets is empty'
-  //     }
-  //   } else {
-  //     echo 'build.rawBuild is empty'
-  //   }
+    if ( build.rawBuild  ) {
+      echo 'build.rawBuild: ' + build.rawBuild
+    //   if ( build.rawBuild.changeSets ) {
+    //     echo 'build.rawBuild.changeSets: ' + build.rawBuild.changeSets
+    //     changeLogSets = build.rawBuild.changeSets
+    //     // for (int i = 0; i < changeLogSets.size(); i++) {
+    //     //   entries = changeLogSets[i].items
+    //     //   for (int j = 0; j < entries.length; j++) {
+    //     //       entry = entries[j]
+    //     //       echo 'entry: ' + entry
+    //     //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
+    //     //       echo "* ${entry.msg} by ${entry.author} \n"
+    //     //   }
+    //     // }
+    //   } else {
+    //     echo 'build.rawBuild.changeSets is empty'
+    //   }
+    } else {
+      echo 'build.rawBuild is empty'
+    }
 
-  //   echo 'over'
+    echo 'over'
 
-  //   build = build.previousBuild
-  // }
+    build = build.previousBuild
+  }
 
-  return '123'+commit
+  return commit
 }
 
 String gitLatestCommonAncestor
