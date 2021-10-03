@@ -31,9 +31,12 @@ pipeline {
                   }
                 }
               }
-              echo 'buid.previousBuild: ' + buid.getPreviousBuild()
-              echo 'buid.previousBuild: ' + buid.previousBuild
-              build = buid.previousBuild
+              if( buid.previousBuild ) {
+                echo 'buid.previousBuild: ' + buid.previousBuild
+                build = buid.previousBuild
+              } else {
+                echo 'buid.previousBuild does not exist'
+              }
             } else {
               echo 'no changeSets'
             }
