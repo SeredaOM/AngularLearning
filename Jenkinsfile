@@ -29,7 +29,7 @@ def firstCommitSinceSuccessfulBuild() {
       echo 'build.rawBuild: ' + build.rawBuild
       changesets = build.rawBuild.changeSets
       if ( changesets ) {
-        echo 'build.rawBuild.changeSets: ' + changesets
+        //echo 'build.rawBuild.changeSets: ' + changesets
         //for (int i = 0; i < changesets.size(); i++) {
         //  echo i
         //   entries = changeLogSets[i].items
