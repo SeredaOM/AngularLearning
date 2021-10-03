@@ -31,11 +31,11 @@ pipeline {
                   }
                 }
               }
-              if( buid.previousBuild ) {
-                echo 'buid.previousBuild: ' + buid.previousBuild
-                build = buid.previousBuild
+              if ( build.previousBuild ) {
+                echo 'build.previousBuild: ' + build.previousBuild
+                build = build.previousBuild
               } else {
-                echo 'buid.previousBuild does not exist'
+                echo 'build.previousBuild does not exist'
               }
             } else {
               echo 'no changeSets'
