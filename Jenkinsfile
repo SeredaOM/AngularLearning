@@ -1,13 +1,12 @@
-/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NestedForLoop */
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, MethodReturnTypeRequired, NestedBlockDepth, NestedForLoop, NoDef */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
-def testSF() {
-  return '123'
-}
-
+@NonCPS
 def firstCommitSinceSuccessfulBuild() {
+  String commit
+
   build = currentBuild
-  while ( build.previousBuild ) {
+  while ( build.previousBuild && build.restult != 'SUCCESS' ) {
     echo 'build.id: ' + build.id + ', result: ' + build.result
 
     // if ( build.changeSets ) {
@@ -52,7 +51,7 @@ def firstCommitSinceSuccessfulBuild() {
     build = build.previousBuild
   }
 
-  return 'fff'
+  return commit
 }
 
 String gitLatestCommonAncestor
@@ -67,8 +66,6 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
         script {
-          echo testSF()
-
           commit = firstCommitSinceSuccessfulBuild()
           echo "commit: ${commit}"
 
