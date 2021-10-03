@@ -6,7 +6,7 @@ def firstCommitSinceSuccessfulBuild() {
   String commit
 
   build = currentBuild
-  while ( build.previousBuild && build.restult != 'SUCCESS' ) {
+  while ( build.previousBuild && build.result != 'SUCCESS' ) {
     echo 'build.id: ' + build.id + ', result: ' + build.result
 
     // if ( build.changeSets ) {
