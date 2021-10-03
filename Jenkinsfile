@@ -1,7 +1,7 @@
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NestedForLoop */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
-testSF {
+def testSF() {
   return '123'
 }
 
