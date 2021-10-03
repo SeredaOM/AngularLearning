@@ -5,7 +5,7 @@ def testSF() {
   return '123'
 }
 
-firstCommitSinceSuccessfulBuild {
+def firstCommitSinceSuccessfulBuild() {
   build = currentBuild
   while ( build.previousBuild ) {
     echo 'build.id: ' + build.id + ', result: ' + build.result
@@ -69,7 +69,7 @@ pipeline {
         script {
           echo testSF()
 
-          commit = firstCommitSinceSuccessfulBuild
+          commit = firstCommitSinceSuccessfulBuild()
           echo "commit: ${commit}"
 
           String remotes = powershell script:'git remote', returnStdout:true
