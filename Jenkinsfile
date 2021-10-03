@@ -34,7 +34,7 @@ pipeline {
               echo 'no changeSets'
             }
 
-            if ( build.rawBuild.changeSets ) {
+            if ( build.rawBuild && build.rawBuild.changeSets ) {
               echo 'rawBuild.changeSets: ' + build.rawBuild.changeSets
               changeLogSets = build.rawBuild.changeSets
               for (int i = 0; i < changeLogSets.size(); i++) {
