@@ -16,7 +16,6 @@ pipeline {
           build = currentBuild
 
           while ( build.previousBuild ) {
-            println(i)
             echo 'build.id: ' + build.id + ', result: ' + build.result
             if ( build.changeSets ) {
               echo 'changeSets: ' + build.changeSets
