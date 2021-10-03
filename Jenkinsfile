@@ -1,6 +1,60 @@
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth, NestedForLoop */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
+testSF {
+  return '123'
+}
+
+firstCommitSinceSuccessfulBuild {
+  build = currentBuild
+  while ( build.previousBuild ) {
+    echo 'build.id: ' + build.id + ', result: ' + build.result
+
+    // if ( build.changeSets ) {
+    //   echo 'changeSets: ' + build.changeSets
+    //   /* groovylint-disable-next-line NestedForLoop */
+    //   for (changeLog in build.changeSets) {
+    //     echo '  changeLog: ' + changeLog
+    //     for (entry in changeLog.items) {
+    //       echo '    entry: ' + entry
+    //       for (file in entry.affectedFiles) {
+    //         echo "      file: * ${file.path}\n"
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   echo 'no changeSets'
+    // }
+
+    if ( build.rawBuild  ) {
+      echo 'build.rawBuild: ' + build.rawBuild
+      if ( build.rawBuild.changeSets ) {
+        echo 'build.rawBuild.changeSets: ' + build.rawBuild.changeSets
+        changeLogSets = build.rawBuild.changeSets
+        // for (int i = 0; i < changeLogSets.size(); i++) {
+        //   entries = changeLogSets[i].items
+        //   for (int j = 0; j < entries.length; j++) {
+        //       entry = entries[j]
+        //       echo 'entry: ' + entry
+        //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
+        //       echo "* ${entry.msg} by ${entry.author} \n"
+        //   }
+        // }
+      } else {
+        echo 'build.rawBuild.changeSets is empty'
+      }
+    } else {
+      echo 'build.rawBuild is empty'
+    }
+
+    echo 'over'
+
+    build = build.previousBuild
+  }
+
+  return 'fff'
+}
+
 String gitLatestCommonAncestor
 boolean builtFrontend = false
 boolean builtWebApi = false
@@ -13,52 +67,10 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
         script {
-          build = currentBuild
+          echo testSF
 
-          while ( build.previousBuild ) {
-            echo 'build.id: ' + build.id + ', result: ' + build.result
-
-            // if ( build.changeSets ) {
-            //   echo 'changeSets: ' + build.changeSets
-            //   /* groovylint-disable-next-line NestedForLoop */
-            //   for (changeLog in build.changeSets) {
-            //     echo '  changeLog: ' + changeLog
-            //     for (entry in changeLog.items) {
-            //       echo '    entry: ' + entry
-            //       for (file in entry.affectedFiles) {
-            //         echo "      file: * ${file.path}\n"
-            //       }
-            //     }
-            //   }
-            // } else {
-            //   echo 'no changeSets'
-            // }
-
-            if ( build.rawBuild  ) {
-              echo 'build.rawBuild: ' + build.rawBuild
-              if ( build.rawBuild.changeSets ) {
-                echo 'build.rawBuild.changeSets: ' + build.rawBuild.changeSets
-                changeLogSets = build.rawBuild.changeSets
-                // for (int i = 0; i < changeLogSets.size(); i++) {
-                //   entries = changeLogSets[i].items
-                //   for (int j = 0; j < entries.length; j++) {
-                //       entry = entries[j]
-                //       echo 'entry: ' + entry
-                //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
-                //       echo "* ${entry.msg} by ${entry.author} \n"
-                //   }
-                // }
-              } else {
-                echo 'build.rawBuild.changeSets is empty'
-              }
-            } else {
-              echo 'build.rawBuild is empty'
-            }
-
-            echo 'over'
-
-            build = build.previousBuild
-          }
+          commit = firstCommitSinceSuccessfulBuild
+          echo "commit: ${commit}"
 
           String remotes = powershell script:'git remote', returnStdout:true
           echo 'Remotes: ' + remotes
