@@ -8,7 +8,7 @@ def detectFirstNewCommit() {
   boolean foundSuccessfulBuild = false
 
   def build = currentBuild
-  do {
+  while ( true ) {
     echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
 
     def changeSets =  build.changeSets
@@ -25,7 +25,9 @@ def detectFirstNewCommit() {
     echo 'over'
     echo "previousBuild: ${build.previousBuild}"
     build = build.previousBuild
-  } while ( build && build.result != 'SUCCESS' )
+
+    if ( build && build.result != 'SUCCESS' ) { break }
+  }
 
   if ( build ) {
     foundSuccessfulBuild = build.result == 'SUCCESS'
