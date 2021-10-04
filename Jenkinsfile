@@ -26,7 +26,7 @@ def detectFirstNewCommit() {
     echo "previousBuild: ${build.previousBuild}"
     build = build.previousBuild
 
-    if ( build && build.result != 'SUCCESS' ) { break }
+    if ( build == null || build.result == 'SUCCESS' ) { break }
   }
 
   if ( build ) {
