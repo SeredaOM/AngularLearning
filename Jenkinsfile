@@ -32,6 +32,7 @@ def detectFirstNewCommit() {
   if ( build ) {
     foundSuccessfulBuild = build.result == 'SUCCESS'
   }
+  echo "foundSuccessfulBuild: ${foundSuccessfulBuild}"
 
   return [foundSuccessfulBuild, commit]
 }
