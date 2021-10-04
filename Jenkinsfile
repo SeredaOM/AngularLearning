@@ -5,14 +5,18 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 def firstCommitSinceSuccessfulBuild() {
   String commit
 
+  echo 'checkout started'
   checkout(scm)
-
+  echo 'checkout completed'
   build = currentBuild
+  echo "build.previousBuild: ${build.previousBuild}"
+  echo "build.result: ${build.result}"
+
   while ( build.previousBuild && build.result != 'SUCCESS' ) {
     echo 'build.id: ' + build.id + ', result: ' + build.result
 
     if ( build.changeSets ) {
-      echo 'changeSets: ' + build.changeSets
+      echo 'build.changeSets: ' + build.changeSets
       /* groovylint-disable-next-line NestedForLoop */
       for (changeLog in build.changeSets) {
         echo '  changeLog: ' + changeLog
@@ -26,7 +30,7 @@ def firstCommitSinceSuccessfulBuild() {
         }
       }
     } else {
-      echo 'no changeSets'
+      echo 'build.changeSets is null'
     }
 
     echo 'over'
