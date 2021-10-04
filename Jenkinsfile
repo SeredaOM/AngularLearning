@@ -71,7 +71,7 @@ pipeline {
                 if ( build.result == 'SUCCESS') {
                   changeSet = changeSets[0]
                 } else {
-                  changeSet = changeLog.last
+                  changeSet = changeSets.last
                 }
 
                 items = changeSet.items
