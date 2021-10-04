@@ -4,21 +4,31 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 @NonCPS
 def firstCommitSinceSuccessfulBuild() {
   String commit
+  boolean over = false
 
   build = currentBuild
   echo "previousBuild: ${build.previousBuild}, result: ${build.result}"
-  while ( build.previousBuild && !commit ) {
+  while ( build.previousBuild && !over ) {
     echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
 
     changeSets =  build.changeSets
     if ( changeSets ) {
       echo "build.changeSets.size(): ${changeSets.size()}"
-      def changeSet = build.result == 'SUCCESS' ? changeSets.first() : changeSets.last()
-      items = changeSet.items
-      echo "  changeSet.items.size(): ${items.size()}"
-      def item = build.result == 'SUCCESS' ? items[0]: items[-1]
-      commit = item.commitId
-      echo "identified commit: ${commit}"
+      echo "changeSet.items.size(): ${items.size()}"
+      if ( build.result == 'SUCCESS' ) {
+        changeSet = changeSets.first()
+        items = changeSet.items
+        item = items[0]
+        commit = item.commitId
+        over = true
+        echo "identified successful commit: ${commit}"
+      } else {
+        changeSet = changeSets.last()
+        items = changeSet.items
+        item = items[-1]
+        commit = item.commitId
+        echo "Current unsuccessful commit: ${commit}"
+      }
     } else {
       echo 'build.changeSets is null'
     }
