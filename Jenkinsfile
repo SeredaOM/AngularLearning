@@ -69,18 +69,18 @@ pipeline {
                 /* groovylint-disable-next-line VariableTypeRequired */
                 def changeSet
                 if ( build.result == 'SUCCESS') {
-                  changeSet = changeSets[0]
+                  changeSet = changeSets.first()
                 } else {
-                  changeSet = changeSets.last
+                  changeSet = changeSets.last()
                 }
 
                 items = changeSet.items
                 echo "  changeSet.items.size(): ${items.size()}"
                 def item
                 if ( build.result == 'SUCCESS') {
-                  item = items.first
+                  item = items[0]
                 } else {
-                  item = items.last
+                  item = items[-1]
                 }
                 commit = item.commitId
               } else {
