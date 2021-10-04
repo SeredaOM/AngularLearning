@@ -63,7 +63,7 @@ pipeline {
           } catch ( err ) {
             echo "Failed: ${err}"
           } finally {
-            echo 'Finally...'
+            echo "Finally, commit: ${firstNewCommit}"
           }
         }
       }
