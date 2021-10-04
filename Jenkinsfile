@@ -1,7 +1,55 @@
-/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, NestedBlockDepth */
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, MethodReturnTypeRequired, NestedBlockDepth, NestedForLoop, NoDef, VariableTypeRequired */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
+import com.cloudbees.groovy.cps.NonCPS
 
-String gitLatestCommonAncestor
+@NonCPS
+def detectFirstNewCommit() {
+  String commit
+  boolean foundSuccessfulBuild = false
+
+  def build = currentBuild
+  while ( true ) {
+    echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
+
+    def changeSets =  build.changeSets
+    if ( changeSets ) {
+      echo "build.changeSets.size(): ${changeSets.size()}"
+      def items = changeSets.last().items
+      echo "changeSet.items.size(): ${items.size()}"
+      commit = items.last().commitId
+      echo "Current first unsuccessful commit: ${commit}"
+    } else {
+      echo 'build.changeSets is null'
+    }
+
+    echo 'over'
+    echo "previousBuild: ${build.previousBuild}"
+    build = build.previousBuild
+
+    if ( build == null || build.result == 'SUCCESS' ) { break }
+  }
+
+  if ( build ) {
+    foundSuccessfulBuild = build.result == 'SUCCESS'
+  }
+  echo "foundSuccessfulBuild: ${foundSuccessfulBuild}"
+
+  return [foundSuccessfulBuild, commit]
+}
+
+def checkChanges(boolean hadSuccessfulBuild, String firstNewCommit, String folder) {
+  if ( !hadSuccessfulBuild ) {
+    return true
+  }
+
+  String result = powershell script:("git diff ${firstNewCommit}^ ${folder}"), returnStdout:true
+  echo "Changes: ${result}"
+
+  return result != null && result != ''
+}
+
+String firstNewCommit
+boolean hadSuccessfulBuild = false
 boolean builtFrontend = false
 boolean builtWebApi = false
 
@@ -13,42 +61,17 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
         script {
-          // //  example of MyInvocation.MyCommand.Path values:
-          // //  ...\AngularLearning_PR-14, ...\AngularLearning_PR-14@2, ...\AngularLearning_master@tmp, ...\AngularLearning_master
-          // branchFolder = powershell (returnStdout:true, script: '''
-          //   $p = $MyInvocation.MyCommand.Path
-          //   $start = $p.LastIndexOf('_');
-          //   $end = $p.IndexOf('@',$start+1);
-          //   $folder = $p.substring($start+1, $end-$start-1)
-          //   echo $folder
-          //   ''')
-          // branchFolder = branchFolder.substring(0,branchFolder.length()-2)
-          // if( branchFolder == 'master' )
-          // {
-          //   buildNumberString = currentBuild.number
-          // }else{
-          //   buildNumberString = '9999';
-          // }
-
-          // echo 'buildNumberString: '+buildNumberString
-
-          String remotes = powershell script:'git remote', returnStdout:true
-          echo 'Remotes: ' + remotes
-          if ( !remotes.contains('github') ) {
-            echo 'Adding github remote'
-            powershell script:'git remote add github https://github.com/SeredaOM/AngularLearning.git'
-            powershell script:'git fetch github master'
+          try {
+            (hadSuccessfulBuild, firstNewCommit) = detectFirstNewCommit()
+            echo "commit: ${firstNewCommit}"
+          } catch ( err ) {
+            echo "Failed: ${err}"
+          } finally {
+            echo "Finally, commit: ${firstNewCommit}"
+            if ( firstNewCommit == null ) {
+              hadSuccessfulBuild = false
+            }
           }
-
-          //    This command helped to spot the remote branches in the history
-          //    echo powershell script:'git log --graph --decorate --oneline', returnStdout:true
-
-          String gitMasterBranchLastCommitHash = powershell script:'git rev-parse github/master', returnStdout:true
-          echo 'MasterBranchLatestCommitHash: ' + gitMasterBranchLastCommitHash
-
-          gitLatestCommonAncestor = powershell script:'git merge-base HEAD github/master', returnStdout:true
-          gitLatestCommonAncestor = gitLatestCommonAncestor[0..<-2]
-          echo 'LatestCommonAncestor: "' + gitLatestCommonAncestor + '".'
         }
       }
     }
@@ -58,10 +81,10 @@ pipeline {
         stage('Build Frontend') {
           steps {
             script {
-              String result = powershell script:('git diff ' + gitLatestCommonAncestor + ' HEAD Frontend/'), returnStdout:true
-              echo result
-              if (result) {
+              builtFrontend = checkChanges(hadSuccessfulBuild, firstNewCommit, 'Frontend/')
+              if ( builtFrontend ) {
                 dir('./Frontend') {
+                  echo 'Building Frontend'
                   // if( branchFolder == 'master' ) {
                   //   def packageFilePath = './package.json'
                   //   def props = readJSON file: packageFilePath, returnPojo: true
@@ -85,10 +108,9 @@ pipeline {
                   powershell script: 'npm ci'
                   powershell script: 'npx ng build --configuration ' + env
                   powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
-                  builtFrontend = true
                 }
               } else {
-                echo 'FrontEnd result is false'
+                echo 'FrontEnd is not built'
                 Utils.markStageSkippedForConditional(env.STAGE_NAME)
                 echo 'echo FrontEnd after markStageSkippedForConditional'
               }
@@ -98,11 +120,10 @@ pipeline {
         stage('Build WebAPI') {
           steps {
             script {
-              String result = powershell script:('git diff ' + gitLatestCommonAncestor + ' HEAD WebAPI/'), returnStdout:true
-              echo result
-              if (result) {
+              builtWebApi = checkChanges(hadSuccessfulBuild, firstNewCommit, 'WebAPI/')
+              if ( builtWebApi ) {
                 dir('./WebAPI') {
-                  echo 'WebAPI result is true'
+                  echo 'Building WebAPI'
 
                   // if( branchFolder == 'master' ) {
                   //   echo 'Replacing version'
@@ -116,11 +137,9 @@ pipeline {
                   powershell \
                     label: 'Compile .NET project',
                     script: "dotnet build WebAPI.sln --configuration Release -property:BuildNumber=${currentBuild.number}"
-
-                  builtWebApi = true
                 }
               } else {
-                echo 'WebAPI result is false'
+                echo 'WebAPI is not built'
                 Utils.markStageSkippedForConditional(env.STAGE_NAME)
                 echo 'echo WebAPI after markStageSkippedForConditional'
               }
@@ -194,5 +213,13 @@ pipeline {
         }
       }
     }
+  }
+  post {
+      always {
+        echo 'post always'
+      }
+      failure {
+        echo 'post failure'
+      }
   }
 }
