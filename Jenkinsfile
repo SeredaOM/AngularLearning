@@ -7,32 +7,29 @@ def firstCommitSinceSuccessfulBuild() {
 
   build = currentBuild
   echo "previousBuild: ${build.previousBuild}, result: ${build.result}"
-  while ( build.previousBuild && build.result != 'SUCCESS' ) {
+  while ( build.previousBuild || commit ) {
     echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
 
     changeSets =  build.changeSets
-    // def log
-    // if ( build.result == 'SUCCESS')
-    // {
-    //   log = changeSets[0]
-    // } else {
-    //   log = changeLog.last
-    // }
-    // for (changeLog in build.changeSets) {
-    //   echo "  changeLog.length: ${changeLog.length}"
     if ( changeSets ) {
       echo "build.changeSets.size(): ${changeSets.size()}"
-      for (changeSet in changeSets) {
-        items = changeSet.items
-        echo "  changeSet.items.size(): ${items.size()}"
-        for (entry in items) {
-          echo "      commit: ${entry.commitId}}"
-          commit = entry.commitId
-          // for (file in entry.affectedFiles) {
-          //   echo "      file: * ${file.path}, ${entry.msg} by ${entry.author}\n"
-          // }
-        }
+      /* groovylint-disable-next-line VariableTypeRequired */
+      def changeSet
+      if ( build.result == 'SUCCESS') {
+        changeSet = changeSets[0]
+      } else {
+        changeSet = changeLog.last
       }
+
+      items = changeSet.items
+      echo "  changeSet.items.size(): ${items.size()}"
+      def item
+      if ( build.result == 'SUCCESS') {
+        item = items.first
+      } else {
+        item = items.last
+      }
+      commit = item.commitId
     } else {
       echo 'build.changeSets is null'
     }
@@ -58,7 +55,44 @@ pipeline {
         bat 'dir'
         script {
           try {
-            firstNewCommit = firstCommitSinceSuccessfulBuild()
+            //firstNewCommit = firstCommitSinceSuccessfulBuild()
+
+            String commit
+            build = currentBuild
+            echo "previousBuild: ${build.previousBuild}, result: ${build.result}"
+            while ( build.previousBuild || commit ) {
+              echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
+
+              changeSets =  build.changeSets
+              if ( changeSets ) {
+                echo "build.changeSets.size(): ${changeSets.size()}"
+                /* groovylint-disable-next-line VariableTypeRequired */
+                def changeSet
+                if ( build.result == 'SUCCESS') {
+                  changeSet = changeSets[0]
+                } else {
+                  changeSet = changeLog.last
+                }
+
+                items = changeSet.items
+                echo "  changeSet.items.size(): ${items.size()}"
+                def item
+                if ( build.result == 'SUCCESS') {
+                  item = items.first
+                } else {
+                  item = items.last
+                }
+                commit = item.commitId
+              } else {
+                echo 'build.changeSets is null'
+              }
+
+              echo 'over'
+
+              build = build.previousBuild
+            }
+
+            firstNewCommit = commit
             echo "commit: ${firstNewCommit}"
           } catch ( err ) {
             echo "Failed: ${err}"
