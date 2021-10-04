@@ -22,7 +22,6 @@ def detectFirstNewCommit() {
       echo 'build.changeSets is null'
     }
 
-    echo 'over'
     echo "previousBuild: ${build.previousBuild}"
     build = build.previousBuild
 
