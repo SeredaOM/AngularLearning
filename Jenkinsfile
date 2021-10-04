@@ -5,6 +5,8 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 def firstCommitSinceSuccessfulBuild() {
   String commit
 
+  checkout(scm)
+
   build = currentBuild
   while ( build.previousBuild && build.result != 'SUCCESS' ) {
     echo 'build.id: ' + build.id + ', result: ' + build.result
@@ -17,6 +19,7 @@ def firstCommitSinceSuccessfulBuild() {
         for (entry in changeLog.items) {
           echo '    entry: ' + entry
           echo "      commit: ${entry.commitId}}\n"
+          commit = entry.commitId
           for (file in entry.affectedFiles) {
             echo "      file: * ${file.path}, ${entry.msg} by ${entry.author}\n"
           }
@@ -25,28 +28,6 @@ def firstCommitSinceSuccessfulBuild() {
     } else {
       echo 'no changeSets'
     }
-
-    // if ( build.rawBuild  ) {
-    //   echo 'build.rawBuild: ' + build.rawBuild
-    //   changesets = build.rawBuild.changeSets
-    //   if ( changesets ) {
-    //     //echo 'build.rawBuild.changeSets: ' + changesets
-    //     //for (int i = 0; i < changesets.size(); i++) {
-    //     //  echo i
-    //     //   entries = changeLogSets[i].items
-    //     //   for (int j = 0; j < entries.length; j++) {
-    //     //       entry = entries[j]
-    //     //       echo 'entry: ' + entry
-    //     //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
-    //     //       echo "* ${entry.msg} by ${entry.author} \n"
-    //     //   }
-    //     //}
-    //   } else {
-    //     echo 'build.rawBuild.changeSets is empty'
-    //   }
-    // } else {
-    //   echo 'build.rawBuild is empty'
-    // }
 
     echo 'over'
 
