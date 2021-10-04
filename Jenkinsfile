@@ -20,13 +20,13 @@ def firstCommitSinceSuccessfulBuild() {
       // }
       // for (changeLog in build.changeSets) {
       //   echo "  changeLog.length: ${changeLog.length}"
-      
+
 
     if ( changeSets ) {
-      echo "build.changeSets.length: ${changeSets.length}"
+      echo "build.changeSets.size(): ${changeSets.size()}"
       for (changeSet in changeSets) {
         items = changeSet.items
-        echo "  changeSet.items.length: ${items.length}"
+        echo "  changeSet.items.size(): ${items.size()}"
         for (entry in items) {
           echo '    entry: ' + entry
           echo "      commit: ${entry.commitId}}\n"
@@ -38,7 +38,6 @@ def firstCommitSinceSuccessfulBuild() {
       }
     } else {
       echo 'build.changeSets is null'
-      echo "build.changeSets.length: ${changeSets.length}"
     }
 
     echo 'over'
