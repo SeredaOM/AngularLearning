@@ -5,15 +5,13 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 def firstCommitSinceSuccessfulBuild() {
   String commit
 
-  echo 'checkout started'
-  checkout(scm)
-  echo 'checkout completed'
   build = currentBuild
   echo "build.previousBuild: ${build.previousBuild}"
   echo "build.result: ${build.result}"
 
+  echo "previousBuild: ${build.previousBuild}, result: ${build.result}"
   while ( build.previousBuild && build.result != 'SUCCESS' ) {
-    echo 'build.id: ' + build.id + ', result: ' + build.result
+    echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
 
     if ( build.changeSets ) {
       echo 'build.changeSets: ' + build.changeSets
