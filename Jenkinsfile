@@ -20,6 +20,7 @@ def firstCommitSinceSuccessfulBuild() {
       // }
       // for (changeLog in build.changeSets) {
       //   echo "  changeLog.length: ${changeLog.length}"
+      
 
     if ( changeSets ) {
       echo "build.changeSets.length: ${changeSets.length}"
