@@ -44,7 +44,6 @@ def checkChanges(boolean hadSuccessfulBuild, String firstNewCommit, String folde
 
   String result = powershell script:("git diff ${firstNewCommit}^ ${folder}"), returnStdout:true
   echo "Changes: ${result}"
-  echo "Res: ${result != null && result != ''}"
 
   return result != null && result != ''
 }
