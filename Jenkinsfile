@@ -1,6 +1,7 @@
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, MethodReturnTypeRequired, NestedBlockDepth, NestedForLoop, NoDef */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
+@NonCPS
 def firstCommitSinceSuccessfulBuild() {
   String commit
 
@@ -10,15 +11,15 @@ def firstCommitSinceSuccessfulBuild() {
     echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
 
     changeSets =  build.changeSets
-      // def log
-      // if ( build.result == 'SUCCESS')
-      // {
-      //   log = changeSets[0]
-      // } else {
-      //   log = changeLog.last
-      // }
-      // for (changeLog in build.changeSets) {
-      //   echo "  changeLog.length: ${changeLog.length}"
+    // def log
+    // if ( build.result == 'SUCCESS')
+    // {
+    //   log = changeSets[0]
+    // } else {
+    //   log = changeLog.last
+    // }
+    // for (changeLog in build.changeSets) {
+    //   echo "  changeLog.length: ${changeLog.length}"
     if ( changeSets ) {
       echo "build.changeSets.size(): ${changeSets.size()}"
       for (changeSet in changeSets) {
@@ -209,5 +210,13 @@ pipeline {
         }
       }
     }
+  }
+  post {
+      always {
+        echo 'post always'
+      }
+      failure {
+        echo 'post failure'
+      }
   }
 }
