@@ -36,6 +36,17 @@ def detectFirstNewCommit() {
   return [foundSuccessfulBuild, commit]
 }
 
+def checkChanges(boolean hadSuccessfulBuild, String firstNewCommit, String folder) {
+  if ( !hadSuccessfulBuild ) {
+    return true
+  }
+
+  String result = powershell script:("git diff ${firstNewCommit}^ ${folder}"), returnStdout:true
+  echo result
+
+  return result != null
+}
+
 String firstNewCommit
 boolean hadSuccessfulBuild = false
 boolean builtFrontend = false
@@ -56,6 +67,9 @@ pipeline {
             echo "Failed: ${err}"
           } finally {
             echo "Finally, commit: ${firstNewCommit}"
+            if ( firstNewCommit == null ) {
+              hadSuccessfulBuild = false
+            }
           }
         }
       }
@@ -66,10 +80,10 @@ pipeline {
         stage('Build Frontend') {
           steps {
             script {
-              String result = powershell script:('git diff ' + firstNewCommit + '^ Frontend/'), returnStdout:true
-              echo result
-              if (!hadSuccessfulBuild || result) {
+              builtFrontend = checkChanges(hadSuccessfulBuild, firstNewCommit, 'Frontend/')
+              if ( builtFrontend ) {
                 dir('./Frontend') {
+                  echo 'Building Frontend'
                   // if( branchFolder == 'master' ) {
                   //   def packageFilePath = './package.json'
                   //   def props = readJSON file: packageFilePath, returnPojo: true
@@ -93,10 +107,9 @@ pipeline {
                   powershell script: 'npm ci'
                   powershell script: 'npx ng build --configuration ' + env
                   powershell script: 'npx ng test --sourceMap=false --browsers=ChromeHeadless --watch=false'
-                  builtFrontend = true
                 }
               } else {
-                echo 'FrontEnd result is false'
+                echo 'FrontEnd is not built'
                 Utils.markStageSkippedForConditional(env.STAGE_NAME)
                 echo 'echo FrontEnd after markStageSkippedForConditional'
               }
@@ -106,11 +119,10 @@ pipeline {
         stage('Build WebAPI') {
           steps {
             script {
-              String result = powershell script:('git diff ' + firstNewCommit + '^ WebAPI/'), returnStdout:true
-              echo result
-              if (!hadSuccessfulBuild || result) {
+              builtWebApi = checkChanges(hadSuccessfulBuild, firstNewCommit, 'WebAPI/')
+              if ( builtWebApi ) {
                 dir('./WebAPI') {
-                  echo 'WebAPI result is true'
+                  echo 'Building WebAPI'
 
                   // if( branchFolder == 'master' ) {
                   //   echo 'Replacing version'
@@ -124,11 +136,9 @@ pipeline {
                   powershell \
                     label: 'Compile .NET project',
                     script: "dotnet build WebAPI.sln --configuration Release -property:BuildNumber=${currentBuild.number}"
-
-                  builtWebApi = true
                 }
               } else {
-                echo 'WebAPI result is false'
+                echo 'WebAPI is not built'
                 Utils.markStageSkippedForConditional(env.STAGE_NAME)
                 echo 'echo WebAPI after markStageSkippedForConditional'
               }
