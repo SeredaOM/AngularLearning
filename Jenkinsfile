@@ -56,11 +56,17 @@ pipeline {
   stages {
     stage('Prepare') {
       steps {
-        bat 'echo The current directory is %CD%'
-        bat 'dir'
-        script {
-          firstNewCommit = firstCommitSinceSuccessfulBuild()
-          echo "commit: ${firstNewCommit}"
+        try{
+          bat 'echo The current directory is %CD%'
+          bat 'dir'
+          script {
+            firstNewCommit = firstCommitSinceSuccessfulBuild()
+            echo "commit: ${firstNewCommit}"
+          }
+        } catch ( err ) {
+          echo "Failed: ${err}"
+        } finally {
+          echo "Finally..."
         }
       }
     }
