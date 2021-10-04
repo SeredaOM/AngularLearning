@@ -10,11 +10,23 @@ def firstCommitSinceSuccessfulBuild() {
   while ( build.previousBuild && build.result != 'SUCCESS' ) {
     echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
 
-    if ( build.changeSets ) {
-      echo 'build.changeSets: ' + build.changeSets
-      for (changeLog in build.changeSets) {
-        echo '  changeLog: ' + changeLog
-        for (entry in changeLog.items) {
+    changeSets =  build.changeSets
+      // def log
+      // if ( build.result == 'SUCCESS')
+      // {
+      //   log = changeSets[0]
+      // } else {
+      //   log = changeLog.last
+      // }
+      // for (changeLog in build.changeSets) {
+      //   echo "  changeLog.length: ${changeLog.length}"
+
+    if ( changeSets ) {
+      echo "build.changeSets.length: ${changeSets.length}"
+      for (changeSet in changeSets) {
+        items = changeSet.items
+        echo "  changeSet.items.length: ${items.length}"
+        for (entry in items) {
           echo '    entry: ' + entry
           echo "      commit: ${entry.commitId}}\n"
           commit = entry.commitId
@@ -25,6 +37,7 @@ def firstCommitSinceSuccessfulBuild() {
       }
     } else {
       echo 'build.changeSets is null'
+      echo "build.changeSets.length: ${changeSets.length}"
     }
 
     echo 'over'
