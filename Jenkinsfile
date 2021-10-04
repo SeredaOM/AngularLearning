@@ -28,8 +28,7 @@ def firstCommitSinceSuccessfulBuild() {
         items = changeSet.items
         echo "  changeSet.items.size(): ${items.size()}"
         for (entry in items) {
-          echo '    entry: ' + entry
-          echo "      commit: ${entry.commitId}}\n"
+          echo "      commit: ${entry.commitId}}"
           commit = entry.commitId
           // for (file in entry.affectedFiles) {
           //   echo "      file: * ${file.path}, ${entry.msg} by ${entry.author}\n"
