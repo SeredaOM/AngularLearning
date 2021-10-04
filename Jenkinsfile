@@ -1,5 +1,6 @@
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, LineLength, MethodReturnTypeRequired, NestedBlockDepth, NestedForLoop, NoDef, VariableTypeRequired */
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
+import com.cloudbees.groovy.cps.NonCPS
 
 @NonCPS
 def firstCommitSinceSuccessfulBuild() {
