@@ -64,7 +64,7 @@ pipeline {
         stage('Build Frontend') {
           steps {
             script {
-              String result = powershell script:('git diff ' + firstNewCommit + ' HEAD Frontend/'), returnStdout:true
+              String result = powershell script:('git diff ' + firstNewCommit + '^ Frontend/'), returnStdout:true
               echo result
               if (!hadSuccessfulBuild || result) {
                 dir('./Frontend') {
@@ -104,7 +104,7 @@ pipeline {
         stage('Build WebAPI') {
           steps {
             script {
-              String result = powershell script:('git diff ' + firstNewCommit + ' HEAD WebAPI/'), returnStdout:true
+              String result = powershell script:('git diff ' + firstNewCommit + '^ WebAPI/'), returnStdout:true
               echo result
               if (!hadSuccessfulBuild || result) {
                 dir('./WebAPI') {
