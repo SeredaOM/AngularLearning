@@ -6,25 +6,21 @@ def firstCommitSinceSuccessfulBuild() {
   String commit
 
   build = currentBuild
-  echo "build.previousBuild: ${build.previousBuild}"
-  echo "build.result: ${build.result}"
-
   echo "previousBuild: ${build.previousBuild}, result: ${build.result}"
   while ( build.previousBuild && build.result != 'SUCCESS' ) {
     echo "build: id: ${build.id}, result: ${build.result}, changeSets: ${build.changeSets}"
 
     if ( build.changeSets ) {
       echo 'build.changeSets: ' + build.changeSets
-      /* groovylint-disable-next-line NestedForLoop */
       for (changeLog in build.changeSets) {
         echo '  changeLog: ' + changeLog
         for (entry in changeLog.items) {
           echo '    entry: ' + entry
           echo "      commit: ${entry.commitId}}\n"
           commit = entry.commitId
-          for (file in entry.affectedFiles) {
-            echo "      file: * ${file.path}, ${entry.msg} by ${entry.author}\n"
-          }
+          // for (file in entry.affectedFiles) {
+          //   echo "      file: * ${file.path}, ${entry.msg} by ${entry.author}\n"
+          // }
         }
       }
     } else {
@@ -39,7 +35,7 @@ def firstCommitSinceSuccessfulBuild() {
   return commit
 }
 
-String gitLatestCommonAncestor
+String firstNewCommit
 boolean builtFrontend = false
 boolean builtWebApi = false
 
@@ -51,26 +47,8 @@ pipeline {
         bat 'echo The current directory is %CD%'
         bat 'dir'
         script {
-          commit = firstCommitSinceSuccessfulBuild()
-          echo "commit: ${commit}"
-
-          String remotes = powershell script:'git remote', returnStdout:true
-          echo 'Remotes: ' + remotes
-          if ( !remotes.contains('github') ) {
-            echo 'Adding github remote'
-            powershell script:'git remote add github https://github.com/SeredaOM/AngularLearning.git'
-            powershell script:'git fetch github master'
-          }
-
-          //    This command helped to spot the remote branches in the history
-          //    echo powershell script:'git log --graph --decorate --oneline', returnStdout:true
-
-          String gitMasterBranchLastCommitHash = powershell script:'git rev-parse github/master', returnStdout:true
-          echo 'MasterBranchLatestCommitHash: ' + gitMasterBranchLastCommitHash
-
-          gitLatestCommonAncestor = powershell script:'git merge-base HEAD github/master', returnStdout:true
-          gitLatestCommonAncestor = gitLatestCommonAncestor[0..<-2]
-          echo 'LatestCommonAncestor: "' + gitLatestCommonAncestor + '".'
+          firstNewCommit = firstCommitSinceSuccessfulBuild()
+          echo "commit: ${firstNewCommit}"
         }
       }
     }
@@ -80,7 +58,7 @@ pipeline {
         stage('Build Frontend') {
           steps {
             script {
-              String result = powershell script:('git diff ' + gitLatestCommonAncestor + ' HEAD Frontend/'), returnStdout:true
+              String result = powershell script:('git diff ' + firstNewCommit + ' HEAD Frontend/'), returnStdout:true
               echo result
               if (result) {
                 dir('./Frontend') {
@@ -120,7 +98,7 @@ pipeline {
         stage('Build WebAPI') {
           steps {
             script {
-              String result = powershell script:('git diff ' + gitLatestCommonAncestor + ' HEAD WebAPI/'), returnStdout:true
+              String result = powershell script:('git diff ' + firstNewCommit + ' HEAD WebAPI/'), returnStdout:true
               echo result
               if (result) {
                 dir('./WebAPI') {
