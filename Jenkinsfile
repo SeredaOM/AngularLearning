@@ -9,43 +9,44 @@ def firstCommitSinceSuccessfulBuild() {
   while ( build.previousBuild && build.result != 'SUCCESS' ) {
     echo 'build.id: ' + build.id + ', result: ' + build.result
 
-    // if ( build.changeSets ) {
-    //   echo 'changeSets: ' + build.changeSets
-    //   /* groovylint-disable-next-line NestedForLoop */
-    //   for (changeLog in build.changeSets) {
-    //     echo '  changeLog: ' + changeLog
-    //     for (entry in changeLog.items) {
-    //       echo '    entry: ' + entry
-    //       for (file in entry.affectedFiles) {
-    //         echo "      file: * ${file.path}\n"
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   echo 'no changeSets'
-    // }
-
-    if ( build.rawBuild  ) {
-      echo 'build.rawBuild: ' + build.rawBuild
-      changesets = build.rawBuild.changeSets
-      if ( changesets ) {
-        //echo 'build.rawBuild.changeSets: ' + changesets
-        //for (int i = 0; i < changesets.size(); i++) {
-        //  echo i
-        //   entries = changeLogSets[i].items
-        //   for (int j = 0; j < entries.length; j++) {
-        //       entry = entries[j]
-        //       echo 'entry: ' + entry
-        //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
-        //       echo "* ${entry.msg} by ${entry.author} \n"
-        //   }
-        //}
-      } else {
-        echo 'build.rawBuild.changeSets is empty'
+    if ( build.changeSets ) {
+      echo 'changeSets: ' + build.changeSets
+      /* groovylint-disable-next-line NestedForLoop */
+      for (changeLog in build.changeSets) {
+        echo '  changeLog: ' + changeLog
+        for (entry in changeLog.items) {
+          echo '    entry: ' + entry
+          echo "      commit: ${entry.commitId}}\n"
+          for (file in entry.affectedFiles) {
+            echo "      file: * ${file.path}, ${entry.msg} by ${entry.author}\n"
+          }
+        }
       }
     } else {
-      echo 'build.rawBuild is empty'
+      echo 'no changeSets'
     }
+
+    // if ( build.rawBuild  ) {
+    //   echo 'build.rawBuild: ' + build.rawBuild
+    //   changesets = build.rawBuild.changeSets
+    //   if ( changesets ) {
+    //     //echo 'build.rawBuild.changeSets: ' + changesets
+    //     //for (int i = 0; i < changesets.size(); i++) {
+    //     //  echo i
+    //     //   entries = changeLogSets[i].items
+    //     //   for (int j = 0; j < entries.length; j++) {
+    //     //       entry = entries[j]
+    //     //       echo 'entry: ' + entry
+    //     //       echo 'entry.msg: ' + entry.msg + ', author: ' + entry.author + ', commitId: ' + entry.commitId
+    //     //       echo "* ${entry.msg} by ${entry.author} \n"
+    //     //   }
+    //     //}
+    //   } else {
+    //     echo 'build.rawBuild.changeSets is empty'
+    //   }
+    // } else {
+    //   echo 'build.rawBuild is empty'
+    // }
 
     echo 'over'
 
