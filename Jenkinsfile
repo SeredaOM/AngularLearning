@@ -16,19 +16,15 @@ def firstCommitSinceSuccessfulBuild() {
     if ( changeSets ) {
       echo "build.changeSets.size(): ${changeSets.size()}"
       if ( build.result == 'SUCCESS' ) {
-        def changeSet = changeSets.first()
-        def items = changeSet.items
+        def items = changeSets.first().items
         echo "changeSet.items.size(): ${items.size()}"
-        def item = items[0]
-        commit = item.commitId
+        commit = items.first().commitId
         over = true
         echo "identified successful commit: ${commit}"
       } else {
-        def changeSet = changeSets.last()
-        def items = changeSet.items
+        def items = changeSets.last().items
         echo "changeSet.items.size(): ${items.size()}"
-        def item = items[-1]
-        commit = item.commitId
+        commit = items[-1].commitId
         echo "Current unsuccessful commit: ${commit}"
       }
     } else {
@@ -38,7 +34,7 @@ def firstCommitSinceSuccessfulBuild() {
     echo 'over'
     build = build.previousBuild
   }
-  
+
   return commit
 }
 
