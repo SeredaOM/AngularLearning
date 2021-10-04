@@ -16,7 +16,7 @@ def detectFirstNewCommit() {
       echo "build.changeSets.size(): ${changeSets.size()}"
       def items = changeSets.last().items
       echo "changeSet.items.size(): ${items.size()}"
-      commit = items.last().commitId
+      commit = items.first().commitId
       echo "Current first unsuccessful commit: ${commit}"
     } else {
       echo 'build.changeSets is null'
