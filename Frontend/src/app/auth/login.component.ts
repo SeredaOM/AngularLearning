@@ -54,9 +54,9 @@ export class LoginComponent implements OnInit {
 
     if (this.authService.isLoggedIn()) {
       this.player = PlayerModel.getPlayerFromStore();
-    } else {
-      this.subscribeToSocialAuthService();
     }
+
+    this.subscribeToSocialAuthService();
   }
 
   ngOnDestroy() {
@@ -97,12 +97,6 @@ export class LoginComponent implements OnInit {
         this.progressProcessName = null;
         this.player = null;
         this.isLoggedIn = false;
-
-        if (this.subscription != null) {
-          console.error(`subscription supposed to be null when signout`);
-        }
-
-        this.subscribeToSocialAuthService();
       },
       (error: any) => {
         console.log(`handling logout error`);
@@ -112,12 +106,6 @@ export class LoginComponent implements OnInit {
 
         this.error = 'Error during logout';
         this.errorDetails = error.message;
-
-        if (this.subscription != null) {
-          console.error(`subscription supposed to be null when signout`);
-        }
-
-        this.subscribeToSocialAuthService();
       }
     );
   }
